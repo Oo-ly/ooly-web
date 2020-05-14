@@ -6,7 +6,19 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { Loader, LoadingManager, TextureLoader, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Raycaster, Vector2 } from 'three';
+import {
+  Loader,
+  LoadingManager,
+  TextureLoader,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  Object3D,
+  Raycaster,
+  Vector2,
+  Color,
+  ShaderMaterial,
+} from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 
 class Scene {
@@ -15,6 +27,8 @@ class Scene {
   private renderer: THREE.WebGLRenderer;
 
   private controls: OrbitControls;
+
+  private uniforms: any;
 
   private interactiveElements: Object3D[] = [];
 
@@ -66,6 +80,21 @@ class Scene {
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
 
+    this.uniforms = {
+      color1: {
+        type: 'c',
+        value: new Color(0x09b9e0),
+      },
+      color2: {
+        type: 'c',
+        value: new Color(0x7c04c2),
+      },
+      time: {
+        type: 'f',
+        value: 1,
+      },
+    };
+
     ObjectLoader.loadGLTF('assets/Pod/Pod.gltf').then((object) => {
       this.scene.add(object);
     });
@@ -73,6 +102,21 @@ class Scene {
     ObjectLoader.loadGLTF('assets/Boitier/Boitier.gltf').then((object) => {
       object.traverse((child) => {
         if (child.name == 'Plus') this.interactiveElements.push(child);
+
+        if (child instanceof Mesh && child.name === 'Bandeau_LED') {
+          const material = child.material as MeshStandardMaterial;
+          material.color.setHex(0x0000ff);
+          material.emissive.setHex(0x0000ff);
+          console.log(child.material);
+
+          const gradient = new ShaderMaterial({
+            uniforms: this.uniforms,
+            vertexShader: document.querySelector('#vertexshader').textContent,
+            fragmentShader: document.querySelector('#fragmentshader').textContent,
+          });
+
+          child.material = gradient;
+        }
       });
       this.scene.add(object);
     });
@@ -83,6 +127,8 @@ class Scene {
     this.renderer.render(this.scene, this.camera);
 
     this.controls.update();
+
+    this.uniforms.time.value += 1 / 60;
   }
 }
 
