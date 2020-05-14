@@ -1,25 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import {
-  Loader,
-  LoadingManager,
-  TextureLoader,
-  Mesh,
-  MeshBasicMaterial,
-  MeshStandardMaterial,
-  Object3D,
-  Raycaster,
-  Vector2,
-  Color,
-  ShaderMaterial,
-} from 'three';
+import { Mesh, MeshStandardMaterial, Raycaster, Vector2, Color, ShaderMaterial } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
+import InteractiveObject from './InteractiveObject';
 
 class Scene {
   private scene: THREE.Scene;
@@ -30,7 +14,7 @@ class Scene {
 
   private uniforms: any;
 
-  private interactiveElements: Object3D[] = [];
+  private interactiveElements: InteractiveObject[] = [];
 
   constructor() {
     this.scene = new THREE.Scene();
@@ -55,10 +39,14 @@ class Scene {
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
       raycaster.setFromCamera(mouse, this.camera);
-      const intersects = raycaster.intersectObjects(this.interactiveElements, true);
-      if (intersects.length > 0) {
-        const selectedObject = intersects[0];
-      }
+
+      this.interactiveElements.forEach((element) => {
+        const intersects = raycaster.intersectObject(element.object, true);
+
+        if (intersects.length > 0) {
+          element.run();
+        }
+      });
     });
   }
 
@@ -69,8 +57,8 @@ class Scene {
   }
 
   init() {
-    this.camera.position.set(0, 0.054, 0.108);
-    this.camera.rotation.set(-26.57, 0, 0);
+    this.camera.position.set(-0.0819560393608861, 0.17910147276113078, 0.000008189676138274878);
+    this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
     this.camera.lookAt(0, 0, 0);
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
@@ -96,13 +84,12 @@ class Scene {
     };
 
     ObjectLoader.loadGLTF('assets/Pod/Pod.gltf').then((object) => {
+      object.position.z = 0.133;
       this.scene.add(object);
     });
 
     ObjectLoader.loadGLTF('assets/Boitier/Boitier.gltf').then((object) => {
       object.traverse((child) => {
-        if (child.name == 'Plus') this.interactiveElements.push(child);
-
         if (child instanceof Mesh && child.name === 'Bandeau_LED') {
           const material = child.material as MeshStandardMaterial;
           material.color.setHex(0x0000ff);
@@ -118,6 +105,13 @@ class Scene {
           child.material = gradient;
         }
       });
+
+      const plusButton = new InteractiveObject(object, 'Plus');
+      plusButton.setAction(() => {
+        console.log('Click on button');
+      });
+      this.interactiveElements.push(plusButton);
+
       this.scene.add(object);
     });
   }
@@ -129,6 +123,9 @@ class Scene {
     this.controls.update();
 
     this.uniforms.time.value += 1 / 60;
+
+    console.log(this.camera.position);
+    console.log(this.camera.rotation);
   }
 }
 
