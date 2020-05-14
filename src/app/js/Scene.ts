@@ -6,7 +6,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { Loader, LoadingManager, TextureLoader, Mesh, MeshBasicMaterial, MeshStandardMaterial } from 'three';
+import { Loader, LoadingManager, TextureLoader, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Raycaster, Vector2 } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 
 class Scene {
@@ -16,7 +16,7 @@ class Scene {
 
   private controls: OrbitControls;
 
-  private torusMesh: THREE.Mesh;
+  private interactiveElements: Object3D[] = [];
 
   constructor() {
     this.scene = new THREE.Scene();
@@ -32,6 +32,20 @@ class Scene {
 
   bind() {
     window.addEventListener('resize', () => this.onResize());
+
+    this.renderer.domElement.addEventListener('click', (e) => {
+      const raycaster = new Raycaster();
+      const mouse = new Vector2();
+
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, this.camera);
+      const intersects = raycaster.intersectObjects(this.interactiveElements, true);
+      if (intersects.length > 0) {
+        const selectedObject = intersects[0];
+      }
+    });
   }
 
   onResize() {
@@ -57,6 +71,9 @@ class Scene {
     });
 
     ObjectLoader.loadGLTF('assets/Boitier/Boitier.gltf').then((object) => {
+      object.traverse((child) => {
+        if (child.name == 'Plus') this.interactiveElements.push(child);
+      });
       this.scene.add(object);
     });
   }
