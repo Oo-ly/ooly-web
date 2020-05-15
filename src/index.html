@@ -43,7 +43,8 @@
     }
 
     void main() {
-        gl_FragColor = vec4(mix(color1, color2, sin(vUv.y + time + noise(vUv.y * time))), 1.0);
+        ;gl_FragColor = vec4(mix(color1, color2, sin(vUv.y + time + noise(vUv.y * time))), 1.0);
+        gl_FragColor = vec4(mix(color1, color2, sin(vUv.x * 10.0 + time) / 2. + 0.5), 1.0);
     }
   </script>
 </html>

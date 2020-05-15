@@ -88,7 +88,7 @@ class Scene {
       this.scene.add(object);
     });
 
-    ObjectLoader.loadGLTF('assets/Boitier/Boitier.gltf').then((object) => {
+    ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
       object.traverse((child) => {
         if (child instanceof Mesh && child.name === 'Bandeau_LED') {
           const material = child.material as MeshStandardMaterial;
@@ -104,13 +104,27 @@ class Scene {
 
           child.material = gradient;
         }
+
+        if (child instanceof Mesh && child.name === 'Tore_1') {
+          const material = child.material as MeshStandardMaterial;
+          material.color.setHex(0xff0000);
+        }
       });
 
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
         console.log('Click on button');
       });
+
+      const oo1 = new InteractiveObject(object, 'Oo_1');
+      oo1.setAction(() => {
+        const material = oo1.object.material as MeshStandardMaterial;
+        material.transparent = true;
+        material.opacity = material.opacity ? 0 : 1;
+      });
+
       this.interactiveElements.push(plusButton);
+      this.interactiveElements.push(oo1);
 
       this.scene.add(object);
     });
@@ -123,9 +137,6 @@ class Scene {
     this.controls.update();
 
     this.uniforms.time.value += 1 / 60;
-
-    console.log(this.camera.position);
-    console.log(this.camera.rotation);
   }
 }
 
