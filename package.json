@@ -60,7 +60,9 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@types/gsap": "^1.20.2",
     "bluebird": "^3.7.2",
+    "gsap": "^3.2.6",
     "three": "^0.111.0"
   }
 }

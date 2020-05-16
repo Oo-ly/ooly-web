@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Mesh, MeshStandardMaterial, Raycaster, Vector2, Color, ShaderMaterial } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
+import { TweenMax } from 'gsap';
 
 class Scene {
   private scene: THREE.Scene;
@@ -116,16 +117,26 @@ class Scene {
         console.log('Click on button');
       });
 
-      const oo1 = new InteractiveObject(object, 'Oo_1');
-      oo1.setAction(() => {
-        const material = oo1.object.material as MeshStandardMaterial;
+      const couvercle = new InteractiveObject(object, 'Couvercle_final');
+      couvercle.setAction(() => {
+        const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
-        material.opacity = material.opacity ? 0 : 1;
+
+        const tween = TweenMax.to(couvercle.object, 1, {
+          onUpdate: () => {
+            material.opacity = 1 - tween.progress();
+            couvercle.object.position.y += 0.001 * (1 - tween.progress());
+          },
+          onComplete: () => {
+            this.scene.remove(couvercle.object);
+          },
+        });
       });
 
       this.interactiveElements.push(plusButton);
-      this.interactiveElements.push(oo1);
+      this.interactiveElements.push(couvercle);
 
+      console.log(object);
       this.scene.add(object);
     });
   }
