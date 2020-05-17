@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { Mesh, MeshStandardMaterial, Raycaster, Vector2, Color, ShaderMaterial } from 'three';
+import { MeshStandardMaterial, Raycaster, Vector2, Object3D } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
+import Oo from './Oo';
+import Boitier from './Boitier';
 
 class Scene {
   private scene: THREE.Scene;
@@ -13,13 +15,16 @@ class Scene {
 
   private controls: OrbitControls;
 
-  private uniforms: any;
+  private pod: Object3D;
+
+  private oos: Oo[] = [];
+  private boitier: Boitier;
 
   private interactiveElements: InteractiveObject[] = [];
 
   constructor() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.001, 1000);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 100);
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
@@ -49,6 +54,22 @@ class Scene {
         }
       });
     });
+
+    document.querySelectorAll('ul.oos li img').forEach((oo) => {
+      oo.addEventListener('click', (e) => {
+        const ooClicked = (e.target as HTMLElement).getAttribute('data-oo');
+
+        const ooInList = this.oos.filter((o) => {
+          return o.getName() === ooClicked;
+        });
+
+        console.log(ooInList);
+
+        if (ooInList.length === 1) {
+          ooInList[0].toogle();
+        }
+      });
+    });
   }
 
   onResize() {
@@ -69,48 +90,16 @@ class Scene {
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
 
-    this.uniforms = {
-      color1: {
-        type: 'c',
-        value: new Color(0x09b9e0),
-      },
-      color2: {
-        type: 'c',
-        value: new Color(0x7c04c2),
-      },
-      time: {
-        type: 'f',
-        value: 1,
-      },
-    };
-
     ObjectLoader.loadGLTF('assets/Pod/Pod.gltf').then((object) => {
-      object.position.z = 0.133;
+      object.position.z = -0.13;
+      object.rotateY((90 * Math.PI) / 180);
+
       this.scene.add(object);
+      this.pod = object;
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
-      object.traverse((child) => {
-        if (child instanceof Mesh && child.name === 'Bandeau_LED') {
-          const material = child.material as MeshStandardMaterial;
-          material.color.setHex(0x0000ff);
-          material.emissive.setHex(0x0000ff);
-          console.log(child.material);
-
-          const gradient = new ShaderMaterial({
-            uniforms: this.uniforms,
-            vertexShader: document.querySelector('#vertexshader').textContent,
-            fragmentShader: document.querySelector('#fragmentshader').textContent,
-          });
-
-          child.material = gradient;
-        }
-
-        if (child instanceof Mesh && child.name === 'Tore_1') {
-          const material = child.material as MeshStandardMaterial;
-          material.color.setHex(0xff0000);
-        }
-      });
+      this.boitier = new Boitier(object);
 
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
@@ -128,6 +117,10 @@ class Scene {
             couvercle.object.position.y += 0.001 * (1 - tween.progress());
           },
           onComplete: () => {
+            const index = this.interactiveElements.indexOf(couvercle);
+            if (index > -1) {
+              this.interactiveElements.splice(index, 1);
+            }
             this.scene.remove(couvercle.object);
           },
         });
@@ -147,7 +140,7 @@ class Scene {
 
     this.controls.update();
 
-    this.uniforms.time.value += 1 / 60;
+    if (this.boitier) this.boitier.update();
   }
 }
 
