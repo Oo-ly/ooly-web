@@ -27,7 +27,7 @@ export default class Boitier {
 
     this.setBandeauColor();
     this.createOos();
-    this.randomActive();
+    // this.randomActive();
   }
 
   createOos() {

@@ -5,8 +5,9 @@ import { MeshStandardMaterial, Raycaster, Vector2, Object3D } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
-import Oo from './Oo';
+import Oo, { OO_DISCOO, OO_INFOO, OO_CINOOCHE } from './Oo';
 import Boitier from './Boitier';
+import Scenario, { Sentence, Interaction } from './Scenario';
 
 class Scene {
   private scene: THREE.Scene;
@@ -22,6 +23,8 @@ class Scene {
 
   private interactiveElements: InteractiveObject[] = [];
 
+  private scenario: Scenario;
+
   constructor() {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 100);
@@ -32,6 +35,7 @@ class Scene {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     this.bind();
+    this.testScenario();
   }
 
   bind() {
@@ -96,6 +100,19 @@ class Scene {
 
       this.scene.add(object);
       this.pod = object;
+
+      const likeButton = new InteractiveObject(object, 'J_aime');
+      likeButton.setAction(() => {
+        document.dispatchEvent(new Event(`interaction:${Interaction.LIKE}`));
+      });
+
+      const dislikeButton = new InteractiveObject(object, 'J_aime_pas');
+      dislikeButton.setAction(() => {
+        document.dispatchEvent(new Event(`interaction:${Interaction.DISLIKE}`));
+      });
+
+      this.interactiveElements.push(likeButton, dislikeButton);
+      console.log('Pod', object);
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
@@ -104,6 +121,11 @@ class Scene {
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
         console.log('Click on button');
+      });
+
+      const powerButton = new InteractiveObject(object, 'Power');
+      powerButton.setAction(() => {
+        this.scenario.play();
       });
 
       const couvercle = new InteractiveObject(object, 'Couvercle_final');
@@ -128,6 +150,7 @@ class Scene {
 
       this.interactiveElements.push(plusButton);
       this.interactiveElements.push(couvercle);
+      this.interactiveElements.push(powerButton);
 
       console.log(object);
       this.scene.add(object);
@@ -141,6 +164,101 @@ class Scene {
     this.controls.update();
 
     if (this.boitier) this.boitier.update();
+  }
+
+  testScenario() {
+    const sentences: Sentence[] = [
+      {
+        id: 1,
+        oo: OO_DISCOO,
+        text: 'Hello Duke',
+        nextSentence: 2,
+      },
+      {
+        id: 2,
+        oo: OO_INFOO,
+        text: 'Coucou Disc’Oo. Ça vous dit de commencer par une petite anecdote marrante ?',
+        interaction: Interaction.LIKE,
+        nextSentence: 3,
+      },
+      {
+        id: 3,
+        oo: OO_INFOO,
+        text: 'Est ce que vous saviez que pour se saluer, certains moines tibétains se tirent la langue ? C’est rigolo, on devrait essayer aussi.',
+        nextSentence: 4,
+      },
+      {
+        id: 4,
+        oo: OO_DISCOO,
+        text: 'Ce serait plus pratique si on avait une langue Inf’Oo ...',
+        nextSentence: 5,
+      },
+      {
+        id: 5,
+        oo: OO_CINOOCHE,
+        text: "C'est pas faux.",
+        nextSentence: 6,
+      },
+      {
+        id: 6,
+        oo: OO_DISCOO,
+        text: 'Par contre, on peut s’inspirer des moines tibétains pour leur musique. Ils la composent en frappant sur des bols.',
+        nextSentence: 7,
+      },
+      {
+        id: 7,
+        oo: OO_INFOO,
+        text: 'Oui, d’ailleurs ces bols sont composés de 7 métaux différents, représentant les planètes du système solaire.',
+        nextSentence: 8,
+      },
+      {
+        id: 8,
+        oo: OO_DISCOO,
+        text: 'Ah ouais je le savais pas tiens ! On s’en écoute un morceau, voir ce que ça donne ?',
+        interaction: Interaction.DISLIKE,
+        nextSentence: 9,
+      },
+      {
+        id: 9,
+        oo: OO_DISCOO,
+        text: 'Ok, une autre fois peut-être !',
+        nextSentence: 10,
+      },
+      {
+        id: 10,
+        oo: OO_CINOOCHE,
+        text: 'Dites, vous saviez que Georges Clonney avait aussi des troubles du sommeil ?',
+        nextSentence: 11,
+      },
+      {
+        id: 11,
+        oo: OO_INFOO,
+        text:
+          'Oui, j’en ai entendu parlé, il parait qu’il se réveille beaucoup la nuit, et qu’il en profite pour écrire. Ca t’es déjà arrivé d’écrire pendant une nuit Duke ?',
+        interaction: Interaction.LIKE,
+        nextSentence: 12,
+      },
+      {
+        id: 12,
+        oo: OO_CINOOCHE,
+        text: 'Chouette, j’espère que tu nous liras ça un jour.',
+        interaction: Interaction.OFF,
+        nextSentence: 13,
+      },
+      {
+        id: 13,
+        oo: OO_CINOOCHE,
+        text: 'Oh ! Bonne nuit Duke, à la prochaine !',
+        nextSentence: 14,
+      },
+      {
+        id: 14,
+        oo: OO_INFOO,
+        text: 'Salut Duke, trop chouette ce moment !',
+      },
+    ];
+
+    this.scenario = new Scenario(sentences);
   }
 }
 
