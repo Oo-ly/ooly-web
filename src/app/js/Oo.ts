@@ -34,7 +34,7 @@ export default class Oo {
     this.object.frustumCulled = false;
 
     // const toreMaterial = this.tore.material as MeshStandardMaterial;
-    // console.log(toreMaterial.color);
+    // console.log(toreMaterial.color, toreMaterial.emissive);
     // toreMaterial.color.set(new Color(`#${this.color}`));
     // toreMaterial.emissive.set(new Color(`#${this.color}`));
   }
@@ -67,8 +67,8 @@ export default class Oo {
 
     TweenMax.to(toreMaterial.emissive, duration, {
       r: nextEmissive.r,
-      g: nextColor.g,
-      b: nextColor.b,
+      g: nextEmissive.g,
+      b: nextEmissive.b,
       onUpdate: () => {
         this.material.needsUpdate = true;
       },
