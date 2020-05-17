@@ -31,13 +31,10 @@ export default class Scenario {
     const sentence = this.sentences.find((s) => s.id === id);
     console.log(`Sentence ${id}: ${sentence.text}`);
 
-    // for (let interaction in Interaction) {
-    //   document.removeEventListener(`interaction:${interaction}`, () => {
-    //     this.playSentence(sentence.nextSentence);
-    //   });
-    // }
-
     if (sentence.interaction) {
+      const event = new CustomEvent('wait:interaction', { detail: sentence.interaction.toString() });
+      document.dispatchEvent(event);
+
       document.addEventListener(
         `interaction:${sentence.interaction}`,
         () => {

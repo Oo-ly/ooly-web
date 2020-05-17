@@ -8,6 +8,7 @@ import { TweenMax } from 'gsap';
 import Oo, { OO_DISCOO, OO_INFOO, OO_CINOOCHE } from './Oo';
 import Boitier from './Boitier';
 import Scenario, { Sentence, Interaction } from './Scenario';
+import Pod from './Pod';
 
 class Scene {
   private scene: THREE.Scene;
@@ -16,10 +17,9 @@ class Scene {
 
   private controls: OrbitControls;
 
-  private pod: Object3D;
-
   private oos: Oo[] = [];
   private boitier: Boitier;
+  private pod: Pod;
 
   private interactiveElements: InteractiveObject[] = [];
 
@@ -99,20 +99,22 @@ class Scene {
       object.rotateY((90 * Math.PI) / 180);
 
       this.scene.add(object);
-      this.pod = object;
 
       const likeButton = new InteractiveObject(object, 'J_aime');
       likeButton.setAction(() => {
         document.dispatchEvent(new Event(`interaction:${Interaction.LIKE}`));
+        document.dispatchEvent(new Event('clean:interaction'));
       });
 
       const dislikeButton = new InteractiveObject(object, 'J_aime_pas');
       dislikeButton.setAction(() => {
         document.dispatchEvent(new Event(`interaction:${Interaction.DISLIKE}`));
+        document.dispatchEvent(new Event('clean:interaction'));
       });
 
       this.interactiveElements.push(likeButton, dislikeButton);
       console.log('Pod', object);
+      this.pod = new Pod(object);
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
