@@ -30,6 +30,16 @@ export default class Boitier {
     // this.randomActive();
   }
 
+  toogleOo(ooName: string) {
+    const ooInList = this.oos.filter((o) => {
+      return o.getName() === ooName;
+    });
+
+    if (ooInList.length === 1) {
+      ooInList[0].toogle();
+    }
+  }
+
   createOos() {
     const discoo = new Oo(this.object, OO_DISCOO, '0085FF', 'Disc_Oo', 'Tore_3');
     const cinooche = new Oo(this.object, OO_CINOOCHE, 'CA0024', 'Cinoche_1', 'Tore_5');

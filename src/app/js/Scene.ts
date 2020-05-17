@@ -62,16 +62,7 @@ class Scene {
     document.querySelectorAll('ul.oos li img').forEach((oo) => {
       oo.addEventListener('click', (e) => {
         const ooClicked = (e.target as HTMLElement).getAttribute('data-oo');
-
-        const ooInList = this.oos.filter((o) => {
-          return o.getName() === ooClicked;
-        });
-
-        console.log(ooInList);
-
-        if (ooInList.length === 1) {
-          ooInList[0].toogle();
-        }
+        this.boitier.toogleOo(ooClicked);
       });
     });
   }
