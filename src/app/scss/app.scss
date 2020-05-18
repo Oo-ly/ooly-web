@@ -26,6 +26,7 @@ aside {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 
   .oos {
     display: flex;
@@ -52,6 +53,7 @@ aside {
         cursor: pointer;
         max-width: 80px;
         margin: 0 auto;
+        pointer-events: all;
       }
     }
   }

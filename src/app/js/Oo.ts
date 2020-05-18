@@ -28,6 +28,10 @@ export default class Oo {
       console.error(`Object not found for ${name}`);
     }
 
+    this.tore.layers.enable(1);
+    const toreMaterial = this.tore.material as MeshStandardMaterial;
+    toreMaterial.emissiveIntensity = 0;
+
     this.material = this.object.material as MeshStandardMaterial;
     this.material.transparent = true;
     this.material.opacity = 0;
@@ -51,6 +55,15 @@ export default class Oo {
     const nextEmissive = active ? new Color(`#${this.color}`) : new Color('#ffffff');
     const duration = 0.3;
 
+    const nextEmissiveIntensity = active ? 10 : 0;
+
+    TweenMax.to(toreMaterial, duration, {
+      emissiveIntensity: nextEmissiveIntensity,
+      onUpdate: () => {
+        this.material.needsUpdate = true;
+      },
+    });
+
     TweenMax.to(toreMaterial.color, duration, {
       r: nextColor.r,
       g: nextColor.g,
@@ -68,6 +81,10 @@ export default class Oo {
         this.material.needsUpdate = true;
       },
     });
+  }
+
+  getColor() {
+    return this.color;
   }
 
   getName() {

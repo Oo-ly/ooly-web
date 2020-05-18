@@ -107,8 +107,8 @@
 
       void main() {
 
-        gl_FragColor = ( getTexture( baseTexture ) + vec4( 1.0, 1.0, 1.0, 0.0 ) * getTexture( bloomTexture ) );
-
+        gl_FragColor = ( getTexture( baseTexture ) + vec4( 1.0 ) * getTexture( bloomTexture ) );
+        gl_FragColor.a =  getTexture( baseTexture ).a; // THIS did it
       }
     </script>
   </body>

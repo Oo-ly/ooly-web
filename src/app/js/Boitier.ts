@@ -1,11 +1,14 @@
-import { Object3D, Mesh, MeshStandardMaterial, ShaderMaterial, Color } from 'three';
+import { Object3D, Mesh, MeshStandardMaterial, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
+import { TweenMax } from 'gsap';
 
 export default class Boitier {
   private object: Object3D;
   private oos: Oo[] = [];
 
   private bandeauUniforms: any;
+  private bandeau: Mesh;
+  private bandeauMaterial: MeshStandardMaterial;
 
   constructor(object: Object3D) {
     this.object = object;
@@ -25,13 +28,27 @@ export default class Boitier {
       },
     };
 
-    this.setBandeauColor();
+    // this.setBandeauColor();
     this.createOos();
 
     const melimelo = this.object.getObjectByName('melimelo_1') as Mesh;
     const melimeloMaterial = melimelo.material as MeshStandardMaterial;
     melimeloMaterial.transparent = true;
     melimeloMaterial.opacity = 0;
+
+    const tore2 = this.object.getObjectByName('Tore_2') as Mesh;
+    const tore2Material = tore2.material as MeshStandardMaterial;
+    tore2.layers.set(1);
+    tore2Material.emissiveIntensity = 0;
+
+    this.bandeau = object.getObjectByName('Bandeau_LED') as Mesh;
+    this.bandeau.material = new MeshPhongMaterial({
+      color: 0x000000,
+      emissive: 0xffffff,
+      emissiveIntensity: 0.01,
+    });
+    this.bandeauMaterial = this.bandeau.material as MeshStandardMaterial;
+    this.bandeau.layers.enable(1);
 
     console.log('Boitier', object);
     this.bind();
@@ -40,6 +57,35 @@ export default class Boitier {
   bind() {
     document.addEventListener('show:oo', (e: CustomEvent) => {
       this.setOoActive(e.detail);
+    });
+
+    document.addEventListener('bandeau:intensity', (e: CustomEvent) => {
+      // TweenMax.to(this.bandeauMaterial, 2, {
+      //   emissiveIntensity: e.detail.intensity,
+      // });
+
+      TweenMax.fromTo(
+        this.bandeauMaterial,
+        2.5,
+        {
+          emissiveIntensity: 0.03,
+        },
+        {
+          emissiveIntensity: e.detail.intensity,
+          yoyo: true,
+          repeat: -1,
+        },
+      );
+    });
+
+    document.addEventListener('bandeau:color', (e: CustomEvent) => {
+      const color = new Color(e.detail.color);
+
+      TweenMax.to(this.bandeauMaterial.emissive, 0.3, {
+        r: color.r,
+        g: color.g,
+        b: color.b,
+      });
     });
   }
 
@@ -68,6 +114,15 @@ export default class Boitier {
   setOoActive(name: string) {
     this.oos.forEach((oo) => {
       oo.setActive(oo.getName() === name);
+    });
+
+    const activeOo = this.oos.find((oo) => oo.getName() === name);
+    const color = new Color(`#${activeOo.getColor()}`);
+
+    TweenMax.to(this.bandeauMaterial.emissive, 0.3, {
+      r: color.r,
+      g: color.g,
+      b: color.b,
     });
   }
 

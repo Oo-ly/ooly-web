@@ -21,7 +21,7 @@ export default class Pod {
     this.dislikeButton = object.getObjectByName('J_aime_pas') as Mesh;
 
     this.led = object.getObjectByName('LED_centre') as Mesh;
-    this.led.layers.set(1);
+    this.led.layers.enable(1);
 
     object.getObjectByName('LED_centre').position.setY(0.001);
 

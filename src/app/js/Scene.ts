@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3 } from 'three';
+import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
@@ -42,6 +42,7 @@ class Scene {
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
     });
+
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
     this.renderer.setClearColor(0x000000, 0);
@@ -58,6 +59,8 @@ class Scene {
     this.bloomPass.radius = 0;
 
     this.bloomComposer = new EffectComposer(this.renderer);
+    this.bloomComposer.setSize(window.innerWidth, window.innerHeight);
+
     // @ts-ignore
     this.bloomComposer.renderToScreen = false;
     this.bloomComposer.addPass(this.renderScene);
@@ -78,6 +81,8 @@ class Scene {
     this.finalPass.needsSwap = true;
 
     this.finalComposer = new EffectComposer(this.renderer);
+    this.finalComposer.setSize(window.innerWidth, window.innerHeight);
+
     this.finalComposer.addPass(this.renderScene);
     this.finalComposer.addPass(this.finalPass);
 
@@ -180,6 +185,16 @@ class Scene {
         const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
 
+        setTimeout(() => {
+          const event = new CustomEvent('bandeau:intensity', {
+            detail: {
+              intensity: 0.1,
+            },
+          });
+
+          document.dispatchEvent(event);
+        }, 1000);
+
         const tween = TweenMax.to(couvercle.object, 1, {
           onUpdate: () => {
             material.opacity = 1 - tween.progress();
@@ -216,9 +231,29 @@ class Scene {
 
   render() {
     requestAnimationFrame(() => this.render());
-    this.camera.layers.set(1);
+    // this.camera.layers.set(1);
+    const materials: any = {};
+    const blackMaterial = new MeshBasicMaterial({ color: 'black' });
+    this.scene.traverse((obj) => {
+      if (obj instanceof Mesh && this.bloomLayer.test(obj.layers) === false) {
+        materials[obj.uuid] = obj.material;
+        obj.material = blackMaterial;
+      }
+    });
+
+    this.renderer.setClearColor(0x000000);
+
     this.bloomComposer.render();
-    this.camera.layers.set(0);
+
+    this.scene.traverse((obj) => {
+      if (obj instanceof Mesh && materials[obj.uuid]) {
+        obj.material = materials[obj.uuid];
+        delete materials[obj.uuid];
+      }
+    });
+
+    this.renderer.setClearColor(0x000000, 0);
+    // this.camera.layers.set(0);
     this.finalComposer.render();
 
     this.controls.update();
@@ -227,7 +262,7 @@ class Scene {
   }
 
   removeObject(object: Object3D) {
-    if (object) object.parent.remove(object);
+    if (object && object.parent) object.parent.remove(object);
   }
 
   testScenario() {
