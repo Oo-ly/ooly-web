@@ -12,12 +12,25 @@ export default class Pod {
   private dislikeButton: Mesh;
   private likeButton: Mesh;
 
+  private led: Mesh;
+
   constructor(object: Object3D) {
     this.object = object;
 
     this.likeButton = object.getObjectByName('J_aime') as Mesh;
     this.dislikeButton = object.getObjectByName('J_aime_pas') as Mesh;
     console.log(this.likeButton.material);
+
+    this.led = object.getObjectByName('Led_centre') as Mesh;
+
+    object.traverse((child) => {
+      if (child instanceof Mesh) {
+        const material = child.material as MeshStandardMaterial;
+        material.roughness = 0.05;
+        material.metalness = 0.4;
+      }
+    });
+
     this.bind();
   }
 
@@ -27,14 +40,17 @@ export default class Pod {
   }
 
   waitInteraction(interactionEvent: InteractionEvent) {
-    switch (interactionEvent.detail) {
-      case Interaction.LIKE:
-        this.enableButton(this.likeButton, new Color('#2ecc71'));
-        break;
-      case Interaction.DISLIKE:
-        this.enableButton(this.dislikeButton, new Color('#e74c3c'));
-        break;
-    }
+    // switch (interactionEvent.detail) {
+    //   case Interaction.LIKE:
+    //     this.enableButton(this.likeButton, new Color('#2ecc71'));
+    //     break;
+    //   case Interaction.DISLIKE:
+    //     this.enableButton(this.dislikeButton, new Color('#e74c3c'));
+    //     break;
+    // }
+
+    this.enableButton(this.dislikeButton, new Color('#e74c3c'));
+    this.enableButton(this.likeButton, new Color('#2ecc71'));
   }
 
   cleanInteraction() {
@@ -67,10 +83,10 @@ export default class Pod {
   }
 
   enableButton(button: Mesh, color: Color) {
-    const buttons = [this.likeButton, this.dislikeButton];
-    const otherButtons = buttons.filter((b) => b != button);
+    // const buttons = [this.likeButton, this.dislikeButton];
+    // const otherButtons = buttons.filter((b) => b != button);
 
-    this.disableButtons(otherButtons);
+    // this.disableButtons(otherButtons);
 
     const material = button.material as MeshStandardMaterial;
 
@@ -91,5 +107,9 @@ export default class Pod {
         material.needsUpdate = true;
       },
     });
+  }
+
+  getObject() {
+    return this.object;
   }
 }

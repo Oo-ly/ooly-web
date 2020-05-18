@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { MeshStandardMaterial, Raycaster, Vector2, Object3D } from 'three';
+import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
@@ -28,10 +28,12 @@ class Scene {
   constructor() {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 100);
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({
+      alpha: true,
+    });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
-    this.renderer.setClearColor(0xececec);
+    this.renderer.setClearColor(0x000000, 0);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     this.bind();
@@ -82,6 +84,10 @@ class Scene {
     light.intensity = 1;
     this.scene.add(light);
 
+    const directionalLight = new DirectionalLight(0xffffff);
+    directionalLight.position.set(0.285, 0.493, 0.086);
+    directionalLight.castShadow = true;
+
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
 
@@ -106,6 +112,14 @@ class Scene {
       this.interactiveElements.push(likeButton, dislikeButton);
       console.log('Pod', object);
       this.pod = new Pod(object);
+      object.receiveShadow = true;
+      object.castShadow = true;
+
+      const led = object.getObjectByName('LED_bas') as Mesh;
+      const m = led.material as MeshStandardMaterial;
+      m.emissiveIntensity = 100;
+
+      console.log('Led', led);
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
@@ -140,6 +154,17 @@ class Scene {
           },
         });
       });
+
+      const geometry = new THREE.PlaneGeometry(5, 20, 32);
+      const material = new THREE.MeshPhongMaterial({ color: 0x343434, side: THREE.DoubleSide });
+
+      var plane = new THREE.Mesh(geometry, material);
+      plane.castShadow = true;
+      plane.receiveShadow = true;
+      plane.rotateX((90 * Math.PI) / 180);
+      // this.scene.add(plane);
+
+      this.renderer.shadowMap.enabled = true;
 
       this.interactiveElements.push(plusButton);
       this.interactiveElements.push(couvercle);

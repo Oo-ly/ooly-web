@@ -27,6 +27,13 @@ export default class Boitier {
 
     this.setBandeauColor();
     this.createOos();
+
+    const melimelo = this.object.getObjectByName('melimelo_1') as Mesh;
+    const melimeloMaterial = melimelo.material as MeshStandardMaterial;
+    melimeloMaterial.transparent = true;
+    melimeloMaterial.opacity = 0;
+
+    console.log('Boitier', object);
     // this.randomActive();
   }
 
