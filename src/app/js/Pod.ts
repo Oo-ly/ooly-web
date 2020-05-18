@@ -21,6 +21,7 @@ export default class Pod {
     this.dislikeButton = object.getObjectByName('J_aime_pas') as Mesh;
 
     this.led = object.getObjectByName('LED_centre') as Mesh;
+    this.led.layers.set(1);
 
     object.getObjectByName('LED_centre').position.setY(0.001);
 
@@ -37,37 +38,61 @@ export default class Pod {
   }
 
   animateLed() {
-    const colorA = new Color('#7930ff');
-    const colorB = new Color('#2b115c');
+    const colorA = new Color('#f76700');
+    const colorB = new Color('#803703');
 
     this.led.material = new MeshPhongMaterial({
       color: new Color('#000000'),
     });
+
+    const ampoule = this.object.getObjectByName('Ampoule') as Mesh;
+    const ampouleMaterial = ampoule.material as MeshStandardMaterial;
+
     const material = this.led.material as MeshPhongMaterial;
     material.emissiveIntensity = 0.2;
 
-    // TweenMax.fromTo(
-    //   material.color,
-    //   5,
-    //   {
-    //     r: colorA.r,
-    //     g: colorA.g,
-    //     b: colorA.b,
-    //   },
-    //   {
-    //     r: colorB.r,
-    //     g: colorB.g,
-    //     b: colorB.b,
-    //     yoyo: true,
-    //     repeat: -1,
-    //     onUpdate: () => {
-    //       material.needsUpdate = true;
-    //     },
-    //   },
-    // );
-
     TweenMax.fromTo(
       material.emissive,
+      5,
+      {
+        r: colorA.r,
+        g: colorA.g,
+        b: colorA.b,
+      },
+      {
+        r: colorB.r,
+        g: colorB.g,
+        b: colorB.b,
+        yoyo: true,
+        repeat: -1,
+        onUpdate: () => {
+          material.needsUpdate = true;
+        },
+      },
+    );
+
+    TweenMax.fromTo(
+      ampouleMaterial.color,
+      5,
+      {
+        r: colorA.r,
+        g: colorA.g,
+        b: colorA.b,
+      },
+      {
+        r: colorB.r,
+        g: colorB.g,
+        b: colorB.b,
+        yoyo: true,
+        repeat: -1,
+        onUpdate: () => {
+          material.needsUpdate = true;
+        },
+      },
+    );
+
+    TweenMax.fromTo(
+      ampouleMaterial.emissive,
       5,
       {
         r: colorA.r,

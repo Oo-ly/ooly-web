@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight } from 'three';
+import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3 } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
@@ -9,11 +9,22 @@ import Oo, { OO_DISCOO, OO_INFOO, OO_CINOOCHE } from './Oo';
 import Boitier from './Boitier';
 import Scenario, { Sentence, Interaction } from './Scenario';
 import Pod from './Pod';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 class Scene {
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
+
+  private renderScene: RenderPass;
+  private bloomLayer: Layers;
+  private bloomPass: UnrealBloomPass;
+  private bloomComposer: EffectComposer;
+  private finalComposer: EffectComposer;
+  private finalPass: ShaderPass;
 
   private controls: OrbitControls;
 
@@ -35,6 +46,40 @@ class Scene {
     document.body.appendChild(this.renderer.domElement);
     this.renderer.setClearColor(0x000000, 0);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+    this.bloomLayer = new Layers();
+    this.bloomLayer.set(1);
+
+    this.renderScene = new RenderPass(this.scene, this.camera);
+
+    this.bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    this.bloomPass.threshold = 0;
+    this.bloomPass.strength = 2;
+    this.bloomPass.radius = 0;
+
+    this.bloomComposer = new EffectComposer(this.renderer);
+    // @ts-ignore
+    this.bloomComposer.renderToScreen = false;
+    this.bloomComposer.addPass(this.renderScene);
+    this.bloomComposer.addPass(this.bloomPass);
+
+    this.finalPass = new ShaderPass(
+      new THREE.ShaderMaterial({
+        uniforms: {
+          baseTexture: { value: null },
+          bloomTexture: { value: this.bloomComposer.renderTarget2.texture },
+        },
+        vertexShader: document.querySelector('#bloomvertexshader').textContent,
+        fragmentShader: document.querySelector('#bloomfragmentshader').textContent,
+        defines: {},
+      }),
+      'baseTexture',
+    );
+    this.finalPass.needsSwap = true;
+
+    this.finalComposer = new EffectComposer(this.renderer);
+    this.finalComposer.addPass(this.renderScene);
+    this.finalComposer.addPass(this.finalPass);
 
     this.bind();
     this.testScenario();
@@ -171,7 +216,10 @@ class Scene {
 
   render() {
     requestAnimationFrame(() => this.render());
-    this.renderer.render(this.scene, this.camera);
+    this.camera.layers.set(1);
+    this.bloomComposer.render();
+    this.camera.layers.set(0);
+    this.finalComposer.render();
 
     this.controls.update();
 
