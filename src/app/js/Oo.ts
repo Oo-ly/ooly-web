@@ -31,14 +31,7 @@ export default class Oo {
     this.material = this.object.material as MeshStandardMaterial;
     this.material.transparent = true;
     this.material.opacity = 0;
-    this.material.depthWrite = false;
-    this.material.depthTest = false;
     this.object.frustumCulled = false;
-
-    // const toreMaterial = this.tore.material as MeshStandardMaterial;
-    // console.log(toreMaterial.color, toreMaterial.emissive);
-    // toreMaterial.color.set(new Color(`#${this.color}`));
-    // toreMaterial.emissive.set(new Color(`#${this.color}`));
   }
 
   toogle() {

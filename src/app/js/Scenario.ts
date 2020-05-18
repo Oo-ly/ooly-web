@@ -31,6 +31,9 @@ export default class Scenario {
     const sentence = this.sentences.find((s) => s.id === id);
     console.log(`Sentence ${id}: ${sentence.text}`);
 
+    const ooEvent = new CustomEvent('show:oo', { detail: sentence.oo });
+    document.dispatchEvent(ooEvent);
+
     if (sentence.interaction) {
       const event = new CustomEvent('wait:interaction', { detail: sentence.interaction.toString() });
       document.dispatchEvent(event);

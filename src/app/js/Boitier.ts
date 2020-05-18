@@ -34,7 +34,13 @@ export default class Boitier {
     melimeloMaterial.opacity = 0;
 
     console.log('Boitier', object);
-    // this.randomActive();
+    this.bind();
+  }
+
+  bind() {
+    document.addEventListener('show:oo', (e: CustomEvent) => {
+      this.setOoActive(e.detail);
+    });
   }
 
   toogleOo(ooName: string) {

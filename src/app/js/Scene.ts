@@ -110,16 +110,11 @@ class Scene {
       });
 
       this.interactiveElements.push(likeButton, dislikeButton);
-      console.log('Pod', object);
+
       this.pod = new Pod(object);
+
       object.receiveShadow = true;
       object.castShadow = true;
-
-      const led = object.getObjectByName('LED_bas') as Mesh;
-      const m = led.material as MeshStandardMaterial;
-      m.emissiveIntensity = 100;
-
-      console.log('Led', led);
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
@@ -150,7 +145,7 @@ class Scene {
             if (index > -1) {
               this.interactiveElements.splice(index, 1);
             }
-            this.scene.remove(couvercle.object);
+            this.removeObject(couvercle.object);
           },
         });
       });
@@ -170,7 +165,6 @@ class Scene {
       this.interactiveElements.push(couvercle);
       this.interactiveElements.push(powerButton);
 
-      console.log(object);
       this.scene.add(object);
     });
   }
@@ -182,6 +176,10 @@ class Scene {
     this.controls.update();
 
     if (this.boitier) this.boitier.update();
+  }
+
+  removeObject(object: Object3D) {
+    if (object) object.parent.remove(object);
   }
 
   testScenario() {

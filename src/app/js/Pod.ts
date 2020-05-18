@@ -1,4 +1,4 @@
-import { Object3D, Mesh, Color, MeshStandardMaterial } from 'three';
+import { Object3D, Mesh, Color, MeshStandardMaterial, MeshPhongMaterial } from 'three';
 import { Interaction } from './Scenario';
 import { TweenMax } from 'gsap';
 
@@ -19,9 +19,10 @@ export default class Pod {
 
     this.likeButton = object.getObjectByName('J_aime') as Mesh;
     this.dislikeButton = object.getObjectByName('J_aime_pas') as Mesh;
-    console.log(this.likeButton.material);
 
-    this.led = object.getObjectByName('Led_centre') as Mesh;
+    this.led = object.getObjectByName('LED_centre') as Mesh;
+
+    object.getObjectByName('LED_centre').position.setY(0.001);
 
     object.traverse((child) => {
       if (child instanceof Mesh) {
@@ -32,6 +33,58 @@ export default class Pod {
     });
 
     this.bind();
+    this.animateLed();
+  }
+
+  animateLed() {
+    const colorA = new Color('#7930ff');
+    const colorB = new Color('#2b115c');
+
+    this.led.material = new MeshPhongMaterial({
+      color: new Color('#000000'),
+    });
+    const material = this.led.material as MeshPhongMaterial;
+    material.emissiveIntensity = 0.2;
+
+    // TweenMax.fromTo(
+    //   material.color,
+    //   5,
+    //   {
+    //     r: colorA.r,
+    //     g: colorA.g,
+    //     b: colorA.b,
+    //   },
+    //   {
+    //     r: colorB.r,
+    //     g: colorB.g,
+    //     b: colorB.b,
+    //     yoyo: true,
+    //     repeat: -1,
+    //     onUpdate: () => {
+    //       material.needsUpdate = true;
+    //     },
+    //   },
+    // );
+
+    TweenMax.fromTo(
+      material.emissive,
+      5,
+      {
+        r: colorA.r,
+        g: colorA.g,
+        b: colorA.b,
+      },
+      {
+        r: colorB.r,
+        g: colorB.g,
+        b: colorB.b,
+        yoyo: true,
+        repeat: -1,
+        onUpdate: () => {
+          material.needsUpdate = true;
+        },
+      },
+    );
   }
 
   bind() {
