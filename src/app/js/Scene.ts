@@ -1,10 +1,10 @@
+import { TweenMax } from 'gsap';
+import * as md5 from 'md5';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
 import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial, Matrix4, Ray } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
-import { TweenMax } from 'gsap';
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO } from './Oo';
 import Boitier from './Boitier';
 import Scenario, { Sentence, Interaction } from './Scenario';
@@ -14,6 +14,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Sentences } from './Sentences';
+import AudioLoader from './utils/AudioLoader';
 
 class Scene {
   private scene: THREE.Scene;
@@ -29,7 +30,7 @@ class Scene {
 
   private controls: OrbitControls;
 
-  private oos: string[] = [OO_DISCOO, OO_CINOOCHE, OO_INFOO];
+  private oos: string[] = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
   private boitier: Boitier;
   private pod: Pod;
 
@@ -236,6 +237,10 @@ class Scene {
           },
           onComplete: () => {
             this.removeObject(couvercle.object);
+
+            AudioLoader.loadSentenceAudio();
+            var audio = new Audio(localStorage.getItem(md5('ok')));
+            audio.play();
           },
         });
       });

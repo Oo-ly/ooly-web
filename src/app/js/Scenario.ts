@@ -1,3 +1,6 @@
+import AudioLoader from './utils/AudioLoader';
+import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
+
 enum Interaction {
   LIKE = 'LIKE',
   DISLIKE = 'DISLIKE',
@@ -32,9 +35,10 @@ export default class Scenario {
     return this.isPlaying;
   }
 
-  playSentence(id: number) {
+  async playSentence(id: number) {
     const sentence = this.sentences.find((s) => s.id === id);
     console.log(`Sentence ${id}: ${sentence.text}`);
+    await AudioLoader.playAudio(sentence);
 
     const ooEvent = new CustomEvent('show:oo', { detail: sentence.oo });
     document.dispatchEvent(ooEvent);
@@ -45,16 +49,15 @@ export default class Scenario {
 
       document.addEventListener(
         `interaction:${sentence.interaction}`,
-        () => {
-          this.playSentence(sentence.nextSentence);
+        async () => {
+          await this.playSentence(sentence.nextSentence);
         },
         { once: true },
       );
     } else {
-      setTimeout(() => {
-        if (sentence.nextSentence) this.playSentence(sentence.nextSentence);
-        else this.isPlaying = false;
-      }, 1500);
+      setTimeout(async () => {
+        if (sentence.nextSentence) await this.playSentence(sentence.nextSentence);
+      }, 600);
     }
   }
 }
