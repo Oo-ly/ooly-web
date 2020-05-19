@@ -28,6 +28,11 @@ export default class Scenario {
   play() {
     console.log('Running scenario');
     this.isPlaying = true;
+
+    const sentence = this.sentences.find((s) => s.id === 1);
+    const ooEvent = new CustomEvent('show:oo', { detail: sentence.oo });
+    document.dispatchEvent(ooEvent);
+
     this.playSentence(1);
   }
 
@@ -37,11 +42,15 @@ export default class Scenario {
 
   async playSentence(id: number) {
     const sentence = this.sentences.find((s) => s.id === id);
+    const nextSentence = this.sentences.find((s) => s.id === sentence.nextSentence);
+
     console.log(`Sentence ${id}: ${sentence.text}`);
     await AudioLoader.playAudio(sentence);
 
-    const ooEvent = new CustomEvent('show:oo', { detail: sentence.oo });
-    document.dispatchEvent(ooEvent);
+    if (nextSentence) {
+      const ooEvent = new CustomEvent('show:oo', { detail: nextSentence.oo });
+      document.dispatchEvent(ooEvent);
+    }
 
     if (sentence.interaction) {
       const event = new CustomEvent('wait:interaction', { detail: sentence.interaction.toString() });

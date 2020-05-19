@@ -237,10 +237,6 @@ class Scene {
           },
           onComplete: () => {
             this.removeObject(couvercle.object);
-
-            AudioLoader.loadSentenceAudio();
-            var audio = new Audio(localStorage.getItem(md5('ok')));
-            audio.play();
           },
         });
       });

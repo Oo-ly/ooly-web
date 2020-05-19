@@ -74,7 +74,7 @@ export const Sentences: IScenarios = {
         {
           id: 10,
           oo: OO_CINOOCHE.name,
-          text: 'Dites, vous saviez que Georges Clonney avait aussi des troubles du sommeil ?',
+          text: 'Dites, vous saviez que Georges Clooney avait aussi des troubles du sommeil ?',
           nextSentence: 11,
         },
         {
