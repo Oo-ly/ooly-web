@@ -10,7 +10,7 @@ const OO_DISCOO = {
   voiceCode: 'fr-FR',
   voicePitch: 3.6,
   voiceRate: 1,
-}
+};
 
 const OO_CINOOCHE = {
   name: "Cin'Oo'che",
@@ -91,7 +91,17 @@ export default class Oo {
   private voiceRate: number;
   private voicePitch: number;
 
-  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string, voiceName: string, voiceCode: string, voiceRate: string, voicePitch: string) {
+  constructor(
+    scene: Object3D,
+    name: string,
+    color: string,
+    objectName: string,
+    tore: string,
+    voiceName: string,
+    voiceCode: string,
+    voiceRate: number,
+    voicePitch: number,
+  ) {
     this.name = name;
     this.color = color;
     this.object = scene.getObjectByName(objectName) as Mesh;

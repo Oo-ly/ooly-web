@@ -2,28 +2,25 @@ import axios from 'axios';
 import md5 from 'md5';
 
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './../Oo';
+import { resolve } from 'bluebird';
 
 const Oos = [OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE];
 const URL = 'https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyBqwOT8HdU75kLRjZpJy4c7cSYgVCUoj6Q';
 const sMainText = 'hello world';
 const oData = {
-  'input':
-  {
-    'text': sMainText,
+  input: {
+    text: sMainText,
   },
-  'voice':
-  {
-    'languageCode': 'fr-FR',
-    'ssmlGender': 'FEMALE'
+  voice: {
+    languageCode: 'fr-FR',
+    ssmlGender: 'FEMALE',
   },
-  'audioConfig':
-  {
-    'audioEncoding': 'mp3'
+  audioConfig: {
+    audioEncoding: 'mp3',
   },
 };
 
 class AudioLoader {
-
   constructor() {
     console.log('ok');
   }
@@ -34,8 +31,7 @@ class AudioLoader {
     if (request.status === 200 && request.data.audioContent) {
       return `data:audio/wav;base64,${request.data.audioContent}`;
     }
-    console.log('Error during fetching')
-
+    console.log('Error during fetching');
   }
 
   async loadSentenceAudio() {
@@ -45,34 +41,38 @@ class AudioLoader {
   }
 
   async playAudio(data: any) {
-    let audio = await this.fetchAudio(this.dataGenerator(data));
-    let audioStream = new Audio(audio);
+    return new Promise(async (resolve, reject) => {
+      let audio = await this.fetchAudio(this.dataGenerator(data));
+      let audioStream = new Audio(audio);
 
-    audioStream.addEventListener('loadeddata', async () => {
-      let duration = audioStream.duration;
-      console.log(duration);
-      await new Promise(resolve => setTimeout(resolve, duration * 1000));
+      // audioStream.addEventListener('loadeddata', async () => {
+      //   let duration = audioStream.duration;
+      //   console.log(duration);
+      //   await new Promise(resolve => setTimeout(resolve, duration * 1000));
+      // });
+
+      audioStream.addEventListener('ended', () => resolve());
+
+      audioStream.play();
     });
-
-    audioStream.play();
   }
 
   dataGenerator(data: any) {
     const oo = Oos.find((o) => o.name === data.oo);
 
     const ttsData = {
-      'input': {
-        'text': data.text,
+      input: {
+        text: data.text,
       },
-      'voice': {
-        'ssmlGender': 'FEMALE',
-        'languageCode': oo.voiceCode,
-        "name": oo.voiceName,
+      voice: {
+        ssmlGender: 'FEMALE',
+        languageCode: oo.voiceCode,
+        name: oo.voiceName,
       },
-      'audioConfig': {
-        'audioEncoding': 'mp3',
-        'pitch': oo.voicePitch,
-        'speakingRate': oo.voiceRate,
+      audioConfig: {
+        audioEncoding: 'mp3',
+        pitch: oo.voicePitch,
+        speakingRate: oo.voiceRate,
       },
     };
 
@@ -81,4 +81,3 @@ class AudioLoader {
 }
 
 export default new AudioLoader();
-

@@ -20,7 +20,6 @@ export { Sentence, Interaction };
 export default class Scenario {
   private sentences: Sentence[];
 
-
   constructor(sentences: Sentence[]) {
     this.sentences = sentences;
   }
@@ -45,15 +44,15 @@ export default class Scenario {
 
       document.addEventListener(
         `interaction:${sentence.interaction}`,
-        () => {
-          this.playSentence(sentence.nextSentence);
+        async () => {
+          await this.playSentence(sentence.nextSentence);
         },
         { once: true },
       );
     } else {
-      setTimeout(() => {
-        if (sentence.nextSentence) this.playSentence(sentence.nextSentence);
-      }, 1500);
+      setTimeout(async () => {
+        if (sentence.nextSentence) await this.playSentence(sentence.nextSentence);
+      }, 600);
     }
   }
 }
