@@ -13,6 +13,12 @@ export default class Pod {
   private likeButton: Mesh;
 
   private led: Mesh;
+  private ledBas: Mesh;
+  private ampoule: Mesh;
+
+  private animation: TweenMax;
+
+  private color: Color;
 
   constructor(object: Object3D) {
     this.object = object;
@@ -22,6 +28,14 @@ export default class Pod {
 
     this.led = object.getObjectByName('LED_centre') as Mesh;
     this.led.layers.enable(1);
+
+    const ledMaterial = this.led.material as MeshStandardMaterial;
+    ledMaterial.emissiveIntensity = 0.3;
+
+    this.ledBas = object.getObjectByName('LED_bas') as Mesh;
+    this.ledBas.layers.enable(1);
+
+    this.ampoule = object.getObjectByName('Ampoule') as Mesh;
 
     object.getObjectByName('LED_centre').position.setY(0.001);
 
@@ -33,98 +47,32 @@ export default class Pod {
       }
     });
 
+    this.color = new Color('#f76700');
+
     this.bind();
     this.animateLed();
   }
 
   animateLed() {
-    const colorA = new Color('#f76700');
-    const colorB = new Color('#542300');
+    if (this.animation) this.animation.kill();
 
-    this.led.material = new MeshPhongMaterial({
-      color: new Color('#000000'),
-    });
+    const nextColor = new Color('#f76700');
+    const nextColorB = new Color('#542300');
 
-    const ampoule = this.object.getObjectByName('Ampoule') as Mesh;
-    const ampouleMaterial = ampoule.material as MeshStandardMaterial;
-
-    const material = this.led.material as MeshPhongMaterial;
-    material.emissiveIntensity = 0.1;
-
-    TweenMax.to(material.color, 1, {
-      r: colorA.r,
-      g: colorA.g,
-      b: colorA.b,
+    TweenMax.to(this.color, 1, {
+      r: nextColor.r,
+      g: nextColor.g,
+      b: nextColor.b,
       onComplete: () => {
-        TweenMax.to(material.color, 1.5, {
-          r: colorB.r,
-          g: colorB.g,
-          b: colorB.b,
+        this.animation = TweenMax.to(this.color, 2, {
+          r: nextColorB.r,
+          g: nextColorB.g,
+          b: nextColorB.b,
           yoyo: true,
           repeat: -1,
         });
       },
     });
-
-    // TweenMax.fromTo(
-    //   material.emissive,
-    //   5,
-    //   {
-    //     r: colorA.r,
-    //     g: colorA.g,
-    //     b: colorA.b,
-    //   },
-    //   {
-    //     r: colorB.r,
-    //     g: colorB.g,
-    //     b: colorB.b,
-    //     yoyo: true,
-    //     repeat: -1,
-    //     onUpdate: () => {
-    //       material.needsUpdate = true;
-    //     },
-    //   },
-    // );
-
-    TweenMax.fromTo(
-      ampouleMaterial.color,
-      5,
-      {
-        r: colorA.r,
-        g: colorA.g,
-        b: colorA.b,
-      },
-      {
-        r: colorB.r,
-        g: colorB.g,
-        b: colorB.b,
-        yoyo: true,
-        repeat: -1,
-        onUpdate: () => {
-          material.needsUpdate = true;
-        },
-      },
-    );
-
-    TweenMax.fromTo(
-      ampouleMaterial.emissive,
-      5,
-      {
-        r: colorA.r,
-        g: colorA.g,
-        b: colorA.b,
-      },
-      {
-        r: colorB.r,
-        g: colorB.g,
-        b: colorB.b,
-        yoyo: true,
-        repeat: -1,
-        onUpdate: () => {
-          material.needsUpdate = true;
-        },
-      },
-    );
   }
 
   bind() {
@@ -136,12 +84,32 @@ export default class Pod {
     if (interactionEvent.detail === Interaction.LIKE || interactionEvent.detail === Interaction.DISLIKE) {
       this.enableButton(this.dislikeButton, new Color('#e74c3c'));
       this.enableButton(this.likeButton, new Color('#2ecc71'));
+
+      if (this.animation) this.animation.kill();
+      const nextColor = new Color('#180236');
+      const nextColorB = new Color('#4d04d4');
+
+      TweenMax.to(this.color, 1, {
+        r: nextColor.r,
+        g: nextColor.g,
+        b: nextColor.b,
+        onComplete: () => {
+          this.animation = TweenMax.to(this.color, 2, {
+            r: nextColorB.r,
+            g: nextColorB.g,
+            b: nextColorB.b,
+            yoyo: true,
+            repeat: -1,
+          });
+        },
+      });
     }
   }
 
   cleanInteraction() {
     const buttons = [this.likeButton, this.dislikeButton];
     this.disableButtons(buttons);
+    this.animateLed();
   }
 
   disableButtons(buttons: Mesh[]) {
@@ -192,5 +160,13 @@ export default class Pod {
 
   getObject() {
     return this.object;
+  }
+
+  update() {
+    const ampouleMaterial = this.ampoule.material as MeshStandardMaterial;
+    const ledMaterial = this.led.material as MeshStandardMaterial;
+    const ledBasMaterial = this.ledBas.material as MeshStandardMaterial;
+
+    ampouleMaterial.color = ledBasMaterial.color = ledMaterial.color = this.color;
   }
 }

@@ -214,6 +214,10 @@ class Scene {
       couvercle.setAction(() => {
         const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
+        const index = this.interactiveElements.indexOf(couvercle);
+        if (index > -1) {
+          this.interactiveElements.splice(index, 1);
+        }
 
         setTimeout(() => {
           const event = new CustomEvent('bandeau:intensity', {
@@ -231,10 +235,6 @@ class Scene {
             couvercle.object.position.y += 0.001 * (1 - tween.progress());
           },
           onComplete: () => {
-            const index = this.interactiveElements.indexOf(couvercle);
-            if (index > -1) {
-              this.interactiveElements.splice(index, 1);
-            }
             this.removeObject(couvercle.object);
           },
         });
@@ -289,6 +289,7 @@ class Scene {
     this.controls.update();
 
     if (this.boitier) this.boitier.update();
+    if (this.pod) this.pod.update();
   }
 
   removeObject(object: Object3D) {
