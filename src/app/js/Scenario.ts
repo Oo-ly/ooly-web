@@ -47,11 +47,6 @@ export default class Scenario {
     console.log(`Sentence ${id}: ${sentence.text}`);
     await AudioLoader.playAudio(sentence);
 
-    if (nextSentence) {
-      const ooEvent = new CustomEvent('show:oo', { detail: nextSentence.oo });
-      document.dispatchEvent(ooEvent);
-    }
-
     if (sentence.interaction) {
       const event = new CustomEvent('wait:interaction', { detail: sentence.interaction.toString() });
       document.dispatchEvent(event);
@@ -64,6 +59,11 @@ export default class Scenario {
         { once: true },
       );
     } else {
+      if (nextSentence) {
+        const ooEvent = new CustomEvent('show:oo', { detail: nextSentence.oo });
+        document.dispatchEvent(ooEvent);
+      }
+
       setTimeout(async () => {
         if (sentence.nextSentence) await this.playSentence(sentence.nextSentence);
       }, 600);

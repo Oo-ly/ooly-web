@@ -425,8 +425,8 @@ export const Sentences: IScenarios = {
         },
         {
           id: 8,
-          oo: OO_YOOGA.name,
-          text: 'Oui, il se servent de ces sons pour méditer, c’est plutot reposant.',
+          oo: OO_DISCOO.name,
+          text: '',
           nextSentence: 9,
         },
         {

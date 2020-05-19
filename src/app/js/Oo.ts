@@ -72,7 +72,7 @@ const OO_WHOOW = {
   color: 'FFB300',
   objectName: 'Whow_1',
   tore: 'Tore_7',
-  voiceName: 'fr-CA-Wavenet-',
+  voiceName: 'fr-CA-Wavenet-B',
   voiceCode: 'fr-CA',
   voicePitch: 1.6,
   voiceRate: 1,
