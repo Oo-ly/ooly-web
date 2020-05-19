@@ -1,19 +1,20 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
-import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial } from 'three';
-import ObjectLoader from './utils/ObjectLoader';
-import AudioLoader from './utils/AudioLoader';
-import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
-import Oo, { OO_DISCOO, OO_INFOO, OO_CINOOCHE } from './Oo';
-import Boitier from './Boitier';
-import Scenario, { Sentence, Interaction } from './Scenario';
-import Pod from './Pod';
+import md5 from 'md5';
+import * as THREE from 'three';
+import { DirectionalLight, Layers, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Raycaster, Vector2 } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import Boitier from './Boitier';
+import InteractiveObject from './InteractiveObject';
+import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
+import Pod from './Pod';
+import Scenario, { Interaction, Sentence } from './Scenario';
+import AudioLoader from './utils/AudioLoader';
+import ObjectLoader from './utils/ObjectLoader';
+
 
 class Scene {
   private scene: THREE.Scene;
@@ -207,7 +208,10 @@ class Scene {
               this.interactiveElements.splice(index, 1);
             }
             this.removeObject(couvercle.object);
+
             AudioLoader.loadSentenceAudio();
+            var audio = new Audio(localStorage.getItem(md5('ok')));
+            audio.play();
           },
         });
       });
@@ -271,69 +275,69 @@ class Scene {
     const sentences: Sentence[] = [
       {
         id: 1,
-        oo: OO_DISCOO,
+        oo: OO_DISCOO.name,
         text: 'Hello Duke',
         nextSentence: 2,
       },
       {
         id: 2,
-        oo: OO_INFOO,
+        oo: OO_INFOO.name,
         text: 'Coucou Disc’Oo. Ça vous dit de commencer par une petite anecdote marrante ?',
         interaction: Interaction.LIKE,
         nextSentence: 3,
       },
       {
         id: 3,
-        oo: OO_INFOO,
+        oo: OO_INFOO.name,
         text: 'Est ce que vous saviez que pour se saluer, certains moines tibétains se tirent la langue ? C’est rigolo, on devrait essayer aussi.',
         nextSentence: 4,
       },
       {
         id: 4,
-        oo: OO_DISCOO,
+        oo: OO_DISCOO.name,
         text: 'Ce serait plus pratique si on avait une langue Inf’Oo ...',
         nextSentence: 5,
       },
       {
         id: 5,
-        oo: OO_CINOOCHE,
+        oo: OO_CINOOCHE.name,
         text: "C'est pas faux.",
         nextSentence: 6,
       },
       {
         id: 6,
-        oo: OO_DISCOO,
+        oo: OO_DISCOO.name,
         text: 'Par contre, on peut s’inspirer des moines tibétains pour leur musique. Ils la composent en frappant sur des bols.',
         nextSentence: 7,
       },
       {
         id: 7,
-        oo: OO_INFOO,
+        oo: OO_INFOO.name,
         text: 'Oui, d’ailleurs ces bols sont composés de 7 métaux différents, représentant les planètes du système solaire.',
         nextSentence: 8,
       },
       {
         id: 8,
-        oo: OO_DISCOO,
+        oo: OO_DISCOO.name,
         text: 'Ah ouais je le savais pas tiens ! On s’en écoute un morceau, voir ce que ça donne ?',
         interaction: Interaction.DISLIKE,
         nextSentence: 9,
       },
       {
         id: 9,
-        oo: OO_DISCOO,
+        oo: OO_DISCOO.name,
         text: 'Ok, une autre fois peut-être !',
         nextSentence: 10,
       },
       {
         id: 10,
-        oo: OO_CINOOCHE,
+        oo: OO_CINOOCHE.name,
         text: 'Dites, vous saviez que Georges Clonney avait aussi des troubles du sommeil ?',
         nextSentence: 11,
       },
       {
         id: 11,
-        oo: OO_INFOO,
+        oo: OO_INFOO.name,
         text:
           'Oui, j’en ai entendu parlé, il parait qu’il se réveille beaucoup la nuit, et qu’il en profite pour écrire. Ca t’es déjà arrivé d’écrire pendant une nuit Duke ?',
         interaction: Interaction.LIKE,
@@ -341,20 +345,20 @@ class Scene {
       },
       {
         id: 12,
-        oo: OO_CINOOCHE,
+        oo: OO_CINOOCHE.name,
         text: 'Chouette, j’espère que tu nous liras ça un jour.',
         interaction: Interaction.OFF,
         nextSentence: 13,
       },
       {
         id: 13,
-        oo: OO_CINOOCHE,
+        oo: OO_CINOOCHE.name,
         text: 'Oh ! Bonne nuit Duke, à la prochaine !',
         nextSentence: 14,
       },
       {
         id: 14,
-        oo: OO_INFOO,
+        oo: OO_INFOO.name,
         text: 'Salut Duke, trop chouette ce moment !',
       },
     ];

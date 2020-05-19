@@ -100,13 +100,13 @@ export default class Boitier {
   }
 
   createOos() {
-    const discoo = new Oo(this.object, OO_DISCOO, '0085FF', 'Disc_Oo', 'Tore_3', 'fr-FR-Wavenet-A', 'fr-FR', '3.6', '1');
-    const cinooche = new Oo(this.object, OO_CINOOCHE, 'CA0024', 'Cinoche_1', 'Tore_5', 'fr-FR-Wavenet-D', 'fr-FR', '-2.8', '1');
-    const infoo = new Oo(this.object, OO_INFOO, '77CEFF', 'Infoo', 'Tore_8', 'fr-FR-Wavenet-B', 'fr-FR', '4.8', '1');
-    const yooga = new Oo(this.object, OO_YOOGA, '53BA9A', 'Yoga', 'Tore_1', 'fr-FR-Wavenet-C', 'fr-FR', '-5.2', '0.85');
-    const vegetoo = new Oo(this.object, OO_VEGETOO, '7AEC70', 'Vegeto_1', 'Tore_4', 'fr-FR-Standard-E', 'fr-FR', '0.4', '0.85');
-    const whoow = new Oo(this.object, OO_WHOOW, 'FFB300', 'Whow_1', 'Tore_7', 'fr-CA-Wavenet-B', 'fr-CA', '1.6', '1');
-    const coomique = new Oo(this.object, OO_COOMIQUE, 'FFE92D', 'Comique_1', 'Tore_6', 'fr-FR-Wavenet-C', 'fr-FR', '4.8', '1.05');
+    const discoo = new Oo(this.object, OO_DISCOO.name, OO_DISCOO.color, OO_DISCOO.objectName, OO_DISCOO.tore, OO_DISCOO.voiceName, OO_DISCOO.voiceCode, OO_DISCOO.voicePitch, OO_DISCOO.voiceRate);
+    const cinooche = new Oo(this.object, OO_CINOOCHE.name, OO_CINOOCHE.color, OO_CINOOCHE.objectName, OO_CINOOCHE.tore, OO_CINOOCHE.voiceName, OO_CINOOCHE.voiceCode, OO_CINOOCHE.voicePitch, OO_CINOOCHE.voiceRate);
+    const infoo = new Oo(this.object, OO_INFOO.name, OO_INFOO.color, OO_INFOO.objectName, OO_INFOO.tore, OO_INFOO.voiceName, OO_INFOO.voiceCode, OO_INFOO.voicePitch, OO_INFOO.voiceRate);
+    const yooga = new Oo(this.object, OO_YOOGA.name, OO_YOOGA.color, OO_YOOGA.objectName, OO_YOOGA.tore, OO_YOOGA.voiceName, OO_YOOGA.voiceCode, OO_YOOGA.voicePitch, OO_YOOGA.voiceRate);
+    const vegetoo = new Oo(this.object, OO_VEGETOO.name, OO_VEGETOO.color, OO_VEGETOO.objectName, OO_VEGETOO.tore, OO_VEGETOO.voiceName, OO_VEGETOO.voiceCode, OO_VEGETOO.voicePitch, OO_VEGETOO.voiceRate);
+    const whoow = new Oo(this.object, OO_WHOOW.name, OO_WHOOW.color, OO_WHOOW.objectName, OO_WHOOW.tore, OO_WHOOW.voiceName, OO_WHOOW.voiceCode, OO_WHOOW.voicePitch, OO_WHOOW.voiceRate);
+    const coomique = new Oo(this.object, OO_COOMIQUE.name, OO_COOMIQUE.color, OO_COOMIQUE.objectName, OO_COOMIQUE.tore, OO_COOMIQUE.voiceName, OO_COOMIQUE.voiceCode, OO_COOMIQUE.voicePitch, OO_COOMIQUE.voiceRate);
 
     this.oos.push(discoo, cinooche, infoo, yooga, vegetoo, whoow, coomique);
   }
