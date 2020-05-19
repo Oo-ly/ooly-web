@@ -1,5 +1,4 @@
 import axios from 'axios';
-import md5 from 'md5';
 
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './../Oo';
 import { resolve } from 'bluebird';
@@ -37,7 +36,7 @@ class AudioLoader {
   async loadSentenceAudio() {
     console.log('going to load some MP3');
     const audio = await this.fetchAudio(oData);
-    localStorage.setItem(md5('ok'), audio);
+    //localStorage.setItem(md5('ok'), audio);
   }
 
   async playAudio(data: any) {

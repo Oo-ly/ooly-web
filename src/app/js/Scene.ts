@@ -1,5 +1,4 @@
 import { TweenMax } from 'gsap';
-import * as md5 from 'md5';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial, Matrix4, Ray } from 'three';
