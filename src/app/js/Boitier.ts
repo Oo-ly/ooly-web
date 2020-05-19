@@ -100,13 +100,13 @@ export default class Boitier {
   }
 
   createOos() {
-    const discoo = new Oo(this.object, OO_DISCOO, '0085FF', 'Disc_Oo', 'Tore_3', 'fr-FR-Wavenet-A', '3.6', '1');
-    const cinooche = new Oo(this.object, OO_CINOOCHE, 'CA0024', 'Cinoche_1', 'Tore_5', 'fr-FR-Wavenet-D', '-2.8', '1');
-    const infoo = new Oo(this.object, OO_INFOO, '77CEFF', 'Infoo', 'Tore_8', 'fr-FR-Wavenet-B', '4.8', '1');
-    const yooga = new Oo(this.object, OO_YOOGA, '53BA9A', 'Yoga', 'Tore_1', 'fr-FR-Standard-E', '0.4', '0.85');
-    const vegetoo = new Oo(this.object, OO_VEGETOO, '7AEC70', 'Vegeto_1', 'Tore_4', 'fr-FR-Wavenet-D', 'male', '24000');
-    const whoow = new Oo(this.object, OO_WHOOW, 'FFB300', 'Whow_1', 'Tore_7', 'fr-FR-Wavenet-D', 'male', '24000');
-    const coomique = new Oo(this.object, OO_COOMIQUE, 'FFE92D', 'Comique_1', 'Tore_6', 'fr-FR-Wavenet-D', 'male', '24000');
+    const discoo = new Oo(this.object, OO_DISCOO, '0085FF', 'Disc_Oo', 'Tore_3', 'fr-FR-Wavenet-A', 'fr-FR', '3.6', '1');
+    const cinooche = new Oo(this.object, OO_CINOOCHE, 'CA0024', 'Cinoche_1', 'Tore_5', 'fr-FR-Wavenet-D', 'fr-FR', '-2.8', '1');
+    const infoo = new Oo(this.object, OO_INFOO, '77CEFF', 'Infoo', 'Tore_8', 'fr-FR-Wavenet-B', 'fr-FR', '4.8', '1');
+    const yooga = new Oo(this.object, OO_YOOGA, '53BA9A', 'Yoga', 'Tore_1', 'fr-FR-Wavenet-C', 'fr-FR', '-5.2', '0.85');
+    const vegetoo = new Oo(this.object, OO_VEGETOO, '7AEC70', 'Vegeto_1', 'Tore_4', 'fr-FR-Standard-E', 'fr-FR', '0.4', '0.85');
+    const whoow = new Oo(this.object, OO_WHOOW, 'FFB300', 'Whow_1', 'Tore_7', 'fr-CA-Wavenet-B', 'fr-CA', '1.6', '1');
+    const coomique = new Oo(this.object, OO_COOMIQUE, 'FFE92D', 'Comique_1', 'Tore_6', 'fr-FR-Wavenet-C', 'fr-FR', '4.8', '1.05');
 
     this.oos.push(discoo, cinooche, infoo, yooga, vegetoo, whoow, coomique);
   }

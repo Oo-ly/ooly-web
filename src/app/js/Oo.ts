@@ -18,15 +18,17 @@ export default class Oo {
   private material: MeshStandardMaterial;
   private tore: Mesh;
   private voiceName: string;
+  private voiceCode: string;
   private voicePitch: string;
   private voiceRate: string;
 
-  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string, voiceName: string, voicePitch: string, voiceRate: string) {
+  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string, voiceName: string, voiceCode: string, voicePitch: string, voiceRate: string) {
     this.name = name;
     this.color = color;
     this.object = scene.getObjectByName(objectName) as Mesh;
     this.tore = scene.getObjectByName(tore) as Mesh;
     this.voiceName = voiceName;
+    this.voiceCode = voiceCode;
     this.voicePitch = voicePitch;
     this.voiceRate = voiceRate;
     
