@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
+import AudioLoader from './utils/AudioLoader';
 import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
 import Oo, { OO_DISCOO, OO_INFOO, OO_CINOOCHE } from './Oo';
@@ -206,6 +207,7 @@ class Scene {
               this.interactiveElements.splice(index, 1);
             }
             this.removeObject(couvercle.object);
+            AudioLoader.loadSentenceAudio();
           },
         });
       });

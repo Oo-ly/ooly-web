@@ -17,13 +17,19 @@ export default class Oo {
   private color: string;
   private material: MeshStandardMaterial;
   private tore: Mesh;
+  private voiceName: string;
+  private voiceGender: string;
+  private voiceRate: string;
 
-  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string) {
+  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string, voiceName: string, voiceGender: string, voiceRate: string) {
     this.name = name;
     this.color = color;
     this.object = scene.getObjectByName(objectName) as Mesh;
     this.tore = scene.getObjectByName(tore) as Mesh;
-
+    this.voiceName = voiceName;
+    this.voiceGender = voiceGender;
+    this.voiceRate = voiceRate;
+    
     if (!this.object) {
       console.error(`Object not found for ${name}`);
     }

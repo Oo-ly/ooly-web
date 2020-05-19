@@ -96,6 +96,10 @@ const config = {
       },
     ]),
   ],
+  externals: {
+    'fs': 'require("fs")'
+  },
+  target: 'web'
 };
 
 module.exports = config;
