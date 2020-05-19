@@ -16,6 +16,7 @@ export { Sentence, Interaction };
 
 export default class Scenario {
   private sentences: Sentence[];
+  private isPlaying: boolean = false;
 
   constructor(sentences: Sentence[]) {
     this.sentences = sentences;
@@ -23,8 +24,12 @@ export default class Scenario {
 
   play() {
     console.log('Running scenario');
-
+    this.isPlaying = true;
     this.playSentence(1);
+  }
+
+  isRunning() {
+    return this.isPlaying;
   }
 
   playSentence(id: number) {
@@ -48,6 +53,7 @@ export default class Scenario {
     } else {
       setTimeout(() => {
         if (sentence.nextSentence) this.playSentence(sentence.nextSentence);
+        else this.isPlaying = false;
       }, 1500);
     }
   }

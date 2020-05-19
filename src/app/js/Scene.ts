@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial } from 'three';
+import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial, Matrix4, Ray } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
 import { TweenMax } from 'gsap';
@@ -103,11 +103,22 @@ class Scene {
       raycaster.setFromCamera(mouse, this.camera);
 
       this.interactiveElements.forEach((element) => {
-        const intersects = raycaster.intersectObject(element.object, true);
+        const inverseMatrix = new Matrix4();
+        const ray = new Ray();
+        inverseMatrix.getInverse(element.object.matrixWorld);
+        ray.copy(raycaster.ray).applyMatrix4(inverseMatrix);
 
-        if (intersects.length > 0) {
-          element.run();
+        if (element.object.geometry.boundingSphere !== null) {
+          if (ray.isIntersectionSphere(element.object.geometry.boundingSphere)) {
+            element.run();
+          }
         }
+
+        // const intersects = raycaster.intersectObject(element.object, true);
+
+        // if (intersects.length > 0) {
+        //   element.run();
+        // }
       });
     });
 
@@ -190,8 +201,13 @@ class Scene {
 
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
-        this.loadScenario();
-        this.scenario.play();
+        if (this.scenario && this.scenario.isRunning()) {
+          const event = new CustomEvent(`interaction:${Interaction.OFF}`);
+          document.dispatchEvent(event);
+        } else {
+          this.loadScenario();
+          this.scenario.play();
+        }
       });
 
       const couvercle = new InteractiveObject(object, 'Couvercle_final');
