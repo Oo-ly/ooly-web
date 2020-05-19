@@ -39,7 +39,7 @@ export default class Pod {
 
   animateLed() {
     const colorA = new Color('#f76700');
-    const colorB = new Color('#803703');
+    const colorB = new Color('#542300');
 
     this.led.material = new MeshPhongMaterial({
       color: new Color('#000000'),
@@ -49,27 +49,42 @@ export default class Pod {
     const ampouleMaterial = ampoule.material as MeshStandardMaterial;
 
     const material = this.led.material as MeshPhongMaterial;
-    material.emissiveIntensity = 0.2;
+    material.emissiveIntensity = 0.1;
 
-    TweenMax.fromTo(
-      material.emissive,
-      5,
-      {
-        r: colorA.r,
-        g: colorA.g,
-        b: colorA.b,
+    TweenMax.to(material.color, 1, {
+      r: colorA.r,
+      g: colorA.g,
+      b: colorA.b,
+      onComplete: () => {
+        TweenMax.to(material.color, 1.5, {
+          r: colorB.r,
+          g: colorB.g,
+          b: colorB.b,
+          yoyo: true,
+          repeat: -1,
+        });
       },
-      {
-        r: colorB.r,
-        g: colorB.g,
-        b: colorB.b,
-        yoyo: true,
-        repeat: -1,
-        onUpdate: () => {
-          material.needsUpdate = true;
-        },
-      },
-    );
+    });
+
+    // TweenMax.fromTo(
+    //   material.emissive,
+    //   5,
+    //   {
+    //     r: colorA.r,
+    //     g: colorA.g,
+    //     b: colorA.b,
+    //   },
+    //   {
+    //     r: colorB.r,
+    //     g: colorB.g,
+    //     b: colorB.b,
+    //     yoyo: true,
+    //     repeat: -1,
+    //     onUpdate: () => {
+    //       material.needsUpdate = true;
+    //     },
+    //   },
+    // );
 
     TweenMax.fromTo(
       ampouleMaterial.color,
@@ -118,17 +133,10 @@ export default class Pod {
   }
 
   waitInteraction(interactionEvent: InteractionEvent) {
-    // switch (interactionEvent.detail) {
-    //   case Interaction.LIKE:
-    //     this.enableButton(this.likeButton, new Color('#2ecc71'));
-    //     break;
-    //   case Interaction.DISLIKE:
-    //     this.enableButton(this.dislikeButton, new Color('#e74c3c'));
-    //     break;
-    // }
-
-    this.enableButton(this.dislikeButton, new Color('#e74c3c'));
-    this.enableButton(this.likeButton, new Color('#2ecc71'));
+    if (interactionEvent.detail === Interaction.LIKE || interactionEvent.detail === Interaction.DISLIKE) {
+      this.enableButton(this.dislikeButton, new Color('#e74c3c'));
+      this.enableButton(this.likeButton, new Color('#2ecc71'));
+    }
   }
 
   cleanInteraction() {
@@ -161,11 +169,6 @@ export default class Pod {
   }
 
   enableButton(button: Mesh, color: Color) {
-    // const buttons = [this.likeButton, this.dislikeButton];
-    // const otherButtons = buttons.filter((b) => b != button);
-
-    // this.disableButtons(otherButtons);
-
     const material = button.material as MeshStandardMaterial;
 
     TweenMax.to(material.emissive, 0.3, {

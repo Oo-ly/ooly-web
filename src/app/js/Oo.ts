@@ -9,6 +9,8 @@ const OO_VEGETOO = "Végét'Oo";
 const OO_COOMIQUE = "C'Oo'mique";
 const OO_WHOOW = "Wh'Oo'w";
 
+const FIXED_OO = [OO_DISCOO, OO_CINOOCHE, OO_INFOO];
+
 export { OO_CINOOCHE, OO_COOMIQUE, OO_DISCOO, OO_INFOO, OO_VEGETOO, OO_WHOOW, OO_YOOGA };
 
 export default class Oo {
@@ -33,12 +35,16 @@ export default class Oo {
     toreMaterial.emissiveIntensity = 0;
 
     this.material = this.object.material as MeshStandardMaterial;
-    this.material.transparent = true;
-    this.material.opacity = 0;
-    this.object.frustumCulled = false;
+
+    if (FIXED_OO.indexOf(this.name) === -1) {
+      this.material.transparent = true;
+      this.material.opacity = 0;
+      this.object.frustumCulled = false;
+    }
   }
 
   toogle() {
+    if (FIXED_OO.indexOf(this.name) > -1) return;
     const nextOpacity = this.material.opacity === 0 ? 1 : 0;
 
     TweenMax.to(this.material, 0.3, {
@@ -55,7 +61,7 @@ export default class Oo {
     const nextEmissive = active ? new Color(`#${this.color}`) : new Color('#ffffff');
     const duration = 0.3;
 
-    const nextEmissiveIntensity = active ? 10 : 0;
+    const nextEmissiveIntensity = active ? 0.2 : 0;
 
     TweenMax.to(toreMaterial, duration, {
       emissiveIntensity: nextEmissiveIntensity,

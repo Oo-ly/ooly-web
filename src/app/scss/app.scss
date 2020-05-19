@@ -54,6 +54,15 @@ aside {
         max-width: 80px;
         margin: 0 auto;
         pointer-events: all;
+        transition: filter 0.3s ease;
+
+        &.selected {
+          filter: brightness(0.3);
+        }
+
+        &.fixed {
+          cursor: not-allowed;
+        }
       }
     }
   }

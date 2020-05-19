@@ -1,6 +1,7 @@
 import { Object3D, Mesh, MeshStandardMaterial, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
 import { TweenMax } from 'gsap';
+import { Interaction } from './Scenario';
 
 export default class Boitier {
   private object: Object3D;
@@ -9,6 +10,8 @@ export default class Boitier {
   private bandeauUniforms: any;
   private bandeau: Mesh;
   private bandeauMaterial: MeshStandardMaterial;
+
+  private powerButton: Mesh;
 
   constructor(object: Object3D) {
     this.object = object;
@@ -50,6 +53,8 @@ export default class Boitier {
     this.bandeauMaterial = this.bandeau.material as MeshStandardMaterial;
     this.bandeau.layers.enable(1);
 
+    this.powerButton = this.object.getObjectByName('Power') as Mesh;
+
     console.log('Boitier', object);
     this.bind();
   }
@@ -81,11 +86,25 @@ export default class Boitier {
     document.addEventListener('bandeau:color', (e: CustomEvent) => {
       const color = new Color(e.detail.color);
 
-      TweenMax.to(this.bandeauMaterial.emissive, 0.3, {
+      TweenMax.to(this.bandeauMaterial.color, 0.3, {
         r: color.r,
         g: color.g,
         b: color.b,
       });
+    });
+
+    document.addEventListener('wait:interaction', (e: CustomEvent) => {
+      if (e.detail == Interaction.OFF) this.setPowerButton(true);
+    });
+  }
+
+  setPowerButton(active: boolean) {
+    const material = this.powerButton.material as MeshStandardMaterial;
+
+    TweenMax.to(material.color, 0.3, {
+      r: active ? 1 : 0,
+      g: 0,
+      b: 0,
     });
   }
 
