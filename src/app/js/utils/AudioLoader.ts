@@ -61,7 +61,7 @@ class AudioLoader {
 
     const ttsData = {
       input: {
-        text: data.text,
+        ssml: data.text,
       },
       voice: {
         ssmlGender: 'FEMALE',
