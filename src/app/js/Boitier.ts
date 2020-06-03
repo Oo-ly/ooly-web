@@ -90,8 +90,8 @@ export default class Boitier {
       });
     });
 
-    document.addEventListener('wait:interaction', (e: CustomEvent) => {
-      if (e.detail == Interaction.OFF) this.setPowerButton(true);
+    EventManager.on('wait:interaction', (e) => {
+      if (e.interaction == Interaction.OFF) this.setPowerButton(true);
     });
   }
 
