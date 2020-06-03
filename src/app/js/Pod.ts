@@ -9,6 +9,7 @@ interface InteractionEvent extends Event {
 export default class Pod {
   private object: Object3D;
 
+  private wizzButton: Mesh;
   private dislikeButton: Mesh;
   private likeButton: Mesh;
 
@@ -23,21 +24,22 @@ export default class Pod {
   constructor(object: Object3D) {
     this.object = object;
 
-    this.likeButton = object.getObjectByName('J_aime') as Mesh;
-    this.dislikeButton = object.getObjectByName('J_aime_pas') as Mesh;
+    this.likeButton = object.getObjectByName('Heart') as Mesh;
+    this.dislikeButton = object.getObjectByName('heartbreak') as Mesh;
+    this.wizzButton = object.getObjectByName('Main_1') as Mesh;
 
-    this.led = object.getObjectByName('LED_centre') as Mesh;
+    this.led = object.getObjectByName('BASE_LED') as Mesh;
     this.led.layers.enable(1);
 
     const ledMaterial = this.led.material as MeshStandardMaterial;
     ledMaterial.emissiveIntensity = 0.3;
 
-    this.ledBas = object.getObjectByName('LED_bas') as Mesh;
+    this.ledBas = object.getObjectByName('LED_dessous') as Mesh;
     this.ledBas.layers.enable(1);
 
-    this.ampoule = object.getObjectByName('Ampoule') as Mesh;
+    // this.ampoule = object.getObjectByName('Ampoule') as Mesh;
 
-    object.getObjectByName('LED_centre').position.setY(0.001);
+    // object.getObjectByName('BASE_LED').position.setY(0.001);
 
     object.traverse((child) => {
       if (child instanceof Mesh) {
@@ -84,6 +86,7 @@ export default class Pod {
     if (interactionEvent.detail === Interaction.LIKE || interactionEvent.detail === Interaction.DISLIKE) {
       this.enableButton(this.dislikeButton, new Color('#e74c3c'));
       this.enableButton(this.likeButton, new Color('#2ecc71'));
+      this.enableButton(this.wizzButton, new Color('#f5d316'));
 
       if (this.animation) this.animation.kill();
       const nextColor = new Color('#180236');
@@ -107,7 +110,7 @@ export default class Pod {
   }
 
   cleanInteraction() {
-    const buttons = [this.likeButton, this.dislikeButton];
+    const buttons = [this.likeButton, this.dislikeButton, this.wizzButton];
     this.disableButtons(buttons);
     this.animateLed();
   }
@@ -163,10 +166,10 @@ export default class Pod {
   }
 
   update() {
-    const ampouleMaterial = this.ampoule.material as MeshStandardMaterial;
+    // const ampouleMaterial = this.ampoule.material as MeshStandardMaterial;
     const ledMaterial = this.led.material as MeshStandardMaterial;
     const ledBasMaterial = this.ledBas.material as MeshStandardMaterial;
 
-    ampouleMaterial.color = ledBasMaterial.color = ledMaterial.color = this.color;
+    ledBasMaterial.color = ledMaterial.color = this.color;
   }
 }

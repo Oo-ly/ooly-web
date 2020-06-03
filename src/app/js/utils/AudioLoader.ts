@@ -33,16 +33,16 @@ class AudioLoader {
     console.log('Error during fetching');
   }
 
-  async loadSentenceAudio() {
-    console.log('going to load some MP3');
-    const audio = await this.fetchAudio(oData);
-    //localStorage.setItem(md5('ok'), audio);
-  }
+  // async loadSentenceAudio() {
+  //   console.log('going to load some MP3');
+  //   const audio = await this.fetchAudio(oData);
+  //   //localStorage.setItem(md5('ok'), audio);
+  // }
 
   async playAudio(data: any) {
     return new Promise(async (resolve, reject) => {
-      let audio = await this.fetchAudio(this.dataGenerator(data));
-      let audioStream = new Audio(audio);
+      const audio = await this.fetchAudio(this.dataGenerator(data));
+      const audioStream = new Audio(audio);
 
       // audioStream.addEventListener('loadeddata', async () => {
       //   let duration = audioStream.duration;

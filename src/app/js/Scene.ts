@@ -165,19 +165,19 @@ class Scene {
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
 
-    ObjectLoader.loadGLTF('assets/Pod/Pod.gltf').then((object) => {
+    ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
       object.position.z = -0.13;
       object.rotateY((90 * Math.PI) / 180);
 
       this.scene.add(object);
 
-      const likeButton = new InteractiveObject(object, 'J_aime');
+      const likeButton = new InteractiveObject(object, 'Heart');
       likeButton.setAction(() => {
         document.dispatchEvent(new Event(`interaction:${Interaction.LIKE}`));
         document.dispatchEvent(new Event('clean:interaction'));
       });
 
-      const dislikeButton = new InteractiveObject(object, 'J_aime_pas');
+      const dislikeButton = new InteractiveObject(object, 'heartbreak');
       dislikeButton.setAction(() => {
         document.dispatchEvent(new Event(`interaction:${Interaction.DISLIKE}`));
         document.dispatchEvent(new Event('clean:interaction'));
