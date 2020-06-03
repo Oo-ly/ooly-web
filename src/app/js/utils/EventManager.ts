@@ -22,6 +22,7 @@ class EventManager {
     };
 
     this.listeners.push(event);
+    return id;
   }
 
   off(id: string) {
@@ -45,3 +46,5 @@ class EventManager {
     });
   }
 }
+
+export default new EventManager();

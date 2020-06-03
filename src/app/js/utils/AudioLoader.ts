@@ -40,15 +40,9 @@ class AudioLoader {
   // }
 
   async playAudio(data: any) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       const audio = await this.fetchAudio(this.dataGenerator(data));
       const audioStream = new Audio(audio);
-
-      // audioStream.addEventListener('loadeddata', async () => {
-      //   let duration = audioStream.duration;
-      //   console.log(duration);
-      //   await new Promise(resolve => setTimeout(resolve, duration * 1000));
-      // });
 
       audioStream.addEventListener('ended', () => resolve());
 

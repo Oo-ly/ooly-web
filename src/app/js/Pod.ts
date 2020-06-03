@@ -1,6 +1,7 @@
 import { Object3D, Mesh, Color, MeshStandardMaterial, MeshPhongMaterial } from 'three';
 import { Interaction } from './Scenario';
 import { TweenMax } from 'gsap';
+import EventManager from './utils/EventManager';
 
 interface InteractionEvent extends Event {
   detail: Interaction;
@@ -36,10 +37,6 @@ export default class Pod {
 
     this.ledBas = object.getObjectByName('LED_dessous') as Mesh;
     this.ledBas.layers.enable(1);
-
-    // this.ampoule = object.getObjectByName('Ampoule') as Mesh;
-
-    // object.getObjectByName('BASE_LED').position.setY(0.001);
 
     object.traverse((child) => {
       if (child instanceof Mesh) {
@@ -78,12 +75,12 @@ export default class Pod {
   }
 
   bind() {
-    document.addEventListener('wait:interaction', (e: InteractionEvent) => this.waitInteraction(e));
-    document.addEventListener('clean:interaction', () => this.cleanInteraction());
+    EventManager.on('wait:interaction', (e) => this.waitInteraction(e.interaction));
+    EventManager.on('clean:interaction', () => this.cleanInteraction());
   }
 
-  waitInteraction(interactionEvent: InteractionEvent) {
-    if (interactionEvent.detail === Interaction.LIKE || interactionEvent.detail === Interaction.DISLIKE) {
+  waitInteraction(interaction: string) {
+    if (interaction === Interaction.LIKE || interaction === Interaction.DISLIKE) {
       this.enableButton(this.dislikeButton, new Color('#e74c3c'));
       this.enableButton(this.likeButton, new Color('#2ecc71'));
       this.enableButton(this.wizzButton, new Color('#f5d316'));
@@ -120,9 +117,9 @@ export default class Pod {
       const material = button.material as MeshStandardMaterial;
 
       TweenMax.to(material.emissive, 0.3, {
-        r: 1,
-        g: 1,
-        b: 1,
+        r: 0,
+        g: 0,
+        b: 0,
         onUpdate: () => {
           material.needsUpdate = true;
         },
@@ -166,7 +163,6 @@ export default class Pod {
   }
 
   update() {
-    // const ampouleMaterial = this.ampoule.material as MeshStandardMaterial;
     const ledMaterial = this.led.material as MeshStandardMaterial;
     const ledBasMaterial = this.ledBas.material as MeshStandardMaterial;
 

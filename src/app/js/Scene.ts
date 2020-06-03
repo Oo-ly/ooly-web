@@ -14,6 +14,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Sentences } from './Sentences';
 import AudioLoader from './utils/AudioLoader';
+import EventManager from './utils/EventManager';
 
 class Scene {
   private scene: THREE.Scene;
@@ -109,16 +110,10 @@ class Scene {
         ray.copy(raycaster.ray).applyMatrix4(inverseMatrix);
 
         if (element.object.geometry.boundingSphere !== null) {
-          if (ray.isIntersectionSphere(element.object.geometry.boundingSphere)) {
+          if (ray.intersectSphere(element.object.geometry.boundingSphere, new Vector3())) {
             element.run();
           }
         }
-
-        // const intersects = raycaster.intersectObject(element.object, true);
-
-        // if (intersects.length > 0) {
-        //   element.run();
-        // }
       });
     });
 
@@ -173,14 +168,14 @@ class Scene {
 
       const likeButton = new InteractiveObject(object, 'Heart');
       likeButton.setAction(() => {
-        document.dispatchEvent(new Event(`interaction:${Interaction.LIKE}`));
-        document.dispatchEvent(new Event('clean:interaction'));
+        EventManager.emit(`interaction:${Interaction.LIKE}`);
+        EventManager.emit('clean:interaction');
       });
 
       const dislikeButton = new InteractiveObject(object, 'heartbreak');
       dislikeButton.setAction(() => {
-        document.dispatchEvent(new Event(`interaction:${Interaction.DISLIKE}`));
-        document.dispatchEvent(new Event('clean:interaction'));
+        EventManager.emit(`interaction:${Interaction.DISLIKE}`);
+        EventManager.emit('clean:interaction');
       });
 
       this.interactiveElements.push(likeButton, dislikeButton);
@@ -202,8 +197,7 @@ class Scene {
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
         if (this.scenario && this.scenario.isRunning()) {
-          const event = new CustomEvent(`interaction:${Interaction.OFF}`);
-          document.dispatchEvent(event);
+          EventManager.emit(`interaction:${Interaction.OFF}`);
         } else {
           this.loadScenario();
           this.scenario.play();
@@ -220,13 +214,7 @@ class Scene {
         }
 
         setTimeout(() => {
-          const event = new CustomEvent('bandeau:intensity', {
-            detail: {
-              intensity: 0.1,
-            },
-          });
-
-          document.dispatchEvent(event);
+          EventManager.emit('bandeau:intensity', { intensity: 0.1 });
         }, 1000);
 
         const tween = TweenMax.to(couvercle.object, 1, {

@@ -1,5 +1,6 @@
 import AudioLoader from './utils/AudioLoader';
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
+import EventManager from './utils/EventManager';
 
 enum Interaction {
   LIKE = 'LIKE',
@@ -30,8 +31,7 @@ export default class Scenario {
     this.isPlaying = true;
 
     const sentence = this.sentences.find((s) => s.id === 1);
-    const ooEvent = new CustomEvent('show:oo', { detail: sentence.oo });
-    document.dispatchEvent(ooEvent);
+    EventManager.emit('show:oo', { oo: sentence.oo });
 
     this.playSentence(1);
   }
@@ -48,20 +48,15 @@ export default class Scenario {
     await AudioLoader.playAudio(sentence);
 
     if (sentence.interaction) {
-      const event = new CustomEvent('wait:interaction', { detail: sentence.interaction.toString() });
-      document.dispatchEvent(event);
+      EventManager.emit('wait:interaction', { interaction: sentence.interaction.toString() });
 
-      document.addEventListener(
-        `interaction:${sentence.interaction}`,
-        async () => {
-          await this.playSentence(sentence.nextSentence);
-        },
-        { once: true },
-      );
+      const eventId = EventManager.on(`interaction:${sentence.interaction}`, async () => {
+        EventManager.off(eventId);
+        await this.playSentence(sentence.nextSentence);
+      });
     } else {
       if (nextSentence) {
-        const ooEvent = new CustomEvent('show:oo', { detail: nextSentence.oo });
-        document.dispatchEvent(ooEvent);
+        EventManager.emit('show:oo', { oo: nextSentence.oo });
       }
 
       setTimeout(async () => {
