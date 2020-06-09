@@ -136,6 +136,13 @@ class Scene {
         console.log(this.oos);
       });
     });
+
+    document.querySelectorAll('.oos__info').forEach((ooInfo) => {
+      ooInfo.addEventListener('click', (event) => {
+        const element = event.target as HTMLElement;
+        console.log(element);
+      });
+    });
   }
 
   onResize() {
