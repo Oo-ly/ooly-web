@@ -50,9 +50,16 @@ const OO_WHOOW = {
   tore: 'Tore_7',
 };
 
+const OO_MELIMELOO = {
+  name: "Méli-Mél'Oo",
+  color: '9573F2',
+  objectName: 'melimelo_1',
+  tore: 'Tore_1',
+};
+
 const FIXED_OO = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
 
-export { OO_CINOOCHE, OO_COOMIQUE, OO_DISCOO, OO_INFOO, OO_VEGETOO, OO_WHOOW, OO_YOOGA };
+export { OO_CINOOCHE, OO_COOMIQUE, OO_DISCOO, OO_INFOO, OO_VEGETOO, OO_WHOOW, OO_YOOGA, OO_MELIMELOO };
 
 export default class Oo {
   private name: string;

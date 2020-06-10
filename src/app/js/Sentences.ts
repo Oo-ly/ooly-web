@@ -1,4 +1,4 @@
-import { OO_DISCOO, OO_INFOO, OO_CINOOCHE, OO_YOOGA, OO_VEGETOO, OO_COOMIQUE, OO_WHOOW } from './Oo';
+import { OO_DISCOO, OO_INFOO, OO_CINOOCHE, OO_YOOGA, OO_VEGETOO, OO_COOMIQUE, OO_WHOOW, OO_MELIMELOO } from './Oo';
 import { Interaction, Sentence } from './Scenario';
 
 

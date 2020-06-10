@@ -1,5 +1,5 @@
 import { Object3D, Mesh, MeshStandardMaterial, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
+import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE, OO_MELIMELOO } from './Oo';
 import { TweenMax } from 'gsap';
 import { Interaction } from './Scenario';
 import EventManager from './utils/EventManager';
@@ -170,8 +170,15 @@ export default class Boitier {
       OO_COOMIQUE.objectName,
       OO_COOMIQUE.tore
     );
+    const melimelo = new Oo(
+      this.object,
+      OO_MELIMELOO.name,
+      OO_MELIMELOO.color,
+      OO_MELIMELOO.objectName,
+      OO_MELIMELOO.tore
+    );
 
-    this.oos.push(discoo, cinooche, infoo, yooga, vegetoo, whoow, coomique);
+    this.oos.push(discoo, cinooche, infoo, yooga, vegetoo, whoow, coomique, melimelo);
   }
 
   setOoDesactive(){

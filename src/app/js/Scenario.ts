@@ -1,5 +1,5 @@
 import AudioLoader from './utils/AudioLoader';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
+import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE, OO_MELIMELOO } from './Oo';
 import EventManager from './utils/EventManager';
 
 enum Interaction {
