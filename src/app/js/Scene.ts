@@ -146,6 +146,9 @@ class Scene {
   }
 
   init() {
+
+    this.loadScenario();
+    
     this.camera.position.set(-0.0819560393608861, 0.17910147276113078, 0.000008189676138274878);
     this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
     this.camera.lookAt(0, 0, 0);
@@ -201,7 +204,9 @@ class Scene {
           EventManager.emit(`interaction:${Interaction.OFF}`);
         } else {
           EventManager.emit(`interaction:${Interaction.ON}`);
-          this.loadScenario();
+          if (this.scenario){
+            this.scenario.play();
+          }
         }
       });
 
@@ -291,7 +296,6 @@ class Scene {
     if (scenario) {
       this.scenario = new Scenario(scenario);
       console.log(this.scenario);
-      this.scenario.play();
     }
 
     // const sentences = Sentences.scenarios.sort((a, b) => {

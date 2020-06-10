@@ -120,7 +120,7 @@ export default class Scenario {
           this.index++;
           await this.playSentence(nextSentence);
         }else{
-          this.index = 0;
+          this.index = -1;
           this.isPlaying = false;
           EventManager.emit('show:off');
         }
