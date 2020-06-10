@@ -25,7 +25,7 @@ interface Sentence {
   order?: number | null;
   interaction: boolean;
   audio: Audio;
-  dislikes: [];
+  dislikes: Audio[];
   likes: [];
 }
 
@@ -67,15 +67,19 @@ export default class Scenario {
     let entry = null;
     let sentence = null;
 
-    console.log(this.iscenario.sentences);
-
     if (this.index === -1) {
-      if (this.previousEnd === 'neutral') {
+      if ((this.previousEnd === 'neutral') && (this.iscenario.neutral_entries[0])) {
         entry = this.iscenario.neutral_entries[0];
-      } else {
+        this.playEntry(entry);
+      } else if ((this.previousEnd === 'negative') && (this.iscenario.negative_entries[0])) {
         entry = this.iscenario.negative_entries[0];
+        this.playEntry(entry);
+      } else{
+        setTimeout(async () => {
+          this.index += 1;
+          await this.play();
+        }, 600);
       }
-      this.playEntry(entry);
     } else {
       sentence = this.iscenario.sentences.find((s) => s.order === this.index);
       this.playSentence(sentence);
@@ -96,9 +100,12 @@ export default class Scenario {
   }
 
   async playSentence(sentence: Sentence) {
+
+    console.log("lire une phrase : ", sentence);
+
     EventManager.emit('show:oo', { oo: sentence.audio.oo.name });
     const nextSentence = this.iscenario.sentences.find((s) => s.order === this.index + 1);
-    // await AudioLoader.playAudio(sentence.audio);
+    await AudioLoader.playAudio(sentence.audio);
 
     if (sentence.interaction) {
       EventManager.emit('wait:interaction');
@@ -107,12 +114,10 @@ export default class Scenario {
         EventManager.off(eventId);
 
         if (e.interaction === Interaction.LIKE) {
+          this.index += 1;
           await this.playSentence(nextSentence);
-          console.log('Like');
         } else {
-          // await this.playSentence(nextSentence);
-          // Jouer les phrases de sortie
-          console.log('Dislike');
+          this.endScenario(sentence.dislikes);
         }
       });
     } else {
@@ -131,5 +136,16 @@ export default class Scenario {
         }
       }, 600);
     }
+  }
+
+  async endScenario(dislikes: Audio[]){
+    await AudioLoader.playAudio(dislikes[0]);
+    this.index = -1;
+    this.isPlaying = false;
+    EventManager.emit('show:off');
+  }
+
+  stop(){
+    console.log("stop scenario");
   }
 }

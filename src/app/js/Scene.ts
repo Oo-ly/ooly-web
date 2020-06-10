@@ -16,6 +16,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import AudioLoader from './utils/AudioLoader';
 import EventManager from './utils/EventManager';
 import ScenarioLoader from './utils/ScenarioLoader';
+import OoManager from './utils/OoManager';
 
 class Scene {
   private scene: THREE.Scene;
@@ -90,9 +91,24 @@ class Scene {
     this.finalComposer.addPass(this.finalPass);
 
     this.bind();
+
   }
 
   bind() {
+
+    EventManager.on('interaction:on', () => OoManager.sayHello(this.oos));
+    EventManager.on('interaction:off', () => OoManager.sayGoodbye(this.oos));
+    EventManager.on('scenario:play', () => this.playScenario());
+    EventManager.on('scenario:stop', () => this.stopScenario());
+
+    EventManager.on('oo:putNew', (e) => {
+      OoManager.putNew(e.oo);
+    });
+
+    EventManager.on('oo:takeOff', (e) => {
+      OoManager.takeOff(e.oo);
+    });
+
     window.addEventListener('resize', () => this.onResize());
 
     this.renderer.domElement.addEventListener('click', (e) => {
@@ -130,8 +146,10 @@ class Scene {
         if (!element.classList.contains('fixed')) {
           if (this.oos.includes(ooClicked)) {
             this.oos.splice(this.oos.indexOf(ooClicked), 1);
+            EventManager.emit('oo:takeOff', { oo: ooClicked });
           } else {
             this.oos.push(ooClicked);
+            EventManager.emit('oo:putNew', { oo: ooClicked });
           }
         }
         console.log(this.oos);
@@ -168,8 +186,6 @@ class Scene {
 
   init() {
 
-    this.loadScenario();
-    
     this.camera.position.set(-0.0819560393608861, 0.17910147276113078, 0.000008189676138274878);
     this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
     this.camera.lookAt(0, 0, 0);
@@ -222,9 +238,9 @@ class Scene {
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
         if (this.scenario && this.scenario.isRunning()) {
-          EventManager.emit(`interaction`, { interaction: Interaction.OFF });
+          EventManager.emit('interaction:off', { interaction: Interaction.OFF });
         } else {
-          EventManager.emit(`interaction`, { interaction: Interaction.ON });
+          EventManager.emit('interaction:on', { interaction: Interaction.ON });
           this.loadScenario();
         }
       });
@@ -313,24 +329,17 @@ class Scene {
     const scenario = await ScenarioLoader.fetchScenario();
     if (scenario) {
       this.scenario = new Scenario(scenario);
-      console.log(this.scenario);
-      this.scenario.play();
     }
-
-    // const sentences = Sentences.scenarios.sort((a, b) => {
-    //   return b.oos.length - a.oos.length;
-    // });
-
-    // const scenario = sentences.find((sentence) => {
-    //   return sentence.oos.reduce((status, oo) => {
-    //     return status && this.oos.includes(oo);
-    //   }, true);
-    // });
-
-    // if (scenario) {
-    //   this.scenario = new Scenario(scenario.sentences);
-    // }
   }
+
+  async playScenario(){
+    this.scenario.play();
+  }
+
+  async stopScenario(){
+    this.scenario.stop();
+  }
+
 }
 
 export default new Scene();
