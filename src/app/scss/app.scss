@@ -1,13 +1,21 @@
+/* Imports */
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap&family=Open+Sans&display=swap');
 
+/* Variables */
 $white: #FFFFFF;
 $yellow: #FFCB13;
 $blue-light: #221A74;
+
+$custom-ease: cubic-bezier(.38,1.04,.88,.98);
+
+$font-comforta: "Comfortaa", Verdana, Arial, Helvetica, sans-serif;
+
+/* Global */
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: 'Open Sans', sans-serif;
+  font-family: $font-comforta;
 }
 
 body {
@@ -24,17 +32,29 @@ body {
   max-width: 550px;
   background: #120C58;
   padding: 100px;
-  
+  transform: translateX(-100%);
+
   z-index: 100;
   
   display: flex;
   flex-direction: column;
   justify-content: center;
   pointer-events: none;
+  cursor: pointer;
+
+  transition: transform .62s $custom-ease;
+
+  &--active {
+    transform: translateX(0);
+
+    .sidebar__button-image {
+      transform: rotate(180deg);
+    }
+  }
 
   &__title {
     color: $white;
-    font-family: "Comfortaa";
+    font-family: $font-comforta;
     letter-spacing: 2.8px;
   }
 
@@ -43,13 +63,33 @@ body {
     margin-bottom: 80px;
   }
 
-  &__close {
-    display: block;
+  &__button {
+    display: flex;
+    align-items: center;
     position: absolute;
-    transform: translateX(100%);
-    background-color: $yellow;
+    border: 0;
     right: 0;
     top: 40px;
+    z-index: 100;
+    transform: translateX(100%);
+    pointer-events: all;
+    cursor: pointer;
+    outline: none;
+    background: none;
+  }
+
+  &__button-figure {
+    border-radius: 0 5px 5px 0;
+    background: $yellow;
+    margin-right: 15px;
+    padding: 15px;
+    transition: transform 0.62s 
+  }
+
+  &__button-text {
+    font-family: $font-comforta;
+    color: $yellow;
+    font-size: 18px;
   }
 
   .oos {
@@ -71,13 +111,13 @@ body {
       margin-bottom: 20px;
       font-size: 8px;
 
-      img {
+      .oos__picture {
         display: block;
         width: 100%;
-        cursor: pointer;
         max-width: 80px;
         margin: 0 auto;
         pointer-events: all;
+        cursor: pointer;
         transition: filter 0.3s ease;
 
         &.selected {
@@ -91,6 +131,98 @@ body {
         &.fixed {
           cursor: not-allowed;
         }
+      }
+    }
+
+
+    &__info {
+      width: 15px;
+      height: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 0 2px $yellow;
+      margin-left: 10px;
+      background-color: $yellow;
+      pointer-events: all;
+      cursor: pointer;
+    }
+
+    &__description {
+      background-color: $blue-light;
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+      padding-top: 150px;
+      padding-left: 25px;
+      position: fixed;
+      right: 0;
+      top: 0;
+      transform: translateX(-100%);
+      height: 100vh;
+      width: 60%;
+      min-width: calc(100vw - 550px);
+      transition: transform .62s $custom-ease;
+      z-index: -1;
+      pointer-events: all;
+      overflow-y: scroll;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      h2 {
+        margin-bottom: 15px;
+        font-size: 16px;
+      }
+
+      p {
+        font-size: 13px;
+        text-align: left;
+        max-width: 380px;
+        font-family: 'Open Sans';
+        margin-bottom: 50px;
+      }
+
+      img {
+        width: auto;
+      }
+    }
+
+    &__description--active {
+      transform: translateX(100%);
+    }
+
+    &__description-button {
+      background-color: unset;
+      outline: none;
+      border: none;
+      position: absolute;
+      top: 50px;
+      right: 40px;
+      pointer-events: all;
+      cursor: pointer;
+    }
+
+    &__character {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    &__characters {
+      display: flex;
+      margin-top: 10px;
+
+      li {
+        margin-right: 72px;
+      }
+
+      img {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 10px;
+      }
+
+      strong {
+        font-size: 16px;
       }
     }
   }
