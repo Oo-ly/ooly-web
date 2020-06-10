@@ -2,7 +2,7 @@ import axios from 'axios';
 import { resolve } from 'bluebird';
 
 const config = {
-  headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE0MzRiOGMxLThkZjEtNDY5Ni04NzczLTFmYjEyOWRlMjYzMSIsImlhdCI6MTU5MTc3NzkwOH0.DHs1jLPWEWGHsALSSj85lagb1iUhA7uwC4mySVbfJDM` }
+  headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyYzMyYWFiLTJmMmEtNDJmMy1hNWVlLTAwYWVjNDg4MmE5OCIsImlhdCI6MTU5MTc4MTIzNH0.DBWdJDInYQR2bvuRMC7W9kX6LskiKBk67G3ldVBG8fw` }
 };
 
 class ScenarioLoader {

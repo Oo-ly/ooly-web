@@ -44,7 +44,9 @@ interface Audio {
 interface IScenario {
   uuid : string;
   name: string;
-  entries: Audio[];
+  negative_entries: Audio[];
+  neutral_entries: Audio[];
+  positive_entries: Audio[];
   exits: Audio[];
   sentences: Sentence[];
   oos: Oo[];
@@ -70,9 +72,9 @@ export default class Scenario {
 
     if (this.index == -1) {
       if (this.previousEnd == 'neutral') {
-        entry = this.iscenario.entries[0];
+        entry = this.iscenario.neutral_entries[0];
       }else{
-        entry = this.iscenario.entries[1];
+        entry = this.iscenario.negative_entries[0];
       }
       this.playEntry(entry);
     }else{
