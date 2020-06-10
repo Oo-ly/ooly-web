@@ -139,10 +139,24 @@ class Scene {
 
     document.querySelectorAll('.oos__info').forEach((ooInfo) => {
       ooInfo.addEventListener('click', (event) => {
-        const element = event.target as HTMLElement;
-        console.log(element);
+        let element = event.target as HTMLElement;
+        let description = element.parentElement.nextElementSibling as HTMLElement;
+        this.closeAllInfos();
+        description.classList.toggle('oos__description--active')
       });
     });
+
+    document.querySelectorAll('.oos__description-button').forEach((ooCloseButton) => {
+      ooCloseButton.addEventListener('click', (event) => {
+        let element = event.target as HTMLElement;
+        element.parentElement.parentElement.classList.remove('oos__description--active');
+      });
+    })
+  }
+
+  closeAllInfos() {
+    const infos = document.querySelectorAll('.oos__description') as NodeList;
+    infos.forEach((info: Element) => info.classList.remove('oos__description--active'));
   }
 
   onResize() {
