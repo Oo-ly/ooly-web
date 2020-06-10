@@ -8,40 +8,221 @@
   </head>
 
   <body>
-    <img class="logo" src="./assets/logo.svg">
+    <img class="logo" src="./assets/UI/logo.svg">
 
-    <aside class="sidebar">
-      <button class="sidebar__close">Fermer</button>
+    <aside class="sidebar sidebar--active">
+      <button class="sidebar__button">
+        <figure class="sidebar__button-figure">
+          <img class="sidebar__button-image" src="./assets/UI/open.svg">
+        </figure>
+        <span class="sidebar__button-text">Fermer</span>
+      </button>
+
       <h1 class="sidebar__title">Les Oo's</h1>
       <p class="sidebar__description">Cliquez sur un Oo’ pour l’ajouter dans le boitier</p>
       <ul class="oos">
-        <li>
-          <img src="./assets/Oos/DiscOo-clean.png" class="fixed selected" alt="" data-oo="Disc'Oo" />
-          Disc'Oo
+        <li class="oos-discoo">
+          <img class="oos__picture" src="./assets/Oos/DiscOo-clean.png" class="fixed selected" alt="" data-oo="Disc'Oo" />
+          <span>Disc'Oo
+          <img class="oos__info" src="./assets/UI/search.svg">
+          </span>
+
+          <section class="oos__description">
+            <button class="oos__description-button">
+              <img src="./assets/UI/close.svg">
+            </button>
+            <img src="./assets/Oos/Icons/yooga.png" alt="">
+            <h2><strong>Spécialité</strong> : Relaxation & détente</h2>
+
+            <p>Y’Oo’ga est le plus calme des Oo’. Il connaît plein d’exercices de relaxation et de détente. Passionné de méditation, de Taï-chï et de sophrologie, Y’Oo’ga est toujours présent pour proposer des occupations relaxantes.<br/>
+              Quand il est là, il instaure une ambiance calme qui plaît aux autres Oo’ pendant la nuit. </p>
+          
+            <span class="oos__character">Traits de caractère</span>
+            <ul class="oos__characters">
+              <li>
+                <img src="./assets/Oos/Icons/zen.svg" alt="Zen">
+                <strong>Zen</strong>
+              </li>
+              <li>
+                <img src="./assets/Oos/Icons/amical.svg" alt="">
+                <strong>Réconfortant</strong>
+              </li>
+            </ul>
+          </section>
         </li>
-        <li>
-          <img src="./assets/Oos/CinOoche-clean.png" class="fixed selected" alt="" data-oo="Cin'Oo'che" />
-          Cin'Oo'che
+        <li class="oos-cinooche">
+          <img class="oos__picture" src="./assets/Oos/CinOoche-clean.png" class="fixed selected" alt="" data-oo="Cin'Oo'che" />
+          <span>Cin'Oo'che
+          <img src="./assets/UI/search.svg" class="oos__info">
+          </span>
+
+          <section class="oos__description">
+            <button class="oos__description-button">
+              <img src="./assets/UI/close.svg">
+            </button>
+            <img src="./assets/Oos/Icons/yooga.png" alt="">
+            <h2><strong>Spécialité</strong> : Relaxation & détente</h2>
+
+            <p>Y’Oo’ga est le plus calme des Oo’. Il connaît plein d’exercices de relaxation et de détente. Passionné de méditation, de Taï-chï et de sophrologie, Y’Oo’ga est toujours présent pour proposer des occupations relaxantes.<br/>
+              Quand il est là, il instaure une ambiance calme qui plaît aux autres Oo’ pendant la nuit. </p>
+          
+            <span class="oos__character">Traits de caractère</span>
+            <ul class="oos__characters">
+              <li>
+                <img src="./assets/Oos/Icons/zen.svg" alt="Zen">
+                <strong>Zen</strong>
+              </li>
+              <li>
+                <img src="./assets/Oos/Icons/amical.svg" alt="">
+                <strong>Réconfortant</strong>
+              </li>
+            </ul>
+          </section>
         </li>
-        <li>
-          <img src="./assets/Oos/InfOo-clean.png" class="fixed selected" alt="" data-oo="Inf'Oo" />
-          Inf'Oo
+        <li class="oos-infoo">
+          <img class="oos__picture" src="./assets/Oos/InfOo-clean.png" class="fixed selected" alt="" data-oo="Inf'Oo" />
+          <span>Inf'Oo
+          <img src="./assets/UI/search.svg" class="oos__info">
+          </span>
+
+          <section class="oos__description">
+            <button class="oos__description-button">
+              <img src="./assets/UI/close.svg">
+            </button>
+            <img src="./assets/Oos/Icons/yooga.png" alt="">
+            <h2><strong>Spécialité</strong> : Relaxation & détente</h2>
+
+            <p>Y’Oo’ga est le plus calme des Oo’. Il connaît plein d’exercices de relaxation et de détente. Passionné de méditation, de Taï-chï et de sophrologie, Y’Oo’ga est toujours présent pour proposer des occupations relaxantes.<br/>
+              Quand il est là, il instaure une ambiance calme qui plaît aux autres Oo’ pendant la nuit. </p>
+          
+            <span class="oos__character">Traits de caractère</span>
+            <ul class="oos__characters">
+              <li>
+                <img src="./assets/Oos/Icons/zen.svg" alt="Zen">
+                <strong>Zen</strong>
+              </li>
+              <li>
+                <img src="./assets/Oos/Icons/amical.svg" alt="">
+                <strong>Réconfortant</strong>
+              </li>
+            </ul>
+          </section>
         </li>
-        <li>
-          <img src="./assets/Oos/YOoga-clean.png" alt="" data-oo="Y'Oo'ga" />
-          Y'Oo'ga
+        <li class="oos-yooga">
+          <img class="oos__picture" src="./assets/Oos/YOoga-clean.png" alt="" data-oo="Y'Oo'ga" />
+          <span>Y'Oo'ga
+          <img src="./assets/UI/search.svg" class="oos__info">
+          </span>
+
+          <section class="oos__description">
+            <button class="oos__description-button">
+              <img src="./assets/UI/close.svg">
+            </button>
+            <img src="./assets/Oos/Icons/yooga.png" alt="">
+            <h2><strong>Spécialité</strong> : Relaxation & détente</h2>
+
+            <p>Y’Oo’ga est le plus calme des Oo’. Il connaît plein d’exercices de relaxation et de détente. Passionné de méditation, de Taï-chï et de sophrologie, Y’Oo’ga est toujours présent pour proposer des occupations relaxantes.<br/>
+              Quand il est là, il instaure une ambiance calme qui plaît aux autres Oo’ pendant la nuit. </p>
+          
+            <span class="oos__character">Traits de caractère</span>
+            <ul class="oos__characters">
+              <li>
+                <img src="./assets/Oos/Icons/zen.svg" alt="Zen">
+                <strong>Zen</strong>
+              </li>
+              <li>
+                <img src="./assets/Oos/Icons/amical.svg" alt="">
+                <strong>Réconfortant</strong>
+              </li>
+            </ul>
+          </section>
         </li>
-        <li>
-          <img src="./assets/Oos/VegetOo-clean.png" alt="" data-oo="Végét'Oo" />
-          Veget'Oo
+        <li class="oos-vegetoo">
+          <img class="oos__picture" src="./assets/Oos/VegetOo-clean.png" alt="" data-oo="Végét'Oo" />
+          <span>Veget'Oo
+          <img src="./assets/UI/search.svg" class="oos__info">
+          </span>
+
+          <section class="oos__description">
+            <button class="oos__description-button">
+              <img src="./assets/UI/close.svg">
+            </button>
+            <img src="./assets/Oos/Icons/yooga.png" alt="">
+            <h2><strong>Spécialité</strong> : Relaxation & détente</h2>
+
+            <p>Y’Oo’ga est le plus calme des Oo’. Il connaît plein d’exercices de relaxation et de détente. Passionné de méditation, de Taï-chï et de sophrologie, Y’Oo’ga est toujours présent pour proposer des occupations relaxantes.<br/>
+              Quand il est là, il instaure une ambiance calme qui plaît aux autres Oo’ pendant la nuit. </p>
+          
+            <span class="oos__character">Traits de caractère</span>
+            <ul class="oos__characters">
+              <li>
+                <img src="./assets/Oos/Icons/zen.svg" alt="Zen">
+                <strong>Zen</strong>
+              </li>
+              <li>
+                <img src="./assets/Oos/Icons/amical.svg" alt="">
+                <strong>Réconfortant</strong>
+              </li>
+            </ul>
+          </section>
         </li>
-        <li>
-          <img src="./assets/Oos/WhOow-clean.png" alt="" data-oo="Wh'Oo'w" />
-          Wh'Oo'w
+        <li class="oos-whoow">
+          <img class="oos__picture" src="./assets/Oos/WhOow-clean.png" alt="" data-oo="Wh'Oo'w" />
+          <span>Wh'Oo'w
+          <img src="./assets/UI/search.svg" class="oos__info">
+          </span>
+
+          <section class="oos__description">
+            <button class="oos__description-button">
+              <img src="./assets/UI/close.svg">
+            </button>
+            <img src="./assets/Oos/Icons/yooga.png" alt="">
+            <h2><strong>Spécialité</strong> : Relaxation & détente</h2>
+
+            <p>Y’Oo’ga est le plus calme des Oo’. Il connaît plein d’exercices de relaxation et de détente. Passionné de méditation, de Taï-chï et de sophrologie, Y’Oo’ga est toujours présent pour proposer des occupations relaxantes.<br/>
+              Quand il est là, il instaure une ambiance calme qui plaît aux autres Oo’ pendant la nuit. </p>
+          
+            <span class="oos__character">Traits de caractère</span>
+            <ul class="oos__characters">
+              <li>
+                <img src="./assets/Oos/Icons/zen.svg" alt="Zen">
+                <strong>Zen</strong>
+              </li>
+              <li>
+                <img src="./assets/Oos/Icons/amical.svg" alt="">
+                <strong>Réconfortant</strong>
+              </li>
+            </ul>
+          </section>
         </li>
-        <li>
-          <img src="./assets/Oos/COomique-clean.png" alt="" data-oo="C'Oo'mique" />
-          C'Oo'mique
+        <li class="oos-coomique">
+          <img class="oos__picture" src="./assets/Oos/COomique-clean.png" alt="" data-oo="C'Oo'mique" />
+          <span>C'Oo'mique
+          <img src="./assets/UI/search.svg" class="oos__info">
+          </span>
+
+          <section class="oos__description">
+            <button class="oos__description-button">
+              <img src="./assets/UI/close.svg">
+            </button>
+            <img src="./assets/Oos/Icons/yooga.png" alt="">
+            <h2><strong>Spécialité</strong> : Relaxation & détente</h2>
+
+            <p>Y’Oo’ga est le plus calme des Oo’. Il connaît plein d’exercices de relaxation et de détente. Passionné de méditation, de Taï-chï et de sophrologie, Y’Oo’ga est toujours présent pour proposer des occupations relaxantes.<br/>
+              Quand il est là, il instaure une ambiance calme qui plaît aux autres Oo’ pendant la nuit. </p>
+          
+            <span class="oos__character">Traits de caractère</span>
+            <ul class="oos__characters">
+              <li>
+                <img src="./assets/Oos/Icons/zen.svg" alt="Zen">
+                <strong>Zen</strong>
+              </li>
+              <li>
+                <img src="./assets/Oos/Icons/amical.svg" alt="">
+                <strong>Réconfortant</strong>
+              </li>
+            </ul>
+          </section>
         </li>
       </ul>
     </aside>
