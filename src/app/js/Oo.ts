@@ -5,77 +5,49 @@ const OO_DISCOO = {
   name: "Disc'Oo",
   color: '0085FF',
   objectName: 'Disc_Oo',
-  tore: 'Tore_3',
-  voiceName: 'fr-FR-Wavenet-A',
-  voiceCode: 'fr-FR',
-  voicePitch: 3.6,
-  voiceRate: 1,
+  tore: 'Tore_3'
 };
 
 const OO_CINOOCHE = {
   name: "Cin'Oo'che",
   color: 'CA0024',
   objectName: 'Cinoche_1',
-  tore: 'Tore_5',
-  voiceName: 'fr-FR-Wavenet-D',
-  voiceCode: 'fr-FR',
-  voicePitch: -2.8,
-  voiceRate: 1,
+  tore: 'Tore_5'
 };
 
 const OO_INFOO = {
   name: "Inf'Oo",
   color: '77CEFF',
   objectName: 'Infoo',
-  tore: 'Tore_8',
-  voiceName: 'fr-FR-Wavenet-B',
-  voiceCode: 'fr-FR',
-  voicePitch: 4.8,
-  voiceRate: 1,
+  tore: 'Tore_8'
 };
 
 const OO_YOOGA = {
   name: "Y'Oo'ga",
   color: '53BA9A',
   objectName: 'Yoga',
-  tore: 'Tore_1',
-  voiceName: 'fr-FR-Wavenet-C',
-  voiceCode: 'fr-FR',
-  voicePitch: -5.2,
-  voiceRate: 0.85,
+  tore: 'Tore_1'
 };
 
 const OO_VEGETOO = {
   name: "Végét'Oo",
   color: '7AEC70',
   objectName: 'Vegeto_1',
-  tore: 'Tore_4',
-  voiceName: 'fr-FR-Standard-E',
-  voiceCode: 'fr-FR',
-  voicePitch: 0.4,
-  voiceRate: 0.85,
+  tore: 'Tore_4'
 };
 
 const OO_COOMIQUE = {
   name: "C'Oo'mique",
   color: 'FFE92D',
   objectName: 'Comique_1',
-  tore: 'Tore_6',
-  voiceName: 'fr-FR-Wavenet-C',
-  voiceCode: 'fr-FR',
-  voicePitch: 4.8,
-  voiceRate: 1.05,
+  tore: 'Tore_6'
 };
 
 const OO_WHOOW = {
   name: "Wh'Oo'w",
   color: 'FFB300',
   objectName: 'Whow_1',
-  tore: 'Tore_7',
-  voiceName: 'fr-CA-Wavenet-B',
-  voiceCode: 'fr-CA',
-  voicePitch: 1.6,
-  voiceRate: 1,
+  tore: 'Tore_7'
 };
 
 const FIXED_OO = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
@@ -88,30 +60,18 @@ export default class Oo {
   private color: string;
   private material: MeshStandardMaterial;
   private tore: Mesh;
-  private voiceName: string;
-  private voiceCode: string;
-  private voiceRate: number;
-  private voicePitch: number;
 
   constructor(
     scene: Object3D,
     name: string,
     color: string,
     objectName: string,
-    tore: string,
-    voiceName: string,
-    voiceCode: string,
-    voiceRate: number,
-    voicePitch: number,
+    tore: string
   ) {
     this.name = name;
     this.color = color;
     this.object = scene.getObjectByName(objectName) as Mesh;
     this.tore = scene.getObjectByName(tore) as Mesh;
-    this.voiceName = voiceName;
-    this.voiceCode = voiceCode;
-    this.voiceRate = voiceRate;
-    this.voicePitch = voicePitch;
 
     if (!this.object) {
       console.error(`Object not found for ${name}`);

@@ -202,9 +202,6 @@ class Scene {
         } else {
           EventManager.emit(`interaction:${Interaction.ON}`);
           this.loadScenario();
-          // this.scenario.play();
-          
-
         }
       });
 
@@ -294,6 +291,7 @@ class Scene {
     if (scenario) {
       this.scenario = new Scenario(scenario);
       console.log(this.scenario);
+      this.scenario.play();
     }
 
     // const sentences = Sentences.scenarios.sort((a, b) => {

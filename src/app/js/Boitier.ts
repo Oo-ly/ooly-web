@@ -61,6 +61,11 @@ export default class Boitier {
   }
 
   bind() {
+
+    EventManager.on('show:off', (e) => {
+      this.setOoDesactive();
+    });
+
     EventManager.on('show:oo', (e) => {
       this.setOoActive(e.oo);
     });
@@ -121,80 +126,60 @@ export default class Boitier {
       OO_DISCOO.name,
       OO_DISCOO.color,
       OO_DISCOO.objectName,
-      OO_DISCOO.tore,
-      OO_DISCOO.voiceName,
-      OO_DISCOO.voiceCode,
-      OO_DISCOO.voicePitch,
-      OO_DISCOO.voiceRate,
+      OO_DISCOO.tore
     );
     const cinooche = new Oo(
       this.object,
       OO_CINOOCHE.name,
       OO_CINOOCHE.color,
       OO_CINOOCHE.objectName,
-      OO_CINOOCHE.tore,
-      OO_CINOOCHE.voiceName,
-      OO_CINOOCHE.voiceCode,
-      OO_CINOOCHE.voicePitch,
-      OO_CINOOCHE.voiceRate,
+      OO_CINOOCHE.tore
     );
     const infoo = new Oo(
       this.object,
       OO_INFOO.name,
       OO_INFOO.color,
       OO_INFOO.objectName,
-      OO_INFOO.tore,
-      OO_INFOO.voiceName,
-      OO_INFOO.voiceCode,
-      OO_INFOO.voicePitch,
-      OO_INFOO.voiceRate,
+      OO_INFOO.tore
     );
     const yooga = new Oo(
       this.object,
       OO_YOOGA.name,
       OO_YOOGA.color,
       OO_YOOGA.objectName,
-      OO_YOOGA.tore,
-      OO_YOOGA.voiceName,
-      OO_YOOGA.voiceCode,
-      OO_YOOGA.voicePitch,
-      OO_YOOGA.voiceRate,
+      OO_YOOGA.tore
     );
     const vegetoo = new Oo(
       this.object,
       OO_VEGETOO.name,
       OO_VEGETOO.color,
       OO_VEGETOO.objectName,
-      OO_VEGETOO.tore,
-      OO_VEGETOO.voiceName,
-      OO_VEGETOO.voiceCode,
-      OO_VEGETOO.voicePitch,
-      OO_VEGETOO.voiceRate,
+      OO_VEGETOO.tore
     );
     const whoow = new Oo(
       this.object,
       OO_WHOOW.name,
       OO_WHOOW.color,
       OO_WHOOW.objectName,
-      OO_WHOOW.tore,
-      OO_WHOOW.voiceName,
-      OO_WHOOW.voiceCode,
-      OO_WHOOW.voicePitch,
-      OO_WHOOW.voiceRate,
+      OO_WHOOW.tore
     );
     const coomique = new Oo(
       this.object,
       OO_COOMIQUE.name,
       OO_COOMIQUE.color,
       OO_COOMIQUE.objectName,
-      OO_COOMIQUE.tore,
-      OO_COOMIQUE.voiceName,
-      OO_COOMIQUE.voiceCode,
-      OO_COOMIQUE.voicePitch,
-      OO_COOMIQUE.voiceRate,
+      OO_COOMIQUE.tore
     );
 
     this.oos.push(discoo, cinooche, infoo, yooga, vegetoo, whoow, coomique);
+  }
+
+  setOoDesactive(){
+    this.oos.forEach((oo) => {
+      oo.setActive(false);
+    });
+
+    this.setBandeauColor();
   }
 
   setOoActive(name: string) {
