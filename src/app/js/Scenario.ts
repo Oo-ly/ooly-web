@@ -6,34 +6,52 @@ enum Interaction {
   LIKE = 'LIKE',
   DISLIKE = 'DISLIKE',
   OFF = 'OFF',
+  ON = 'ON'
 }
 
 interface Sentence {
-  id: number;
-  oo: string;
-  text: string;
-  nextSentence?: number | null;
+  uuid: string;
+  scenarioUuid: string;
+  order?: number | null;
   interaction?: Interaction | null;
 }
 
-export { Sentence, Interaction };
+interface Audio {
+  uuid: string;
+  name: string;
+  url: string;
+  type?: string | null;
+  audibleUuid: string;
+  audibleType?: string | null;
+  ooUuid: string;
+}
+
+interface IScenario {
+  scenario: string[];
+  oos: string[];
+  sentences: Sentence[];
+  audios: Audio[];
+}
+
+export { Sentence, Interaction, IScenario };
 
 export default class Scenario {
-  private sentences: Sentence[];
+  private iscenario: IScenario;
+  // private sentences: Sentence[];
   private isPlaying: boolean = false;
 
-  constructor(sentences: Sentence[]) {
-    this.sentences = sentences;
+  constructor(iscenario: IScenario) {
+    // this.iscenario = iscenario;
   }
 
   play() {
-    console.log('Running scenario');
-    this.isPlaying = true;
+    // console.log('Running scenario');
+    // this.isPlaying = true;
 
-    const sentence = this.sentences.find((s) => s.id === 1);
-    EventManager.emit('show:oo', { oo: sentence.oo });
+    // const sentence = this.sentences.find((s) => s.id === 1);
+    // EventManager.emit('show:oo', { oo: sentence.oo });
 
-    this.playSentence(1);
+    // this.playSentence(1);
   }
 
   isRunning() {
@@ -41,27 +59,27 @@ export default class Scenario {
   }
 
   async playSentence(id: number) {
-    const sentence = this.sentences.find((s) => s.id === id);
-    const nextSentence = this.sentences.find((s) => s.id === sentence.nextSentence);
+    // const sentence = this.sentences.find((s) => s.id === id);
+    // const nextSentence = this.sentences.find((s) => s.id === sentence.nextSentence);
 
-    console.log(`Sentence ${id}: ${sentence.text}`);
-    await AudioLoader.playAudio(sentence);
+    // console.log(`Sentence ${id}: ${sentence.text}`);
+    // await AudioLoader.playAudio(sentence);
 
-    if (sentence.interaction) {
-      EventManager.emit('wait:interaction', { interaction: sentence.interaction.toString() });
+    // if (sentence.interaction) {
+    //   EventManager.emit('wait:interaction', { interaction: sentence.interaction.toString() });
 
-      const eventId = EventManager.on(`interaction:${sentence.interaction}`, async () => {
-        EventManager.off(eventId);
-        await this.playSentence(sentence.nextSentence);
-      });
-    } else {
-      if (nextSentence) {
-        EventManager.emit('show:oo', { oo: nextSentence.oo });
-      }
+    //   const eventId = EventManager.on(`interaction:${sentence.interaction}`, async () => {
+    //     EventManager.off(eventId);
+    //     await this.playSentence(sentence.nextSentence);
+    //   });
+    // } else {
+    //   if (nextSentence) {
+    //     EventManager.emit('show:oo', { oo: nextSentence.oo });
+    //   }
 
-      setTimeout(async () => {
-        if (sentence.nextSentence) await this.playSentence(sentence.nextSentence);
-      }, 600);
-    }
+    //   setTimeout(async () => {
+    //     if (sentence.nextSentence) await this.playSentence(sentence.nextSentence);
+    //   }, 600);
+    // }
   }
 }

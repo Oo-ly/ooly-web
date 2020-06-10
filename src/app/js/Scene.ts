@@ -12,9 +12,10 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { Sentences } from './Sentences';
+// import { Sentences } from './Sentences';
 import AudioLoader from './utils/AudioLoader';
 import EventManager from './utils/EventManager';
+import ScenarioLoader from './utils/ScenarioLoader';
 
 class Scene {
   private scene: THREE.Scene;
@@ -199,8 +200,11 @@ class Scene {
         if (this.scenario && this.scenario.isRunning()) {
           EventManager.emit(`interaction:${Interaction.OFF}`);
         } else {
+          EventManager.emit(`interaction:${Interaction.ON}`);
           this.loadScenario();
-          this.scenario.play();
+          // this.scenario.play();
+          
+
         }
       });
 
@@ -285,19 +289,26 @@ class Scene {
   }
 
   loadScenario() {
-    const sentences = Sentences.scenarios.sort((a, b) => {
-      return b.oos.length - a.oos.length;
-    });
 
-    const scenario = sentences.find((sentence) => {
-      return sentence.oos.reduce((status, oo) => {
-        return status && this.oos.includes(oo);
-      }, true);
-    });
-
+    var scenario = ScenarioLoader.fetchScenario();
     if (scenario) {
-      this.scenario = new Scenario(scenario.sentences);
+      // this.scenario = new Scenario(scenario);
     }
+
+    // const sentences = Sentences.scenarios.sort((a, b) => {
+    //   return b.oos.length - a.oos.length;
+    // });
+
+    // const scenario = sentences.find((sentence) => {
+    //   return sentence.oos.reduce((status, oo) => {
+    //     return status && this.oos.includes(oo);
+    //   }, true);
+    // });
+
+    // if (scenario) {
+    //   this.scenario = new Scenario(scenario.sentences);
+    // }
+
   }
 }
 
