@@ -11,9 +11,11 @@ enum Interaction {
 
 interface Sentence {
   uuid: string;
-  scenarioUuid: string;
+  name: string;
   order?: number | null;
-  interaction?: Interaction | null;
+  audio: Audio;
+  dislikes: [];
+  likes: [];
 }
 
 interface Audio {
@@ -21,19 +23,20 @@ interface Audio {
   name: string;
   url: string;
   type?: string | null;
-  audibleUuid: string;
-  audibleType?: string | null;
-  ooUuid: string;
+  oo: Oo;
+  encodedData?: string | null;
 }
 
 interface IScenario {
-  scenario: string[];
-  oos: string[];
+  uuid : string;
+  name: string;
+  entries: Audio[];
+  exits: Audio[];
   sentences: Sentence[];
-  audios: Audio[];
+  oos: Oo[];
 }
 
-export { Sentence, Interaction, IScenario };
+export { Sentence, Interaction, IScenario, Audio };
 
 export default class Scenario {
   private iscenario: IScenario;
@@ -41,7 +44,7 @@ export default class Scenario {
   private isPlaying: boolean = false;
 
   constructor(iscenario: IScenario) {
-    // this.iscenario = iscenario;
+    this.iscenario = iscenario;
   }
 
   play() {

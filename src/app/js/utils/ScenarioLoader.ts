@@ -28,7 +28,7 @@ class ScenarioLoader {
     const request = await axios.get("https://dev.api.ooly.fr/scenarios/f8e6adab-7bd2-4925-b769-a154e011df67", config);
     console.log(request);
     if (request.status === 200 && request.data.scenario) {
-      return `${request.data.scenario}`;
+      return request.data.scenario;
     }
     console.log('Error during fetching');
   }

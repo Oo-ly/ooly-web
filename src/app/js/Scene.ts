@@ -288,11 +288,12 @@ class Scene {
     if (object && object.parent) object.parent.remove(object);
   }
 
-  loadScenario() {
-
-    var scenario = ScenarioLoader.fetchScenario();
+  async loadScenario() {
+    
+    const scenario = await ScenarioLoader.fetchScenario();
     if (scenario) {
-      // this.scenario = new Scenario(scenario);
+      this.scenario = new Scenario(scenario);
+      console.log(this.scenario);
     }
 
     // const sentences = Sentences.scenarios.sort((a, b) => {
