@@ -1,12 +1,8 @@
-import axios from 'axios';
-import { resolve } from 'bluebird';
-
 class AudioLoader {
-  constructor() {
-  }
+  constructor() {}
 
   async fetchAudio(data: any) {
-      return `data:audio/wav;base64,${data}`;
+    return `data:audio/wav;base64,${data}`;
   }
 
   async playAudio(data: any) {
@@ -19,7 +15,6 @@ class AudioLoader {
       audioStream.play();
     });
   }
-
 }
 
 export default new AudioLoader();

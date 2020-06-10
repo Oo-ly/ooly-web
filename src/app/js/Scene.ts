@@ -169,13 +169,13 @@ class Scene {
 
       const likeButton = new InteractiveObject(object, 'Heart');
       likeButton.setAction(() => {
-        EventManager.emit(`interaction:${Interaction.LIKE}`);
+        EventManager.emit(`interaction`, { interaction: Interaction.LIKE });
         EventManager.emit('clean:interaction');
       });
 
       const dislikeButton = new InteractiveObject(object, 'heartbreak');
       dislikeButton.setAction(() => {
-        EventManager.emit(`interaction:${Interaction.DISLIKE}`);
+        EventManager.emit(`interaction`, { interaction: Interaction.DISLIKE });
         EventManager.emit('clean:interaction');
       });
 
@@ -198,9 +198,9 @@ class Scene {
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
         if (this.scenario && this.scenario.isRunning()) {
-          EventManager.emit(`interaction:${Interaction.OFF}`);
+          EventManager.emit(`interaction`, { interaction: Interaction.OFF });
         } else {
-          EventManager.emit(`interaction:${Interaction.ON}`);
+          EventManager.emit(`interaction`, { interaction: Interaction.ON });
           this.loadScenario();
         }
       });
@@ -286,7 +286,6 @@ class Scene {
   }
 
   async loadScenario() {
-    
     const scenario = await ScenarioLoader.fetchScenario();
     if (scenario) {
       this.scenario = new Scenario(scenario);
@@ -307,7 +306,6 @@ class Scene {
     // if (scenario) {
     //   this.scenario = new Scenario(scenario.sentences);
     // }
-
   }
 }
 
