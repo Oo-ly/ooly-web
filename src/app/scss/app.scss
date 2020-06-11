@@ -2,13 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap&family=Open+Sans&display=swap');
 
 /* Variables */
-$white: #FFFFFF;
-$yellow: #FFCB13;
-$blue-light: #221A74;
+$white: #ffffff;
+$yellow: #ffcb13;
+$blue-light: #221a74;
 
-$custom-ease: cubic-bezier(.38,1.04,.88,.98);
+$custom-ease: cubic-bezier(0.38, 1.04, 0.88, 0.98);
 
-$font-comforta: "Comfortaa", Verdana, Arial, Helvetica, sans-serif;
+$font-comforta: 'Comfortaa', Verdana, Arial, Helvetica, sans-serif;
 
 /* Global */
 * {
@@ -30,19 +30,19 @@ body {
   bottom: 0;
   width: 40%;
   max-width: 550px;
-  background: #120C58;
+  background: #120c58;
   padding: 100px;
   transform: translateX(-100%);
 
   z-index: 100;
-  
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   pointer-events: none;
   cursor: pointer;
 
-  transition: transform .62s $custom-ease;
+  transition: transform 0.62s $custom-ease;
 
   &--active {
     transform: translateX(0);
@@ -83,7 +83,7 @@ body {
     background: $yellow;
     margin-right: 15px;
     padding: 15px;
-    transition: transform 0.62s 
+    transition: transform 0.62s;
   }
 
   &__button-text {
@@ -124,8 +124,7 @@ body {
           background-color: $blue-light;
           box-shadow: 0 0 0 10px $blue-light;
           border-radius: 100%;
-          transition: box-shadow 0.62s ease-in-out,
-                      background-color 0.62s ease-in-out;
+          transition: box-shadow 0.62s ease-in-out, background-color 0.62s ease-in-out;
         }
 
         &.fixed {
@@ -133,7 +132,6 @@ body {
         }
       }
     }
-
 
     &__info {
       width: 15px;
@@ -160,7 +158,7 @@ body {
       height: 100vh;
       width: 60%;
       min-width: calc(100vw - 550px);
-      transition: transform .62s $custom-ease;
+      transition: transform 0.62s $custom-ease;
       z-index: -1;
       pointer-events: all;
       overflow-y: scroll;

@@ -143,7 +143,7 @@ class Scene {
         let element = event.target as HTMLElement;
         let description = element.parentElement.nextElementSibling as HTMLElement;
         this.closeAllInfos();
-        description.classList.toggle('oos__description--active')
+        description.classList.toggle('oos__description--active');
       });
     });
 
@@ -152,7 +152,7 @@ class Scene {
         let element = event.target as HTMLElement;
         element.parentElement.parentElement.classList.remove('oos__description--active');
       });
-    })
+    });
   }
 
   closeAllInfos() {
@@ -167,13 +167,12 @@ class Scene {
   }
 
   init() {
-
     this.loadScenario();
-    
+
     this.camera.position.set(-0.19560393608861, 0.12910147276113078, 0.000008189676138274878);
     this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
     this.camera.lookAt(0, 0, 0.15);
-    this.scene.add( this.camera );
+    this.scene.add(this.camera);
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
     light.intensity = 1;
@@ -193,7 +192,6 @@ class Scene {
       object.rotateX((90 * Math.PI) / 45);
       object.rotateY((90 * Math.PI) / 90);
       object.rotateZ((90 * Math.PI) / 90);
-
 
       this.camera.add(object);
 
