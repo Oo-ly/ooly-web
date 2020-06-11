@@ -8,20 +8,20 @@ export default class App {
         if (document.readyState === 'complete') resolve();
       });
 
-      let sidebarName:String = 'sidebar';
-      let sidebar:Element = document.querySelector(`.${sidebarName}`);
-      let sidebarButton:Element = document.querySelector(`.${sidebarName}__button`);
-      let sidebarButtonText:Element = document.querySelector(`.${sidebarName}__button-text`);
+      let sidebarName: String = 'sidebar';
+      let sidebar: Element = document.querySelector(`.${sidebarName}`);
+      let sidebarButton: Element = document.querySelector(`.${sidebarName}__button`);
+      let sidebarButtonText: Element = document.querySelector(`.${sidebarName}__button-text`);
 
-      sidebarButton.addEventListener('click', (event) => {
+      sidebarButton.addEventListener('click', event => {
         sidebar.classList.toggle(`${sidebarName}--active`);
 
         if (sidebar.classList.contains(`${sidebarName}--active`)) {
           sidebarButtonText.innerHTML = 'Fermer';
         } else {
-          sidebarButtonText.innerHTML = 'Les Oo\'';
+          sidebarButtonText.innerHTML = "Les Oo'";
         }
-      })
+      });
     });
   }
 }

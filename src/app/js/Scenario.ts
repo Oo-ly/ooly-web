@@ -56,5 +56,4 @@ export default class Scenario {
   getPreviousEndType() {
     return this.previousEnd;
   }
-
 }

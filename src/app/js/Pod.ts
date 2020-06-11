@@ -38,7 +38,7 @@ export default class Pod {
     this.ledBas = object.getObjectByName('LED_dessous') as Mesh;
     this.ledBas.layers.enable(1);
 
-    object.traverse((child) => {
+    object.traverse(child => {
       if (child instanceof Mesh) {
         const material = child.material as MeshStandardMaterial;
         material.roughness = 0.05;
@@ -113,7 +113,7 @@ export default class Pod {
   }
 
   disableButtons(buttons: Mesh[]) {
-    buttons.forEach((button) => {
+    buttons.forEach(button => {
       const material = button.material as MeshStandardMaterial;
 
       TweenMax.to(material.emissive, 0.3, {

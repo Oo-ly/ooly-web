@@ -61,16 +61,15 @@ export default class Boitier {
   }
 
   bind() {
-
-    EventManager.on('show:off', (e) => {
+    EventManager.on('show:off', e => {
       this.setOoDesactive();
     });
 
-    EventManager.on('show:oo', (e) => {
+    EventManager.on('show:oo', e => {
       this.setOoActive(e.oo);
     });
 
-    EventManager.on('bandeau:intensity', (e) => {
+    EventManager.on('bandeau:intensity', e => {
       TweenMax.fromTo(
         this.bandeauMaterial,
         2.5,
@@ -85,7 +84,7 @@ export default class Boitier {
       );
     });
 
-    EventManager.on('bandeau:color', (e) => {
+    EventManager.on('bandeau:color', e => {
       const color = new Color(e.color);
 
       TweenMax.to(this.bandeauMaterial.color, 0.3, {
@@ -95,7 +94,7 @@ export default class Boitier {
       });
     });
 
-    EventManager.on('wait:interaction', (e) => {
+    EventManager.on('wait:interaction', e => {
       if (e.interaction == Interaction.OFF) this.setPowerButton(true);
     });
   }
@@ -111,7 +110,7 @@ export default class Boitier {
   }
 
   toogleOo(ooName: string) {
-    const ooInList = this.oos.filter((o) => {
+    const ooInList = this.oos.filter(o => {
       return o.getName() === ooName;
     });
 
@@ -121,61 +120,19 @@ export default class Boitier {
   }
 
   createOos() {
-    const discoo = new Oo(
-      this.object,
-      OO_DISCOO.name,
-      OO_DISCOO.color,
-      OO_DISCOO.objectName,
-      OO_DISCOO.tore
-    );
-    const cinooche = new Oo(
-      this.object,
-      OO_CINOOCHE.name,
-      OO_CINOOCHE.color,
-      OO_CINOOCHE.objectName,
-      OO_CINOOCHE.tore
-    );
-    const infoo = new Oo(
-      this.object,
-      OO_INFOO.name,
-      OO_INFOO.color,
-      OO_INFOO.objectName,
-      OO_INFOO.tore
-    );
-    const yooga = new Oo(
-      this.object,
-      OO_YOOGA.name,
-      OO_YOOGA.color,
-      OO_YOOGA.objectName,
-      OO_YOOGA.tore
-    );
-    const vegetoo = new Oo(
-      this.object,
-      OO_VEGETOO.name,
-      OO_VEGETOO.color,
-      OO_VEGETOO.objectName,
-      OO_VEGETOO.tore
-    );
-    const whoow = new Oo(
-      this.object,
-      OO_WHOOW.name,
-      OO_WHOOW.color,
-      OO_WHOOW.objectName,
-      OO_WHOOW.tore
-    );
-    const coomique = new Oo(
-      this.object,
-      OO_COOMIQUE.name,
-      OO_COOMIQUE.color,
-      OO_COOMIQUE.objectName,
-      OO_COOMIQUE.tore
-    );
+    const discoo = new Oo(this.object, OO_DISCOO.name, OO_DISCOO.color, OO_DISCOO.objectName, OO_DISCOO.tore);
+    const cinooche = new Oo(this.object, OO_CINOOCHE.name, OO_CINOOCHE.color, OO_CINOOCHE.objectName, OO_CINOOCHE.tore);
+    const infoo = new Oo(this.object, OO_INFOO.name, OO_INFOO.color, OO_INFOO.objectName, OO_INFOO.tore);
+    const yooga = new Oo(this.object, OO_YOOGA.name, OO_YOOGA.color, OO_YOOGA.objectName, OO_YOOGA.tore);
+    const vegetoo = new Oo(this.object, OO_VEGETOO.name, OO_VEGETOO.color, OO_VEGETOO.objectName, OO_VEGETOO.tore);
+    const whoow = new Oo(this.object, OO_WHOOW.name, OO_WHOOW.color, OO_WHOOW.objectName, OO_WHOOW.tore);
+    const coomique = new Oo(this.object, OO_COOMIQUE.name, OO_COOMIQUE.color, OO_COOMIQUE.objectName, OO_COOMIQUE.tore);
 
     this.oos.push(discoo, cinooche, infoo, yooga, vegetoo, whoow, coomique);
   }
 
-  setOoDesactive(){
-    this.oos.forEach((oo) => {
+  setOoDesactive() {
+    this.oos.forEach(oo => {
       oo.setActive(false);
     });
 
@@ -183,11 +140,11 @@ export default class Boitier {
   }
 
   setOoActive(name: string) {
-    this.oos.forEach((oo) => {
+    this.oos.forEach(oo => {
       oo.setActive(oo.getName() === name);
     });
 
-    const activeOo = this.oos.find((oo) => oo.getName() === name);
+    const activeOo = this.oos.find(oo => oo.getName() === name);
     const color = new Color(`#${activeOo.getColor()}`);
 
     TweenMax.to(this.bandeauMaterial.emissive, 0.3, {
@@ -205,7 +162,7 @@ export default class Boitier {
   }
 
   setBandeauColor() {
-    this.object.traverse((child) => {
+    this.object.traverse(child => {
       if (child instanceof Mesh && child.name === 'Bandeau_LED') {
         const material = child.material as MeshStandardMaterial;
         material.color.setHex(0x0000ff);

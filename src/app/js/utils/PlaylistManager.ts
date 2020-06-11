@@ -4,7 +4,6 @@ import ScenarioLoader from './ScenarioLoader';
 var audios = require('./oos.json');
 
 class PlaylistManager {
-
   private oos: string[];
 
   private audioStreamMain: any;
@@ -16,32 +15,30 @@ class PlaylistManager {
 
   public power: boolean = false;
 
-  private scenarioStatus: string = "missing";
+  private scenarioStatus: string = 'missing';
 
   constructor() {
     this.bind();
   }
 
-  bind(){
-
-    EventManager.on('interaction:on', (e) => {
+  bind() {
+    EventManager.on('interaction:on', e => {
       this.oos = e.oos;
       this.loadScenario();
       this.sayHello();
     });
-    EventManager.on('interaction:off', (e) => {
+    EventManager.on('interaction:off', e => {
       this.oos = e.oos;
-      this.sayGoodbye()
+      this.sayGoodbye();
     });
-    EventManager.on('oo:putNew', (e) => {
+    EventManager.on('oo:putNew', e => {
       this.oos = e.oos;
-      this.putNew(e.oo)
+      this.putNew(e.oo);
     });
-    EventManager.on('oo:takeOff', (e) => {
+    EventManager.on('oo:takeOff', e => {
       this.oos = e.oos;
-      this.takeOff(e.oo)
+      this.takeOff(e.oo);
     });
-
   }
 
   async fetchAudio(data: any) {
@@ -49,63 +46,59 @@ class PlaylistManager {
   }
 
   async playAudio(data: any, type: string) {
-    return new Promise(async (resolve) => {
-
+    return new Promise(async resolve => {
       if (data.encodedData) {
-
-        if (type === "main") {
+        if (type === 'main') {
           const audio = await this.fetchAudio(data.encodedData);
           this.audioStreamMain = new Audio(audio);
           this.audioStreamMain.addEventListener('ended', () => resolve());
           this.audioStreamMain.play();
-        }else{
+        } else {
           const audio = await this.fetchAudio(data.encodedData);
           this.audioStreamSecondary = new Audio(audio);
           this.audioStreamSecondary.addEventListener('ended', () => resolve());
           this.audioStreamSecondary.play();
         }
-        
-      }else{
-        // setTimeout(function (){  
-          resolve();     
+      } else {
+        // setTimeout(function (){
+        resolve();
         // }, 2000);
       }
-      
     });
   }
 
-  async requestNewScenario(){
-    return new Promise(async (resolve) => {
+  async requestNewScenario() {
+    return new Promise(async resolve => {
       await this.loadScenario();
-      this.cleanPlaylist("main");
+      this.cleanPlaylist('main');
       resolve();
     });
   }
 
   async loadScenario() {
-    this.scenarioStatus = "loading";
+    this.scenarioStatus = 'loading';
     const scenario = await ScenarioLoader.fetchScenario(this.oos);
-    this.scenarioStatus = "loaded";
+    this.scenarioStatus = 'loaded';
     if (scenario) {
-      this.scenario = new Scenario(scenario, "neutral_entries");
+      this.scenario = new Scenario(scenario, 'neutral_entries');
       EventManager.emit('scenario:loaded');
-      this.constructPlaylistMain("entries");
-      this.constructPlaylistMain("sentences");
+      this.constructPlaylistMain('entries');
+      this.constructPlaylistMain('sentences');
     }
   }
 
-  async constructPlaylistMain(type: string){
+  async constructPlaylistMain(type: string) {
     const scenario = this.scenario.getScenarioDetails();
     switch (type) {
-      case "entries":
+      case 'entries':
         var previousEntries = this.scenario.getPreviousEndType();
         switch (previousEntries) {
-          case "neutral_entries":
+          case 'neutral_entries':
             scenario.neutral_entries.forEach(audio => {
               this.playlistMain.push(audio);
             });
             break;
-          case "negative_entries":
+          case 'negative_entries':
             scenario.negative_entries.forEach(audio => {
               this.playlistMain.push(audio);
             });
@@ -114,88 +107,85 @@ class PlaylistManager {
             break;
         }
         break;
-      case "sentences":
+      case 'sentences':
         for (let index = 0; index < scenario.sentences.length; index++) {
-          var audio = scenario.sentences.find((s) => s.order === index);
+          var audio = scenario.sentences.find(s => s.order === index);
           this.playlistMain.push(audio);
         }
         this.playlistMain.push(audios.pause.pause[0]);
-        break;  
-      case "exits":
+        break;
+      case 'exits':
         break;
       default:
         break;
     }
   }
 
-  async sayHello(){
+  async sayHello() {
     this.power = true;
-    this.cleanPlaylist("secondary");
+    this.cleanPlaylist('secondary');
     this.oos.forEach(oo => {
-       if (audios.bonjour[oo]) {
-         console.log("un premier oo ajouté à la liste de la playlist");
-         this.playlistSecondary.unshift(audios.bonjour[oo][0]);
-       }
+      if (audios.bonjour[oo]) {
+        console.log('un premier oo ajouté à la liste de la playlist');
+        this.playlistSecondary.unshift(audios.bonjour[oo][0]);
+      }
     });
     // this.playlist.push(audios.pause.pause[0]);
     await this.play();
   }
 
-  async sayGoodbye(){
-    this.cleanPlaylist("secondary");
+  async sayGoodbye() {
+    this.cleanPlaylist('secondary');
     this.oos.forEach(oo => {
       if (audios.bye[oo]) {
         this.playlistSecondary.unshift(audios.bye[oo][0]);
       }
     });
     await this.play();
-    this.power = false;   
+    this.power = false;
   }
 
-  async putNew(oo: string){
-    this.cleanPlaylist("secondary");
-    this.cleanPlaylist("main");
+  async putNew(oo: string) {
+    this.cleanPlaylist('secondary');
+    this.cleanPlaylist('main');
     if (audios.entree[oo]) {
       this.playlistSecondary.unshift(audios.entree[oo][0]);
     }
     await this.play();
   }
 
-  async takeOff(oo: string){
-    this.cleanPlaylist("secondary");
-    this.cleanPlaylist("main");
+  async takeOff(oo: string) {
+    this.cleanPlaylist('secondary');
+    this.cleanPlaylist('main');
     if (audios.sortie["Disc'Oo"]) {
       this.playlistSecondary.unshift(audios.sortie["Disc'Oo"][0]);
     }
     await this.play();
   }
 
-  async play(){
-
-    if(this.playlistSecondary[0]){
-        this.pausePlaylist("main");
-        var audio = this.playlistSecondary.shift();
-        EventManager.emit('show:oo', { oo: audio.oo.name });
-        await this.playAudio(audio, "secondary")
-        setTimeout(async () => {
-          await this.play();
-        }, 800);
-
-    }else{
-    
+  async play() {
+    if (this.playlistSecondary[0]) {
+      this.pausePlaylist('main');
+      var audio = this.playlistSecondary.shift();
+      EventManager.emit('show:oo', { oo: audio.oo.name });
+      await this.playAudio(audio, 'secondary');
+      setTimeout(async () => {
+        await this.play();
+      }, 800);
+    } else {
       if (this.playlistMain[0]) {
-        this.pausePlaylist("secondary");
-        console.log("je peux lire un scénario");
+        this.pausePlaylist('secondary');
+        console.log('je peux lire un scénario');
         var audio = this.playlistMain.shift();
         EventManager.emit('show:oo', { oo: audio.oo.name });
-        await this.playAudio(audio, "main");
-  
+        await this.playAudio(audio, 'main');
+
         if (audio.interaction) {
           EventManager.emit('wait:interaction');
-    
-          const eventId = EventManager.on(`interaction`, async (e) => {
+
+          const eventId = EventManager.on(`interaction`, async e => {
             EventManager.off(eventId);
-    
+
             if (e.interaction === Interaction.LIKE) {
               await this.play();
             } else {
@@ -211,7 +201,7 @@ class PlaylistManager {
             await this.play();
           }, 800);
         }
-      }else{
+      } else {
         setTimeout(async () => {
           await this.play();
         }, 500);
@@ -225,29 +215,26 @@ class PlaylistManager {
         //   }, 500);
         // }else{
         //   console.log("je request un scenario");
-          // this.requestNewScenario();
-          // await this.play();
+        // this.requestNewScenario();
+        // await this.play();
         //   this.timer = 0;
         //   setTimeout(async () => {
         //     await this.play();
         //   }, 500);
         // }
-        
-      
       }
     }
-
   }
 
-  cleanPlaylist(type: string){
+  cleanPlaylist(type: string) {
     switch (type) {
-      case "main":
+      case 'main':
         if (this.audioStreamMain) {
           this.audioStreamMain.pause();
         }
         this.playlistMain = [];
         break;
-      case "secondary":
+      case 'secondary':
         if (this.audioStreamSecondary) {
           this.audioStreamSecondary.pause();
         }
@@ -258,14 +245,14 @@ class PlaylistManager {
     }
   }
 
-  pausePlaylist(type: string){
+  pausePlaylist(type: string) {
     switch (type) {
-      case "main":
+      case 'main':
         if (this.audioStreamMain) {
           this.audioStreamMain.pause();
         }
         break;
-      case "secondary":
+      case 'secondary':
         if (this.audioStreamSecondary) {
           this.audioStreamSecondary.pause();
         }
@@ -275,10 +262,9 @@ class PlaylistManager {
     }
   }
 
-  destroyScenario(){
+  destroyScenario() {
     this.scenario = null;
   }
-  
 }
 
 export default new PlaylistManager();

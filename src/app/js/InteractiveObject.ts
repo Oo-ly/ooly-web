@@ -5,7 +5,7 @@ export default class InteractiveObject {
   private callback: () => void;
 
   constructor(scene: Object3D, name: string) {
-    scene.traverse((child) => {
+    scene.traverse(child => {
       if (child instanceof Mesh && child.name === name) {
         this.mesh = child;
       }

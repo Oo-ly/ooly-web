@@ -86,14 +86,12 @@ class Scene {
     this.finalComposer.addPass(this.finalPass);
 
     this.bind();
-
   }
 
   bind() {
-
     window.addEventListener('resize', () => this.onResize());
 
-    this.renderer.domElement.addEventListener('click', (e) => {
+    this.renderer.domElement.addEventListener('click', e => {
       const raycaster = new Raycaster();
       const mouse = new Vector2();
 
@@ -102,7 +100,7 @@ class Scene {
 
       raycaster.setFromCamera(mouse, this.camera);
 
-      this.interactiveElements.forEach((element) => {
+      this.interactiveElements.forEach(element => {
         const inverseMatrix = new Matrix4();
         const ray = new Ray();
         inverseMatrix.getInverse(element.object.matrixWorld);
@@ -116,8 +114,8 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('ul.oos li img').forEach((oo) => {
-      oo.addEventListener('click', (e) => {
+    document.querySelectorAll('ul.oos li img').forEach(oo => {
+      oo.addEventListener('click', e => {
         const element = e.target as HTMLElement;
 
         if (!element.classList.contains('fixed')) element.classList.toggle('selected');
@@ -138,21 +136,21 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('.oos__info').forEach((ooInfo) => {
-      ooInfo.addEventListener('click', (event) => {
+    document.querySelectorAll('.oos__info').forEach(ooInfo => {
+      ooInfo.addEventListener('click', event => {
         let element = event.target as HTMLElement;
         let description = element.parentElement.nextElementSibling as HTMLElement;
         this.closeAllInfos();
-        description.classList.toggle('oos__description--active')
+        description.classList.toggle('oos__description--active');
       });
     });
 
-    document.querySelectorAll('.oos__description-button').forEach((ooCloseButton) => {
-      ooCloseButton.addEventListener('click', (event) => {
+    document.querySelectorAll('.oos__description-button').forEach(ooCloseButton => {
+      ooCloseButton.addEventListener('click', event => {
         let element = event.target as HTMLElement;
         element.parentElement.parentElement.classList.remove('oos__description--active');
       });
-    })
+    });
   }
 
   closeAllInfos() {
@@ -167,7 +165,6 @@ class Scene {
   }
 
   init() {
-
     this.camera.position.set(-0.0819560393608861, 0.17910147276113078, 0.000008189676138274878);
     this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
     this.camera.lookAt(0, 0, 0);
@@ -183,7 +180,7 @@ class Scene {
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
 
-    ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
+    ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then(object => {
       object.position.z = -0.13;
       object.rotateY((90 * Math.PI) / 180);
 
@@ -209,7 +206,7 @@ class Scene {
       object.castShadow = true;
     });
 
-    ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
+    ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then(object => {
       this.boitier = new Boitier(object);
 
       const plusButton = new InteractiveObject(object, 'Plus');
@@ -274,7 +271,7 @@ class Scene {
     // this.camera.layers.set(1);
     const materials: any = {};
     const blackMaterial = new MeshBasicMaterial({ color: 'black' });
-    this.scene.traverse((obj) => {
+    this.scene.traverse(obj => {
       if (obj instanceof Mesh && this.bloomLayer.test(obj.layers) === false) {
         materials[obj.uuid] = obj.material;
         obj.material = blackMaterial;
@@ -285,7 +282,7 @@ class Scene {
 
     this.bloomComposer.render();
 
-    this.scene.traverse((obj) => {
+    this.scene.traverse(obj => {
       if (obj instanceof Mesh && materials[obj.uuid]) {
         obj.material = materials[obj.uuid];
         delete materials[obj.uuid];
@@ -305,7 +302,6 @@ class Scene {
   removeObject(object: Object3D) {
     if (object && object.parent) object.parent.remove(object);
   }
-  
 }
 
 export default new Scene();

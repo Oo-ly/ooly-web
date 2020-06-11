@@ -137,5 +137,4 @@ export default class Oo {
   getName() {
     return this.name;
   }
-
 }

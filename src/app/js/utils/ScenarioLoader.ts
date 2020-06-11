@@ -42,14 +42,18 @@ class ScenarioLoader {
 
   async fetchScenario(myOos: string[]) {
     console.log(this.config.headers);
-    // const request = await axios.get('https://dev.api.ooly.fr/scenarios/f8e6adab-7bd2-4925-b769-a154e011df67', this.config.headers);
-    const request = await axios.post(`${this.config.baseUrl}/scenarios`, 
-    { params : {
-      "oos": myOos
-    }}, this.config.headers);
+    const request = await axios.post(
+      `${this.config.baseUrl}/scenarios`,
+      {
+        params: {
+          oos: myOos,
+        },
+      },
+      this.config.headers,
+    );
     console.log(request.data);
     if (request.status === 200 && request.data.scenarios) {
-      console.log("successfull request");
+      console.log('successfull request');
       const scenario = request.data.scenarios[Math.floor(Math.random() * request.data.scenarios.length)];
       return scenario;
     }
