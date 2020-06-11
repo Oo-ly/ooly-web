@@ -8,3 +8,4 @@ addons:
 after_success:
   - export SSHPASS=$DEPLOY_PASS
   - test $TRAVIS_BRANCH = "master" && sshpass -e ssh $DEPLOY_USER@$DEPLOY_HOST -o stricthostkeychecking=no 'bash ./deploy_demo_master.sh'
+  - test $TRAVIS_BRANCH = "jury" && sshpass -e ssh $DEPLOY_USER@$DEPLOY_HOST -o stricthostkeychecking=no 'bash ./deploy_demo_jury.sh'
