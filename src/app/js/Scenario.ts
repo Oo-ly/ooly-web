@@ -1,4 +1,4 @@
-import AudioLoader from './utils/AudioLoader';
+import PlaylistManager from './utils/PlaylistManager';
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
 import EventManager from './utils/EventManager';
 
@@ -19,16 +19,6 @@ interface myOo {
   toreObjectName: string;
 }
 
-interface Sentence {
-  uuid: string;
-  name: string;
-  order?: number | null;
-  interaction: boolean;
-  audio: Audio;
-  dislikes: Audio[];
-  likes: [];
-}
-
 interface Audio {
   uuid: string;
   name: string;
@@ -36,6 +26,9 @@ interface Audio {
   type?: string | null;
   oo: myOo;
   encodedData?: string | null;
+  interaction: boolean;
+  order?: number | null;
+  dislikes: Audio[];
 }
 
 interface IScenario {
@@ -45,107 +38,104 @@ interface IScenario {
   neutral_entries: Audio[];
   positive_entries: Audio[];
   exits: Audio[];
-  sentences: Sentence[];
-  oos: Oo[];
+  sentences: Audio[];
+  oos: myOo[];
 }
 
-export { Sentence, Interaction, IScenario, Audio };
+export { Interaction, IScenario, Audio };
 
 export default class Scenario {
   private iscenario: IScenario;
-  private isPlaying: boolean = false;
-  private previousEnd: string = 'neutral';
+  private previousEnd: string;
   private index: number = -1;
 
-  constructor(iscenario: IScenario) {
+  constructor(iscenario: IScenario, previousEnd: string) {
     this.iscenario = iscenario;
+    this.previousEnd = previousEnd;
   }
 
-  play() {
-    console.log('Running scenario');
-    this.isPlaying = true;
-    let entry = null;
-    let sentence = null;
+  // play() {
+  //   console.log('Running scenario');
+  //   let sentence = null;
 
-    if (this.index === -1) {
-      if ((this.previousEnd === 'neutral') && (this.iscenario.neutral_entries[0])) {
-        entry = this.iscenario.neutral_entries[0];
-        this.playEntry(entry);
-      } else if ((this.previousEnd === 'negative') && (this.iscenario.negative_entries[0])) {
-        entry = this.iscenario.negative_entries[0];
-        this.playEntry(entry);
-      } else{
-        setTimeout(async () => {
-          this.index += 1;
-          await this.play();
-        }, 600);
-      }
-    } else {
-      sentence = this.iscenario.sentences.find((s) => s.order === this.index);
-      this.playSentence(sentence);
-    }
+  //   if (this.index === -1) {
+  //     if ((this.previousEnd === 'neutral') && (this.iscenario.neutral_entries[0])) {
+       
+  //       this.playEntry(entry);
+  //     } else if ((this.previousEnd === 'negative') && (this.iscenario.negative_entries[0])) {
+       
+  //     } else{
+  //       setTimeout(async () => {
+  //         this.index += 1;
+  //         await this.play();
+  //       }, 600);
+  //     }
+  //   } else {
+  //     sentence = this.iscenario.sentences.find((s) => s.order === this.index);
+  //     // this.playSentence(sentence);
+  //   }
+  // }
+
+  getScenarioDetails() {
+    return this.iscenario;
   }
 
-  isRunning() {
-    return this.isPlaying;
+  getPreviousEndType() {
+    return this.previousEnd;
   }
 
-  async playEntry(audio: Audio) {
-    EventManager.emit('show:oo', { oo: audio.oo.name });
-    await AudioLoader.playAudio(audio);
-    setTimeout(async () => {
-      this.index += 1;
-      await this.play();
-    }, 600);
-  }
+  // async playEntry(audio: Audio) {
+  //   EventManager.emit('show:oo', { oo: audio.oo.name });
+  //   await PlaylistManager.playAudio(audio);
+  //   setTimeout(async () => {
+  //     this.index += 1;
+  //     await this.play();
+  //   }, 600);
+  // }
 
-  async playSentence(sentence: Sentence) {
+  // async playSentence(sentence: Sentence) {
 
-    console.log("lire une phrase : ", sentence);
+  //   console.log("lire une phrase : ", sentence);
 
-    EventManager.emit('show:oo', { oo: sentence.audio.oo.name });
-    const nextSentence = this.iscenario.sentences.find((s) => s.order === this.index + 1);
-    await AudioLoader.playAudio(sentence.audio);
+  //   EventManager.emit('show:oo', { oo: sentence.audio.oo.name });
+  //   const nextSentence = this.iscenario.sentences.find((s) => s.order === this.index + 1);
+  //   await PlaylistManager.playAudio(sentence.audio);
 
-    if (sentence.interaction) {
-      EventManager.emit('wait:interaction');
+  //   if (sentence.interaction) {
+  //     EventManager.emit('wait:interaction');
 
-      const eventId = EventManager.on(`interaction`, async (e) => {
-        EventManager.off(eventId);
+  //     const eventId = EventManager.on(`interaction`, async (e) => {
+  //       EventManager.off(eventId);
 
-        if (e.interaction === Interaction.LIKE) {
-          this.index += 1;
-          await this.playSentence(nextSentence);
-        } else {
-          this.endScenario(sentence.dislikes);
-        }
-      });
-    } else {
-      if (nextSentence) {
-        EventManager.emit('show:oo', { oo: nextSentence.audio.oo.name });
-      }
+  //       if (e.interaction === Interaction.LIKE) {
+  //         this.index += 1;
+  //         await this.playSentence(nextSentence);
+  //       } else {
+  //         this.endScenario(sentence.dislikes);
+  //       }
+  //     });
+  //   } else {
+  //     if (nextSentence) {
+  //       EventManager.emit('show:oo', { oo: nextSentence.audio.oo.name });
+  //     }
 
-      setTimeout(async () => {
-        if (nextSentence) {
-          this.index += 1;
-          await this.playSentence(nextSentence);
-        }else{
-          this.index = -1;
-          this.isPlaying = false;
-          EventManager.emit('show:off');
-        }
-      }, 600);
-    }
-  }
+  //     setTimeout(async () => {
+  //       if (nextSentence) {
+  //         this.index += 1;
+  //         await this.playSentence(nextSentence);
+  //       }else{
+  //         this.index = -1;
+  //         this.isPlaying = false;
+  //         EventManager.emit('show:off');
+  //       }
+  //     }, 600);
+  //   }
+  // }
 
   async endScenario(dislikes: Audio[]){
-    await AudioLoader.playAudio(dislikes[0]);
+    await PlaylistManager.playAudio(dislikes[0]);
     this.index = -1;
-    this.isPlaying = false;
     EventManager.emit('show:off');
   }
 
-  stop(){
-    console.log("stop scenario");
-  }
 }

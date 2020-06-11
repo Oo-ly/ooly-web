@@ -35,8 +35,9 @@ class ScenarioLoader {
   }
 
   async fetchScenario() {
+    console.log(this.config.headers);
     // const request = await axios.get('https://dev.api.ooly.fr/scenarios/f8e6adab-7bd2-4925-b769-a154e011df67', this.config.headers);
-    const request = await axios.get(`${this.config.baseUrl}/scenarios/a90bf2da-17ff-4bbe-a486-5b17ef8a59c4`, this.config.headers);
+    const request = await axios.get(`${this.config.baseUrl}/scenarios/f8e6adab-7bd2-4925-b769-a154e011df67`, this.config.headers);
     console.log(request.data);
     if (request.status === 200 && request.data.scenario) {
       return request.data.scenario;

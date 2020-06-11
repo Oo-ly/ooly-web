@@ -6,17 +6,14 @@ import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
 import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO } from './Oo';
 import Boitier from './Boitier';
-import Scenario, { Sentence, Interaction } from './Scenario';
+import Scenario, { Interaction } from './Scenario';
 import Pod from './Pod';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-// import { Sentences } from './Sentences';
-import AudioLoader from './utils/AudioLoader';
+import PlaylistManager from './utils/PlaylistManager';
 import EventManager from './utils/EventManager';
-import ScenarioLoader from './utils/ScenarioLoader';
-import OoManager from './utils/OoManager';
 
 class Scene {
   private scene: THREE.Scene;
@@ -37,8 +34,6 @@ class Scene {
   private pod: Pod;
 
   private interactiveElements: InteractiveObject[] = [];
-
-  private scenario: Scenario;
 
   constructor() {
     this.scene = new THREE.Scene();
@@ -95,19 +90,6 @@ class Scene {
   }
 
   bind() {
-
-    EventManager.on('interaction:on', () => OoManager.sayHello(this.oos));
-    EventManager.on('interaction:off', () => OoManager.sayGoodbye(this.oos));
-    EventManager.on('scenario:play', () => this.playScenario());
-    EventManager.on('scenario:stop', () => this.stopScenario());
-
-    EventManager.on('oo:putNew', (e) => {
-      OoManager.putNew(e.oo);
-    });
-
-    EventManager.on('oo:takeOff', (e) => {
-      OoManager.takeOff(e.oo);
-    });
 
     window.addEventListener('resize', () => this.onResize());
 
@@ -237,11 +219,10 @@ class Scene {
 
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
-        if (this.scenario && this.scenario.isRunning()) {
-          EventManager.emit('interaction:off', { interaction: Interaction.OFF });
+        if (PlaylistManager.scenario && PlaylistManager.isPlaylistPlaying()) {
+          EventManager.emit('interaction:off', { oos: this.oos });
         } else {
-          EventManager.emit('interaction:on', { interaction: Interaction.ON });
-          this.loadScenario();
+          EventManager.emit('interaction:on', { oos: this.oos });
         }
       });
 
@@ -324,22 +305,7 @@ class Scene {
   removeObject(object: Object3D) {
     if (object && object.parent) object.parent.remove(object);
   }
-
-  async loadScenario() {
-    const scenario = await ScenarioLoader.fetchScenario();
-    if (scenario) {
-      this.scenario = new Scenario(scenario);
-    }
-  }
-
-  async playScenario(){
-    this.scenario.play();
-  }
-
-  async stopScenario(){
-    this.scenario.stop();
-  }
-
+  
 }
 
 export default new Scene();
