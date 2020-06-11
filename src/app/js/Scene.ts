@@ -170,9 +170,10 @@ class Scene {
 
     this.loadScenario();
     
-    this.camera.position.set(-0.0819560393608861, 0.17910147276113078, 0.000008189676138274878);
+    this.camera.position.set(-0.19560393608861, 0.12910147276113078, 0.000008189676138274878);
     this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
-    this.camera.lookAt(0, 0, 0);
+    this.camera.lookAt(0, 0, 0.15);
+    this.scene.add( this.camera );
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
     light.intensity = 1;
@@ -186,10 +187,15 @@ class Scene {
     this.renderer.shadowMap.enabled = true;
 
     ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
+      object.position.x = -0.1;
+      object.position.y = 0;
       object.position.z = -0.13;
-      object.rotateY((90 * Math.PI) / 180);
+      object.rotateX((90 * Math.PI) / 45);
+      object.rotateY((90 * Math.PI) / 90);
+      object.rotateZ((90 * Math.PI) / 90);
 
-      this.scene.add(object);
+
+      this.camera.add(object);
 
       const likeButton = new InteractiveObject(object, 'Heart');
       likeButton.setAction(() => {
@@ -213,6 +219,8 @@ class Scene {
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
       this.boitier = new Boitier(object);
+      object.position.set(0, 0, 0.1);
+      object.rotation.set(0, -0.4, -0.1);
 
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
