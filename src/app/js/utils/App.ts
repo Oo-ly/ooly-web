@@ -28,7 +28,6 @@ export default class App {
           infoOo.classList.remove('oos__description--active');
         }
       });
-s
     });
   }
 }
