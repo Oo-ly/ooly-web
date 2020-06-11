@@ -5,6 +5,8 @@ var audios = require('./oos.json');
 
 class PlaylistManager {
 
+  private oos: string[];
+
   private audioStreamMain: any;
   private audioStreamSecondary: any;
 
@@ -14,6 +16,8 @@ class PlaylistManager {
 
   public power: boolean = false;
 
+  private scenarioStatus: string = "missing";
+
   constructor() {
     this.bind();
   }
@@ -21,15 +25,21 @@ class PlaylistManager {
   bind(){
 
     EventManager.on('interaction:on', (e) => {
-      this.loadScenario(e.oos);
-      this.sayHello(e.oos);
+      this.oos = e.oos;
+      this.loadScenario();
+      this.sayHello();
     });
-    EventManager.on('interaction:off', (e) => this.sayGoodbye(e.oos));
-    EventManager.on('oo:putNew', (e) => this.putNew(e.oo, e.oos));
-    EventManager.on('oo:takeOff', (e) => this.takeOff(e.oo, e.oos));
-
-    EventManager.on('scenario:requestScenario', (e) => {
-      console.log("i need a scenario");
+    EventManager.on('interaction:off', (e) => {
+      this.oos = e.oos;
+      this.sayGoodbye()
+    });
+    EventManager.on('oo:putNew', (e) => {
+      this.oos = e.oos;
+      this.putNew(e.oo)
+    });
+    EventManager.on('oo:takeOff', (e) => {
+      this.oos = e.oos;
+      this.takeOff(e.oo)
     });
 
   }
@@ -64,14 +74,23 @@ class PlaylistManager {
     });
   }
 
-  async loadScenario(oos: string[]) {
-    const scenario = await ScenarioLoader.fetchScenario(oos);
+  async requestNewScenario(){
+    return new Promise(async (resolve) => {
+      await this.loadScenario();
+      this.cleanPlaylist("main");
+      resolve();
+    });
+  }
+
+  async loadScenario() {
+    this.scenarioStatus = "loading";
+    const scenario = await ScenarioLoader.fetchScenario(this.oos);
+    this.scenarioStatus = "loaded";
     if (scenario) {
       this.scenario = new Scenario(scenario, "neutral_entries");
       EventManager.emit('scenario:loaded');
       this.constructPlaylistMain("entries");
       this.constructPlaylistMain("sentences");
-      console.log(this.playlistMain);
     }
   }
 
@@ -109,10 +128,10 @@ class PlaylistManager {
     }
   }
 
-  async sayHello(oos: string[]){
+  async sayHello(){
     this.power = true;
     this.cleanPlaylist("secondary");
-    oos.forEach(oo => {
+    this.oos.forEach(oo => {
        if (audios.bonjour[oo]) {
          console.log("un premier oo ajouté à la liste de la playlist");
          this.playlistSecondary.unshift(audios.bonjour[oo][0]);
@@ -122,9 +141,9 @@ class PlaylistManager {
     await this.play();
   }
 
-  async sayGoodbye(oos: string[]){
+  async sayGoodbye(){
     this.cleanPlaylist("secondary");
-    oos.forEach(oo => {
+    this.oos.forEach(oo => {
       if (audios.bye[oo]) {
         this.playlistSecondary.unshift(audios.bye[oo][0]);
       }
@@ -133,7 +152,7 @@ class PlaylistManager {
     this.power = false;   
   }
 
-  async putNew(oo: string, oos: string[]){
+  async putNew(oo: string){
     this.cleanPlaylist("secondary");
     this.cleanPlaylist("main");
     if (audios.entree[oo]) {
@@ -142,7 +161,7 @@ class PlaylistManager {
     await this.play();
   }
 
-  async takeOff(oo: string, oos: string[]){
+  async takeOff(oo: string){
     this.cleanPlaylist("secondary");
     this.cleanPlaylist("main");
     if (audios.sortie["Disc'Oo"]) {
@@ -193,17 +212,31 @@ class PlaylistManager {
           }, 800);
         }
       }else{
-        console.log("pas de scénario à lire...");
         setTimeout(async () => {
-          EventManager.emit('scenario:requestScenario');
           await this.play();
-        }, 5000);
+        }, 500);
+
+        // this.timer+=1;
+
+        // if (this.timer < 20) {
+        //   console.log(this.timer);
+        //   setTimeout(async () => {
+        //     await this.play();
+        //   }, 500);
+        // }else{
+        //   console.log("je request un scenario");
+          // this.requestNewScenario();
+          // await this.play();
+        //   this.timer = 0;
+        //   setTimeout(async () => {
+        //     await this.play();
+        //   }, 500);
+        // }
+        
       
       }
     }
 
-    
-  
   }
 
   cleanPlaylist(type: string){
