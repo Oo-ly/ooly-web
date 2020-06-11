@@ -43,10 +43,6 @@ We use **Gitflow** as our Git workflow. [More explanation here.](https://www.atl
 - We use **camelCase** for `variables`, `properties`, `functions` and `methods`.
 - We use **PascalCase** for `classes`.
 
-#### Comments
-
-- We use **apiDoc** ([https://apidocjs.com/](https://apidocjs.com/)) for functions documentation.
-
 ### Rules
 
 Before pushing code, please make sure to :
