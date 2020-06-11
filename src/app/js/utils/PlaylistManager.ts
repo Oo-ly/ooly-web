@@ -5,6 +5,7 @@ var audios = require('./oos.json');
 
 class PlaylistManager {
 
+  private audioStream: any;
   private playlist: Audio[] = [];
   public scenario: Scenario;
   private isPlaying: boolean = false;
@@ -39,11 +40,11 @@ class PlaylistManager {
   async playAudio(data: any) {
     return new Promise(async (resolve) => {
       const audio = await this.fetchAudio(data.encodedData);
-      const audioStream = new Audio(audio);
+      this.audioStream = new Audio(audio);
 
-      audioStream.addEventListener('ended', () => resolve());
+      this.audioStream.addEventListener('ended', () => resolve());
 
-      audioStream.play();
+      this.audioStream.play();
     });
   }
 
@@ -53,20 +54,19 @@ class PlaylistManager {
       this.scenario = new Scenario(scenario, "neutral_entries");
       EventManager.emit('scenario:loaded');
       this.constructPlaylist("entries");
+      this.constructPlaylist("sentences");
     }
   }
 
   constructPlaylist(type: string){
+    const scenario = this.scenario.getScenarioDetails();
     switch (type) {
       case "entries":
         var previousEntries = this.scenario.getPreviousEndType();
-        const scenario = this.scenario.getScenarioDetails();
         switch (previousEntries) {
           case "neutral_entries":
             scenario.neutral_entries.forEach(audio => {
               this.playlist.push(audio);
-              console.log("J'AI PUSH UN NOUVEL AUDIO : ", this.playlist);
-              
             });
             break;
           case "negative_entries":
@@ -78,23 +78,14 @@ class PlaylistManager {
             break;
         }
         break;
-
       case "sentences":
-        
-        break;
-          
+        for (let index = 0; index < scenario.sentences.length; index++) {
+          var audio = scenario.sentences.find((s) => s.order === index);
+          this.playlist.push(audio);
+        }
+        break;  
       case "exits":
-        
         break;
-      
-      case "hello":
-        
-        break;
-
-      case "goodbye":
-        
-        break;
-
       default:
         break;
     }
@@ -110,8 +101,13 @@ class PlaylistManager {
   }
 
   sayGoodbye(oos: string[]){
-    console.log("say goodbye", oos);
-    console.log("ICI, AJOUTER LES AU REVOIR DES OO PRESENTS EN DEBUT DE PLAYLIST");
+    this.stop();
+    oos.forEach(oo => {
+      if (audios.bonjour[oo]) {
+        this.playlist.unshift(audios.bonjour[oo][0]);
+      }
+   });
+   this.play();
   }
 
   putNew(oo: string){
@@ -147,8 +143,9 @@ class PlaylistManager {
 
   stop(){
     console.log("stop");
+    this.audioStream.pause();
     this.isPlaying = false;
-
+    this.playlist = [];
   }
 
   
