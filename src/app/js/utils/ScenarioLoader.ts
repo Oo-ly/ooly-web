@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+interface ScenarioLoaderData {
+  oos: string[];
+}
+
 interface ScenarioLoaderConfig {
   token: string;
   baseUrl: string;
@@ -21,6 +25,8 @@ class ScenarioLoader {
     },
   };
 
+  private data: ScenarioLoaderData;
+
   constructor() {}
 
   async init() {
@@ -34,13 +40,15 @@ class ScenarioLoader {
     console.log(this.config);
   }
 
-  async fetchScenario() {
+  async fetchScenario(myOos: string[]) {
     console.log(this.config.headers);
+    this.data = {oos : myOos};
     // const request = await axios.get('https://dev.api.ooly.fr/scenarios/f8e6adab-7bd2-4925-b769-a154e011df67', this.config.headers);
-    const request = await axios.get(`${this.config.baseUrl}/scenarios/f8e6adab-7bd2-4925-b769-a154e011df67`, this.config.headers);
+    const request = await axios.post(`${this.config.baseUrl}/scenarios`, this.data, this.config.headers);
     console.log(request.data);
-    if (request.status === 200 && request.data.scenario) {
-      return request.data.scenario;
+    if (request.status === 200 && request.data.scenarios) {
+      const scenario = request.data.scenarios[Math.floor(Math.random() * request.data.scenarios.length)];
+      return scenario;
     }
     console.log('Error during fetching');
   }

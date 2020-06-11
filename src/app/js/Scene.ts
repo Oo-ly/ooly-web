@@ -128,10 +128,10 @@ class Scene {
         if (!element.classList.contains('fixed')) {
           if (this.oos.includes(ooClicked)) {
             this.oos.splice(this.oos.indexOf(ooClicked), 1);
-            EventManager.emit('oo:takeOff', { oo: ooClicked });
+            EventManager.emit('oo:takeOff', { oo: ooClicked, oos: this.oos });
           } else {
+            EventManager.emit('oo:putNew', { oo: ooClicked, oos: this.oos });
             this.oos.push(ooClicked);
-            EventManager.emit('oo:putNew', { oo: ooClicked });
           }
         }
         console.log(this.oos);
@@ -219,7 +219,7 @@ class Scene {
 
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
-        if (PlaylistManager.scenario && PlaylistManager.isPlaylistPlaying()) {
+        if (PlaylistManager.power) {
           EventManager.emit('interaction:off', { oos: this.oos });
         } else {
           EventManager.emit('interaction:on', { oos: this.oos });
