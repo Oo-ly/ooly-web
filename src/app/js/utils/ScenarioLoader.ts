@@ -1,9 +1,5 @@
 import axios from 'axios';
 
-interface ScenarioLoaderData {
-  oos: string[];
-}
-
 interface ScenarioLoaderConfig {
   token: string;
   baseUrl: string;
@@ -25,11 +21,10 @@ class ScenarioLoader {
     },
   };
 
-  private data: ScenarioLoaderData;
-
   constructor() {}
 
   async init() {
+    /* Token request */
     const response = await axios.post(`${this.config.baseUrl}/login`, {
       username: 'Ooly',
       password: 'ooly',
@@ -37,25 +32,13 @@ class ScenarioLoader {
 
     this.config.token = response.data.token;
     this.config.headers.headers.Authorization = `Bearer ${this.config.token}`;
-    console.log(this.config);
   }
 
   async fetchScenario(myOos: string[]) {
-    console.log(this.config.headers);
-    const request = await axios.post(
-      `${this.config.baseUrl}/scenarios`,
-      {
-        params: {
-          oos: myOos,
-        },
-      },
-      this.config.headers,
-    );
-    console.log(request.data);
+    const request = await axios.post(`${this.config.baseUrl}/scenarios`, { params: { oos: myOos } }, this.config.headers);
     if (request.status === 200 && request.data.scenarios) {
-      console.log('successfull request');
-      const scenario = request.data.scenarios[Math.floor(Math.random() * request.data.scenarios.length)];
-      return scenario;
+      const scenario = request.data.scenarios[Math.floor(Math.random() * request.data.scenarios.length)]; // Select a random scenario in request.data.scenarios[]
+      return scenario; // Return scenario to PlaylistManager
     }
     console.log('Error during fetching');
   }
