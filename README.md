@@ -7,10 +7,6 @@
 
 The project is using node and some npm packages, to install some packages like Webpack.
 
-## Workflow
-
-![Schema](./schema.jpg)
-
 ## Commands
 
 | Command                 | Description                                    |
