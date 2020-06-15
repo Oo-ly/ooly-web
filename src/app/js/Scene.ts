@@ -4,7 +4,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial, Matrix4, Ray } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO } from './Oo';
 import Boitier from './Boitier';
 import Scenario, { Interaction } from './Scenario';
 import Pod from './Pod';
@@ -29,7 +28,7 @@ class Scene {
 
   private controls: OrbitControls;
 
-  private oos: string[] = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
+  private oos: string[] = [];
   private boitier: Boitier;
   private pod: Pod;
 
@@ -91,7 +90,7 @@ class Scene {
   bind() {
     window.addEventListener('resize', () => this.onResize());
 
-    this.renderer.domElement.addEventListener('click', e => {
+    this.renderer.domElement.addEventListener('click', (e) => {
       const raycaster = new Raycaster();
       const mouse = new Vector2();
 
@@ -100,7 +99,7 @@ class Scene {
 
       raycaster.setFromCamera(mouse, this.camera);
 
-      this.interactiveElements.forEach(element => {
+      this.interactiveElements.forEach((element) => {
         const inverseMatrix = new Matrix4();
         const ray = new Ray();
         inverseMatrix.getInverse(element.object.matrixWorld);
@@ -114,8 +113,8 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('ul.oos li img').forEach(oo => {
-      oo.addEventListener('click', e => {
+    document.querySelectorAll('ul.oos li img').forEach((oo) => {
+      oo.addEventListener('click', (e) => {
         const element = e.target as HTMLElement;
 
         if (!element.classList.contains('fixed')) element.classList.toggle('selected');
@@ -136,8 +135,8 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('.oos__info').forEach(ooInfo => {
-      ooInfo.addEventListener('click', event => {
+    document.querySelectorAll('.oos__info').forEach((ooInfo) => {
+      ooInfo.addEventListener('click', (event) => {
         let element = event.target as HTMLElement;
         let description = element.parentElement.nextElementSibling as HTMLElement;
         this.closeAllInfos();
@@ -145,8 +144,8 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('.oos__description-button').forEach(ooCloseButton => {
-      ooCloseButton.addEventListener('click', event => {
+    document.querySelectorAll('.oos__description-button').forEach((ooCloseButton) => {
+      ooCloseButton.addEventListener('click', (event) => {
         let element = event.target as HTMLElement;
         element.parentElement.parentElement.classList.remove('oos__description--active');
       });
@@ -180,7 +179,7 @@ class Scene {
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
 
-    ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then(object => {
+    ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
       object.position.z = -0.13;
       object.rotateY((90 * Math.PI) / 180);
 
@@ -206,7 +205,7 @@ class Scene {
       object.castShadow = true;
     });
 
-    ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then(object => {
+    ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
       this.boitier = new Boitier(object);
 
       const plusButton = new InteractiveObject(object, 'Plus');
@@ -271,7 +270,7 @@ class Scene {
     // this.camera.layers.set(1);
     const materials: any = {};
     const blackMaterial = new MeshBasicMaterial({ color: 'black' });
-    this.scene.traverse(obj => {
+    this.scene.traverse((obj) => {
       if (obj instanceof Mesh && this.bloomLayer.test(obj.layers) === false) {
         materials[obj.uuid] = obj.material;
         obj.material = blackMaterial;
@@ -282,7 +281,7 @@ class Scene {
 
     this.bloomComposer.render();
 
-    this.scene.traverse(obj => {
+    this.scene.traverse((obj) => {
       if (obj instanceof Mesh && materials[obj.uuid]) {
         obj.material = materials[obj.uuid];
         delete materials[obj.uuid];

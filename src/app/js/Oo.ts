@@ -1,58 +1,25 @@
 import { Object3D, MeshStandardMaterial, Mesh, DoubleSide, Color } from 'three';
 import { TweenMax } from 'gsap';
 
-const OO_DISCOO = {
-  name: "Disc'Oo",
-  color: '0085FF',
-  objectName: 'Disc_Oo',
-  tore: 'Tore_3',
-};
+const FIXED_OO: string[] = [];
 
-const OO_CINOOCHE = {
-  name: "Cin'Oo'che",
-  color: 'CA0024',
-  objectName: 'Cinoche_1',
-  tore: 'Tore_5',
-};
+interface OoData {
+  uuid: string;
+  name: string;
+  color: string;
+  objectName: string;
+  toreObjectName: string;
+  byes: OoAudioData[];
+  entries: OoAudioData[];
+  exits: OoAudioData[];
+  hellos: OoAudioData[];
+}
 
-const OO_INFOO = {
-  name: "Inf'Oo",
-  color: '77CEFF',
-  objectName: 'Infoo',
-  tore: 'Tore_8',
-};
-
-const OO_YOOGA = {
-  name: "Y'Oo'ga",
-  color: '53BA9A',
-  objectName: 'Yoga',
-  tore: 'Tore_1',
-};
-
-const OO_VEGETOO = {
-  name: "Végét'Oo",
-  color: '7AEC70',
-  objectName: 'Vegeto_1',
-  tore: 'Tore_4',
-};
-
-const OO_COOMIQUE = {
-  name: "C'Oo'mique",
-  color: 'FFE92D',
-  objectName: 'Comique_1',
-  tore: 'Tore_6',
-};
-
-const OO_WHOOW = {
-  name: "Wh'Oo'w",
-  color: 'FFB300',
-  objectName: 'Whow_1',
-  tore: 'Tore_7',
-};
-
-const FIXED_OO = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
-
-export { OO_CINOOCHE, OO_COOMIQUE, OO_DISCOO, OO_INFOO, OO_VEGETOO, OO_WHOOW, OO_YOOGA };
+interface OoAudioData {
+  uuid: string;
+  encodedData: string;
+  type: string;
+}
 
 export default class Oo {
   private name: string;
@@ -60,12 +27,21 @@ export default class Oo {
   private color: string;
   private material: MeshStandardMaterial;
   private tore: Mesh;
+  private byes: string[] = [];
+  private entries: string[] = [];
+  private hellos: string[] = [];
+  private exits: string[] = [];
 
-  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string) {
-    this.name = name;
-    this.color = color;
-    this.object = scene.getObjectByName(objectName) as Mesh;
-    this.tore = scene.getObjectByName(tore) as Mesh;
+  constructor(scene: Object3D, data: OoData) {
+    this.name = data.name;
+    this.color = data.color;
+    this.object = scene.getObjectByName(data.objectName) as Mesh;
+    this.tore = scene.getObjectByName(data.toreObjectName) as Mesh;
+
+    data.byes.forEach((audio) => this.byes.push(audio.encodedData));
+    data.hellos.forEach((audio) => this.hellos.push(audio.encodedData));
+    data.exits.forEach((audio) => this.exits.push(audio.encodedData));
+    data.entries.forEach((audio) => this.entries.push(audio.encodedData));
 
     if (!this.object) {
       console.error(`Object not found for ${name}`);
@@ -98,8 +74,8 @@ export default class Oo {
 
   setActive(active: boolean) {
     const toreMaterial = this.tore.material as MeshStandardMaterial;
-    const nextColor = active ? new Color(`#${this.color}`) : new Color('#000000');
-    const nextEmissive = active ? new Color(`#${this.color}`) : new Color('#ffffff');
+    const nextColor = active ? new Color(`${this.color}`) : new Color('#000000');
+    const nextEmissive = active ? new Color(`${this.color}`) : new Color('#ffffff');
     const duration = 0.3;
 
     const nextEmissiveIntensity = active ? 0.2 : 0;
