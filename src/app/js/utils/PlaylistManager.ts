@@ -21,7 +21,9 @@ class PlaylistManager {
   public scenario: Scenario; // To stock instance of Scenario
 
   public power: boolean = false; // Box status
-  public scenarioStatus: Status = Status.empty;
+  private scenarioStatus: Status = Status.empty;
+
+  private timer: number = 0;
 
   constructor() {
     this.bind();
@@ -31,7 +33,7 @@ class PlaylistManager {
   bind() {
     /* When the user turn the box on */
     EventManager.on('interaction:on', (e) => {
-      this.loadScenario();
+      // this.loadScenario();
       this.sayHello();
     });
     /* When the user turn the box off */
@@ -50,6 +52,10 @@ class PlaylistManager {
         this.takeOff(e.oo);
       }
     });
+    /* When the user take a Oo out of the box */
+    EventManager.on('audio:finished', (e) => {
+     console.log('AUDIO FINISHED');
+    });
   }
 
   /* Return readable base64 file */
@@ -65,13 +71,31 @@ class PlaylistManager {
           // If we need to play an audio related to a scenario
           const audio = this.fetchAudio(data.encodedData); // Transfrom txt to readable base64 audio
           this.audioStreamMain = new Audio(audio);
-          this.audioStreamMain.addEventListener('ended', () => resolve());
+          this.audioStreamMain.addEventListener('ended', () => {
+            EventManager.emit('audioMain:finished');
+          });
+
+          EventManager.on('audioMain:finished', (e) => {
+            console.log('AUDIO FINISHED');
+            resolve();
+          });
+          console.log("ask to play the thing main")
           this.audioStreamMain.play(); // Play the audio
         } else {
           // If we need to play an audio related to an Oo interaction
           const audio = this.fetchAudio(data.encodedData); // Transfrom txt to readable base64 audio
           this.audioStreamSecondary = new Audio(audio);
-          this.audioStreamSecondary.addEventListener('ended', () => resolve());
+
+          this.audioStreamSecondary.addEventListener('ended', () => {
+            EventManager.emit('audioSecondary:finished');
+          });
+
+          EventManager.on('audioSecondary:finished', (e) => {
+            console.log('AUDIO FINISHED');
+            resolve();
+          });
+
+        
           this.audioStreamSecondary.play(); // Play the audio
         }
       } else {
@@ -90,15 +114,19 @@ class PlaylistManager {
 
   /* Load scenario by calling ScenarioLoader fetch function */
   async loadScenario() {
+    console.log("load scenario");
     this.scenarioStatus = Status.waiting;
     const oos = Boitier.getActiveOos().map((oo) => oo.getUUID());
     const scenario = await ScenarioLoader.fetchScenario(oos);
     if (scenario) {
+      console.log(scenario);
       this.scenarioStatus = Status.loaded;
       this.scenario = new Scenario(scenario, 'neutral_entries');
       this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
       this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
-    } else {
+    // }
+      } else {
+      console.log("no scenario founded");
       this.scenarioStatus = Status.null;
       this.saySorry();
     }
@@ -142,34 +170,35 @@ class PlaylistManager {
   async sayHello() {
     this.power = true;
     this.cleanPlaylist('secondary'); // Clean actual playlist
-
+    this.cleanPlaylist('main');
     Boitier.getRandomActiveOos(3).map((oo) => {
       this.playlistSecondary.push(oo.getRandomAudio('hello'));
     });
-
     await this.play(); // Playlist play
   }
 
   // /* Oos want to say sorry */
   async saySorry() {
+    console.log("say sorry !");
+    this.cleanPlaylist('main');
     this.cleanPlaylist('secondary'); // Clean actual playlist
-    Boitier.getRandomActiveOos(3).map((oo) => {
-      // Foreach Oo present in the box, add a correspondant "hello" sentence to playlist
+    Boitier.getRandomActiveOos(1).map((oo) => {
+      // Foreach Oo present in the box, add a correspondant "goodbye" sentence to playlist
       this.playlistSecondary.push(oo.getRandomAudio('sorry'));
     });
-    await this.play(); // Playlist play
+    // await this.play(); // Playlist play
   }
 
   /* Oos want to say goodbye */
   async sayGoodbye() {
     this.cleanPlaylist('secondary'); // Clean actual playlist
-
+    this.cleanPlaylist('main');
     Boitier.getRandomActiveOos(3).map((oo) => {
       // Foreach Oo present in the box, add a correspondant "goodbye" sentence to playlist
       this.playlistSecondary.push(oo.getRandomAudio('bye'));
     });
 
-    await this.play(); // Playlist play
+    // await this.play(); // Playlist play
     this.power = false;
   }
 
@@ -179,27 +208,27 @@ class PlaylistManager {
     this.cleanPlaylist('main'); // Clean main playlist
 
     var ooInstance = Boitier.getOoByName(oo);
-
-    this.playlistSecondary.unshift(ooInstance.getRandomAudio('entries'));
-
-    await this.play(); // Playlist play
+    
+    this.playlistSecondary.push(ooInstance.getRandomAudio('entry'));
+    // await this.play(); // Playlist play
   }
 
   /* Taking a Oo out of the box */
   async takeOff(oo: string) {
+    console.log("take of a oo");
     this.cleanPlaylist('secondary'); // Clean secondary playlist
     this.cleanPlaylist('main'); // Clean main playlist
 
     Boitier.getRandomActiveOos(2).map((oo) => {
       // Foreach Oo present in the box, add a correspondant "take off" sentence to playlist
-      this.playlistSecondary.unshift(oo.getRandomAudio('exits'));
+      this.playlistSecondary.push(oo.getRandomAudio('exit'));
     });
-
-    await this.play(); // Playlist play
+    // await this.play(); // Playlist play
   }
 
   /* Playlist play function */
   async play() {
+    console.log("play something");
     if (this.playlistSecondary[0]) {
       // If Playlist Secondary isn't empty we want to play it before playing the main playlist
       this.pausePlaylist('main'); // Playlist pause
@@ -217,7 +246,9 @@ class PlaylistManager {
         var audio = this.playlistMain.shift();
         EventManager.emit('show:oo', { oo: audio.oo.name });
         await this.playAudio(audio, 'main');
-
+        if (!this.playlistMain[0]) {
+          this.scenarioStatus = Status.empty;
+        }
         if (audio.interaction) {
           // If we encounter a sentence that need an interaction from the user
           EventManager.emit('wait:interaction'); // Light on the Pod and activation of Pod choices buttons
@@ -245,8 +276,20 @@ class PlaylistManager {
         }
       } else {
         // If playlists are both empty
+        console.log('nothing to play');
         setTimeout(async () => {
-          if (this.scenarioStatus == Status.empty || this.scenarioStatus == Status.null) {
+          console.log("nothing to read, ", this.timer);
+
+          if (this.scenarioStatus === Status.null) {
+            console.log("try to reload scenario because value is null");
+            this.loadScenario();
+          }
+
+          this.timer+=1
+
+          if (this.timer > 30 && this.scenarioStatus === Status.empty) {
+            console.log("it's been 30 seconds that scenario is empty");
+            this.timer = 0;
             this.loadScenario();
           }
           await this.play();
@@ -257,17 +300,20 @@ class PlaylistManager {
 
   /* Playlist clean function */
   cleanPlaylist(type: string) {
+    this.timer = 0;
     this.scenarioStatus = Status.empty;
     switch (type) {
       case 'main':
         if (this.audioStreamMain) {
           this.audioStreamMain.pause();
+          EventManager.emit('audioMain:finished');
         }
         this.playlistMain = [];
         break;
       case 'secondary':
         if (this.audioStreamSecondary) {
           this.audioStreamSecondary.pause();
+          EventManager.emit('audioSecondary:finished');
         }
         this.playlistSecondary = [];
         break;
