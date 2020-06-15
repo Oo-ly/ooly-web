@@ -1,5 +1,6 @@
-import { Object3D, MeshStandardMaterial, Mesh, DoubleSide, Color } from 'three';
+import { Object3D, MeshStandardMaterial, Mesh, Color } from 'three';
 import { TweenMax } from 'gsap';
+import { Audio } from './Scenario';
 
 const FIXED_OO: string[] = [];
 
@@ -9,39 +10,36 @@ interface OoData {
   color: string;
   objectName: string;
   toreObjectName: string;
-  byes: OoAudioData[];
-  entries: OoAudioData[];
-  exits: OoAudioData[];
-  hellos: OoAudioData[];
-}
-
-interface OoAudioData {
-  uuid: string;
-  encodedData: string;
-  type: string;
+  byes: Audio[];
+  entries: Audio[];
+  exits: Audio[];
+  hellos: Audio[];
 }
 
 export default class Oo {
+  private uuid: string;
   private name: string;
   private object: Mesh;
   private color: string;
   private material: MeshStandardMaterial;
   private tore: Mesh;
-  private byes: string[] = [];
-  private entries: string[] = [];
-  private hellos: string[] = [];
-  private exits: string[] = [];
+  private byes: Audio[] = [];
+  private entries: Audio[] = [];
+  private hellos: Audio[] = [];
+  private exits: Audio[] = [];
+  private active: boolean = false;
 
   constructor(scene: Object3D, data: OoData) {
+    this.uuid = data.uuid;
     this.name = data.name;
     this.color = data.color;
     this.object = scene.getObjectByName(data.objectName) as Mesh;
     this.tore = scene.getObjectByName(data.toreObjectName) as Mesh;
 
-    data.byes.forEach((audio) => this.byes.push(audio.encodedData));
-    data.hellos.forEach((audio) => this.hellos.push(audio.encodedData));
-    data.exits.forEach((audio) => this.exits.push(audio.encodedData));
-    data.entries.forEach((audio) => this.entries.push(audio.encodedData));
+    this.hellos = data.hellos;
+    this.byes = data.byes;
+    this.entries = data.entries;
+    this.exits = data.exits;
 
     if (!this.object) {
       console.error(`Object not found for ${name}`);
@@ -63,6 +61,7 @@ export default class Oo {
   toogle() {
     if (FIXED_OO.indexOf(this.name) > -1) return;
     const nextOpacity = this.material.opacity === 0 ? 1 : 0;
+    this.active = !this.active;
 
     TweenMax.to(this.material, 0.3, {
       opacity: nextOpacity,
@@ -112,5 +111,33 @@ export default class Oo {
 
   getName() {
     return this.name;
+  }
+
+  getUUID() {
+    return this.uuid;
+  }
+
+  getRandomAudio(type: string) {
+    switch (type) {
+      case 'hello':
+        return this.getRandomFromArray(this.hellos);
+      case 'bye':
+        return this.getRandomFromArray(this.byes);
+      case 'entry':
+        return this.getRandomFromArray(this.entries);
+      case 'exit':
+        return this.getRandomFromArray(this.exits);
+    }
+
+    return null;
+  }
+
+  isActive() {
+    return this.active;
+  }
+
+  private getRandomFromArray(array: Audio[]): Audio {
+    const index = Math.floor(Math.random() * array.length);
+    return array[index];
   }
 }
