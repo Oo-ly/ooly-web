@@ -35,7 +35,7 @@ class ScenarioLoader {
   }
 
   async fetchScenario(myOos: string[]) {
-    const request = await axios.post(`${this.config.baseUrl}/scenarios`, { params: { oos: myOos } }, this.config.headers);
+    const request = await axios.post(`${this.config.baseUrl}/scenarios`, { oos: myOos }, this.config.headers);
     if (request.status === 200 && request.data.scenarios) {
       const scenario = request.data.scenarios[Math.floor(Math.random() * request.data.scenarios.length)]; // Select a random scenario in request.data.scenarios[]
       return scenario; // Return scenario to PlaylistManager

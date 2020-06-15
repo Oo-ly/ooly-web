@@ -14,6 +14,7 @@ interface OoData {
   entries: Audio[];
   exits: Audio[];
   hellos: Audio[];
+  noScenario: Audio[];
 }
 
 export default class Oo {
@@ -27,6 +28,7 @@ export default class Oo {
   private entries: Audio[] = [];
   private hellos: Audio[] = [];
   private exits: Audio[] = [];
+  private noScenario: Audio[] = [];
   private active: boolean = false;
 
   constructor(scene: Object3D, data: OoData) {
@@ -40,6 +42,7 @@ export default class Oo {
     this.byes = data.byes;
     this.entries = data.entries;
     this.exits = data.exits;
+    this.noScenario = data.noScenario;
 
     if (!this.object) {
       console.error(`Object not found for ${name}`);
@@ -127,6 +130,8 @@ export default class Oo {
         return this.getRandomFromArray(this.entries);
       case 'exit':
         return this.getRandomFromArray(this.exits);
+      case 'sorry':
+        return this.getRandomFromArray(this.noScenario);
     }
 
     return null;

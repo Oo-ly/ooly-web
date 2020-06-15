@@ -100,7 +100,7 @@ class PlaylistManager {
       this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
     } else {
       this.scenarioStatus = Status.null;
-      // this.saySorry();
+      this.saySorry();
     }
   }
 
@@ -152,14 +152,12 @@ class PlaylistManager {
 
   // /* Oos want to say sorry */
   async saySorry() {
-    // this.cleanPlaylist('secondary'); // Clean actual playlist
-    // this.oos.forEach(oo => {
-    //   // Foreach Oo present in the box, add a correspondant "hello" sentence to playlist
-    //   if (audios.sorry[oo]) {
-    //     this.playlistSecondary.unshift(audios.sorry[oo][0]);
-    //   }
-    // });
-    // await this.play(); // Playlist play
+    this.cleanPlaylist('secondary'); // Clean actual playlist
+    Boitier.getRandomActiveOos(3).map((oo) => {
+      // Foreach Oo present in the box, add a correspondant "hello" sentence to playlist
+      this.playlistSecondary.push(oo.getRandomAudio('sorry'));
+    });
+    await this.play(); // Playlist play
   }
 
   /* Oos want to say goodbye */
@@ -181,7 +179,7 @@ class PlaylistManager {
     this.cleanPlaylist('main'); // Clean main playlist
 
     var ooInstance = Boitier.getOoByName(oo);
-    
+
     this.playlistSecondary.unshift(ooInstance.getRandomAudio('entries'));
 
     await this.play(); // Playlist play
@@ -196,7 +194,7 @@ class PlaylistManager {
       // Foreach Oo present in the box, add a correspondant "take off" sentence to playlist
       this.playlistSecondary.unshift(oo.getRandomAudio('exits'));
     });
-    
+
     await this.play(); // Playlist play
   }
 
