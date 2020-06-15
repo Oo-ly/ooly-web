@@ -35,13 +35,17 @@ class PlaylistManager {
     });
     /* When the user add a Oo on the box */
     EventManager.on('oo:putNew', e => {
-      this.oos = e.oos;
-      this.putNew(e.oo);
+      if (this.power) {
+        this.oos = e.oos;
+        this.putNew(e.oo);
+      } 
     });
     /* When the user take a Oo out of the box */
     EventManager.on('oo:takeOff', e => {
-      this.oos = e.oos;
-      this.takeOff(e.oo);
+      if (this.power){
+        this.oos = e.oos;
+        this.takeOff(e.oo);
+      }
     });
   }
 
@@ -220,7 +224,7 @@ class PlaylistManager {
         // If playlists are both empty
         setTimeout(async () => {
           await this.play();
-        }, 500);
+        }, 800);
       }
     }
   }
