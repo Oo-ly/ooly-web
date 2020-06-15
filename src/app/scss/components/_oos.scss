@@ -70,25 +70,25 @@
         overflow-y: scroll;
 
         &::-webkit-scrollbar {
-        display: none;
+            display: none;
         }
 
         h2 {
-        margin-bottom: 15px;
-        font-size: 16px;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
 
         p {
-        font-size: 13px;
-        text-align: left;
-        max-width: 380px;
-        font-family: 'Open Sans';
-        margin-bottom: 50px;
+            font-size: 13px;
+            text-align: left;
+            max-width: 380px;
+            font-family: 'Open Sans';
+            margin-bottom: 50px;
         }
 
         img {
-        width: 100%;
-        max-width: 700px;
+            width: 100%;
+            max-width: 700px;
         }
     }
 
@@ -117,17 +117,17 @@
         margin-top: 10px;
 
         li {
-        margin-right: 72px;
+            margin-right: 72px;
         }
 
         img {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 10px;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
         }
 
         strong {
-        font-size: 16px;
+            font-size: 16px;
         }
     }
 }
