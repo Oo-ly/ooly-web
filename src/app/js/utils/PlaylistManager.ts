@@ -3,6 +3,13 @@ import EventManager from './EventManager';
 import ScenarioLoader from './ScenarioLoader';
 var audios = require('./oos.json');
 
+enum Status {
+  empty = 'none',
+  waiting = 'waiting',
+  loaded = 'loaded',
+  null = 'null'
+}
+
 class PlaylistManager {
   private oos: string[];
 
@@ -15,6 +22,7 @@ class PlaylistManager {
   public scenario: Scenario; // To stock instance of Scenario
 
   public power: boolean = false; // Box status
+  public scenarioStatus: Status = Status.empty;
 
   constructor() {
     this.bind();
@@ -87,11 +95,16 @@ class PlaylistManager {
 
   /* Load scenario by calling ScenarioLoader fetch function */
   async loadScenario() {
+    this.scenarioStatus = Status.waiting;
     const scenario = await ScenarioLoader.fetchScenario(this.oos);
     if (scenario) {
+      this.scenarioStatus = Status.loaded;
       this.scenario = new Scenario(scenario, 'neutral_entries');
       this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
       this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
+    }else{
+      this.scenarioStatus = Status.null;
+      this.saySorry();
     }
   }
 
@@ -141,6 +154,18 @@ class PlaylistManager {
     });
     await this.play(); // Playlist play
   }
+
+  // /* Oos want to say sorry */
+  // async saySorry() {
+  //   this.cleanPlaylist('secondary'); // Clean actual playlist
+  //   this.oos.forEach(oo => {
+  //     // Foreach Oo present in the box, add a correspondant "hello" sentence to playlist
+  //     if (audios.sorry[oo]) {
+  //       this.playlistSecondary.unshift(audios.sorry[oo][0]);
+  //     }
+  //   });
+  //   await this.play(); // Playlist play
+  // }
 
   /* Oos want to say goodbye */
   async sayGoodbye() {
@@ -223,6 +248,9 @@ class PlaylistManager {
       } else {
         // If playlists are both empty
         setTimeout(async () => {
+          if ((this.scenarioStatus == Status.empty ) || (this.scenarioStatus == Status.null)) {
+            this.loadScenario();
+          }
           await this.play();
         }, 800);
       }
@@ -231,6 +259,7 @@ class PlaylistManager {
 
   /* Playlist clean function */
   cleanPlaylist(type: string) {
+    this.scenarioStatus = Status.empty;
     switch (type) {
       case 'main':
         if (this.audioStreamMain) {
