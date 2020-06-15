@@ -29,7 +29,6 @@ class Scene {
   private controls: OrbitControls;
 
   private oos: string[] = [];
-  private boitier: Boitier;
   private pod: Pod;
 
   private interactiveElements: InteractiveObject[] = [];
@@ -113,28 +112,6 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('ul.oos li img').forEach((oo) => {
-      oo.addEventListener('click', (e) => {
-        const element = e.target as HTMLElement;
-
-        if (!element.classList.contains('fixed')) element.classList.toggle('selected');
-
-        const ooClicked = element.getAttribute('data-oo');
-        this.boitier.toogleOo(ooClicked);
-
-        if (!element.classList.contains('fixed')) {
-          if (this.oos.includes(ooClicked)) {
-            this.oos.splice(this.oos.indexOf(ooClicked), 1);
-            EventManager.emit('oo:takeOff', { oo: ooClicked, oos: this.oos });
-          } else {
-            EventManager.emit('oo:putNew', { oo: ooClicked, oos: this.oos });
-            this.oos.push(ooClicked);
-          }
-        }
-        console.log(this.oos);
-      });
-    });
-
     document.querySelectorAll('.oos__info').forEach((ooInfo) => {
       ooInfo.addEventListener('click', (event) => {
         let element = event.target as HTMLElement;
@@ -206,7 +183,7 @@ class Scene {
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
-      this.boitier = new Boitier(object);
+      Boitier.init(object);
 
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
@@ -294,7 +271,7 @@ class Scene {
 
     this.controls.update();
 
-    if (this.boitier) this.boitier.update();
+    if (Boitier) Boitier.update();
     if (this.pod) this.pod.update();
   }
 

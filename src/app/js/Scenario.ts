@@ -25,6 +25,7 @@ interface Audio {
   interaction: boolean;
   order?: number | null;
   dislikes: Audio[];
+  ooUuid: string;
 }
 
 interface IScenario {

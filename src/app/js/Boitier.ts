@@ -5,7 +5,7 @@ import { Interaction } from './Scenario';
 import EventManager from './utils/EventManager';
 import ScenarioLoader from './utils/ScenarioLoader';
 
-export default class Boitier {
+class Boitier {
   private object: Object3D;
   private oos: Oo[] = [];
 
@@ -15,7 +15,7 @@ export default class Boitier {
 
   private powerButton: Mesh;
 
-  constructor(object: Object3D) {
+  init(object: Object3D) {
     this.object = object;
 
     this.bandeauUniforms = {
@@ -88,6 +88,29 @@ export default class Boitier {
     EventManager.on('wait:interaction', (e) => {
       if (e.interaction == Interaction.OFF) this.setPowerButton(true);
     });
+
+    document.querySelectorAll('ul.oos li img').forEach((oo) => {
+      oo.addEventListener('click', (e) => {
+        const element = e.target as HTMLElement;
+
+        if (!element.classList.contains('fixed')) element.classList.toggle('selected');
+
+        const ooClicked = element.getAttribute('data-oo');
+        this.toogleOo(ooClicked);
+
+        if (!element.classList.contains('fixed')) {
+          const oo = this.oos.find((oo) => oo.getName() === ooClicked);
+          if (oo) {
+            if (oo.isActive()) {
+              EventManager.emit('oo:putNew', { oo: ooClicked, oos: this.oos });
+            } else {
+              EventManager.emit('oo:takeOff', { oo: ooClicked, oos: this.oos });
+            }
+          }
+        }
+        console.log(this.getActiveOos().map((oo) => oo.getName()));
+      });
+    });
   }
 
   setPowerButton(active: boolean) {
@@ -120,6 +143,10 @@ export default class Boitier {
     });
   }
 
+  getActiveOos() {
+    return this.oos.filter((oo) => oo.isActive());
+  }
+
   setOoDesactive() {
     this.oos.forEach((oo) => {
       oo.setActive(false);
@@ -150,6 +177,27 @@ export default class Boitier {
     }, 2000);
   }
 
+  getOoByUUID(ooUuid: string) {
+    return this.oos.find((oo) => oo.getUUID() === ooUuid);
+  }
+
+  getOoByName(ooName: string) {
+    return this.oos.find((oo) => oo.getName() === ooName);
+  }
+
+  getRandomActiveOos(number: number) {
+    const activesOos = this.getActiveOos();
+    const selectedOos = [];
+
+    while (selectedOos.length < number && activesOos.length > 0) {
+      const randomIndex = Math.floor(Math.random() * activesOos.length);
+      const oo = activesOos.splice(randomIndex, 1);
+      selectedOos.push(...oo);
+    }
+
+    return selectedOos;
+  }
+
   setBandeauColor() {
     this.object.traverse((child) => {
       if (child instanceof Mesh && child.name === 'Bandeau_LED') {
@@ -169,6 +217,8 @@ export default class Boitier {
   }
 
   update() {
-    this.bandeauUniforms.time.value += 1 / 60;
+    if (this.bandeauUniforms) this.bandeauUniforms.time.value += 1 / 60;
   }
 }
+
+export default new Boitier();
