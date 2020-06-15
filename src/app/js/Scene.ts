@@ -41,7 +41,7 @@ class Scene {
 
   constructor() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 100);
+    this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0001, 100);
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
     });
@@ -170,8 +170,8 @@ class Scene {
     this.loadScenario();
 
     this.camera.position.set(-0.19560393608861, 0.12910147276113078, 0.000008189676138274878);
-    this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
-    this.camera.lookAt(0, 0, 0.15);
+    this.camera.rotation.set(0, 0, 0);
+    this.camera.lookAt(0, 0, 0);
     this.scene.add(this.camera);
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
@@ -187,11 +187,14 @@ class Scene {
 
     ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
       object.position.x = -0.1;
-      object.position.y = 0;
-      object.position.z = -0.13;
-      object.rotateX((90 * Math.PI) / 45);
-      object.rotateY((90 * Math.PI) / 90);
-      object.rotateZ((90 * Math.PI) / 90);
+      object.position.y = -0.015;
+      object.position.z = -0.1;
+      object.rotateX((90 * Math.PI) / 200);
+      object.rotateY((90 * Math.PI) / 85);
+      object.rotateZ((45 * Math.PI) / 360);
+      object.scale.x = 0.75;
+      object.scale.y = 0.75;
+      object.scale.z = 0.75;
 
       this.camera.add(object);
 
@@ -217,8 +220,8 @@ class Scene {
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
       this.boitier = new Boitier(object);
-      object.position.set(0, 0, 0.1);
-      object.rotation.set(0, -0.4, -0.1);
+      object.position.set(-0.05, 0, 0.05);
+      object.rotation.set(0, 0, -0.1);
 
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
