@@ -104,7 +104,7 @@ class PlaylistManager {
       this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
     }else{
       this.scenarioStatus = Status.null;
-      this.saySorry();
+      // this.saySorry();
     }
   }
 
@@ -146,7 +146,8 @@ class PlaylistManager {
   async sayHello() {
     this.power = true;
     this.cleanPlaylist('secondary'); // Clean actual playlist
-    this.oos.forEach(oo => {
+    var selectedOos = this.oos.sort(() => Math.random() - Math.random()).slice(0, 3);
+    selectedOos.forEach(oo => {
       // Foreach Oo present in the box, add a correspondant "hello" sentence to playlist
       if (audios.bonjour[oo]) {
         this.playlistSecondary.unshift(audios.bonjour[oo][0]);
@@ -170,7 +171,8 @@ class PlaylistManager {
   /* Oos want to say goodbye */
   async sayGoodbye() {
     this.cleanPlaylist('secondary'); // Clean actual playlist
-    this.oos.forEach(oo => {
+    var selectedOos = this.oos.sort(() => Math.random() - Math.random()).slice(0, 3);
+    selectedOos.forEach(oo => {
       // Foreach Oo present in the box, add a correspondant "goodbye" sentence to playlist
       if (audios.bye[oo]) {
         this.playlistSecondary.unshift(audios.bye[oo][0]);
@@ -194,6 +196,7 @@ class PlaylistManager {
   async takeOff(oo: string) {
     this.cleanPlaylist('secondary'); // Clean secondary playlist
     this.cleanPlaylist('main'); // Clean main playlist
+    var selectedOo = this.oos.sort(() => Math.random() - Math.random()).slice(0,1);
     if (audios.sortie["Disc'Oo"]) {
       this.playlistSecondary.unshift(audios.sortie["Disc'Oo"][0]); // Disc'Oo says "goodbye" => EVOLUTION INCOMING
     }
