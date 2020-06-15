@@ -1,17 +1,26 @@
-import { OO_DISCOO, OO_INFOO, OO_CINOOCHE, OO_YOOGA, OO_VEGETOO, OO_COOMIQUE, OO_WHOOW } from './Oo';
+import { OO_DISCOO, OO_INFOO, OO_CINOOCHE, OO_YOOGA, OO_VEGETOO, OO_COOMIQUE, OO_WHOOW, OO_MELIMELOO } from './Oo';
 import { Interaction, Sentence } from './Scenario';
 
-interface IScenario {
+
+interface Sentence2 {
+  id: number;
+  oo: string;
+  text?: string | null;
+  interaction?: Interaction | null;
+  nextSentence?: number | null;
+}
+
+interface IScenario2 {
   oos: string[];
-  sentences: Sentence[];
+  sentences: Sentence2[];
 }
 
-interface IScenarios {
-  scenarios: IScenario[];
+interface IScenarios2 {
+  scenario: IScenario2[];
 }
 
-export const Sentences: IScenarios = {
-  scenarios: [
+export const Sentences: IScenarios2 = {
+  scenario: [
     {
       oos: [OO_DISCOO.name, OO_INFOO.name, OO_CINOOCHE.name],
       sentences: [

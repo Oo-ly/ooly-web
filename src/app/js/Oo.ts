@@ -6,10 +6,6 @@ const OO_DISCOO = {
   color: '0085FF',
   objectName: 'Disc_Oo',
   tore: 'Tore_3',
-  voiceName: 'fr-FR-Wavenet-A',
-  voiceCode: 'fr-FR',
-  voicePitch: 3.6,
-  voiceRate: 1,
 };
 
 const OO_CINOOCHE = {
@@ -17,10 +13,6 @@ const OO_CINOOCHE = {
   color: 'CA0024',
   objectName: 'Cinoche_1',
   tore: 'Tore_5',
-  voiceName: 'fr-FR-Wavenet-D',
-  voiceCode: 'fr-FR',
-  voicePitch: -2.8,
-  voiceRate: 1,
 };
 
 const OO_INFOO = {
@@ -28,10 +20,6 @@ const OO_INFOO = {
   color: '77CEFF',
   objectName: 'Infoo',
   tore: 'Tore_8',
-  voiceName: 'fr-FR-Wavenet-B',
-  voiceCode: 'fr-FR',
-  voicePitch: 4.8,
-  voiceRate: 1,
 };
 
 const OO_YOOGA = {
@@ -39,10 +27,6 @@ const OO_YOOGA = {
   color: '53BA9A',
   objectName: 'Yoga',
   tore: 'Tore_1',
-  voiceName: 'fr-FR-Wavenet-C',
-  voiceCode: 'fr-FR',
-  voicePitch: -5.2,
-  voiceRate: 0.85,
 };
 
 const OO_VEGETOO = {
@@ -50,10 +34,6 @@ const OO_VEGETOO = {
   color: '7AEC70',
   objectName: 'Vegeto_1',
   tore: 'Tore_4',
-  voiceName: 'fr-FR-Standard-E',
-  voiceCode: 'fr-FR',
-  voicePitch: 0.4,
-  voiceRate: 0.85,
 };
 
 const OO_COOMIQUE = {
@@ -61,10 +41,6 @@ const OO_COOMIQUE = {
   color: 'FFE92D',
   objectName: 'Comique_1',
   tore: 'Tore_6',
-  voiceName: 'fr-FR-Wavenet-C',
-  voiceCode: 'fr-FR',
-  voicePitch: 4.8,
-  voiceRate: 1.05,
 };
 
 const OO_WHOOW = {
@@ -72,15 +48,18 @@ const OO_WHOOW = {
   color: 'FFB300',
   objectName: 'Whow_1',
   tore: 'Tore_7',
-  voiceName: 'fr-CA-Wavenet-B',
-  voiceCode: 'fr-CA',
-  voicePitch: 1.6,
-  voiceRate: 1,
+};
+
+const OO_MELIMELOO = {
+  name: "Méli-Mél'Oo",
+  color: '9573F2',
+  objectName: 'melimelo_1',
+  tore: 'Tore_1',
 };
 
 const FIXED_OO = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
 
-export { OO_CINOOCHE, OO_COOMIQUE, OO_DISCOO, OO_INFOO, OO_VEGETOO, OO_WHOOW, OO_YOOGA };
+export { OO_CINOOCHE, OO_COOMIQUE, OO_DISCOO, OO_INFOO, OO_VEGETOO, OO_WHOOW, OO_YOOGA, OO_MELIMELOO };
 
 export default class Oo {
   private name: string;
@@ -88,30 +67,12 @@ export default class Oo {
   private color: string;
   private material: MeshStandardMaterial;
   private tore: Mesh;
-  private voiceName: string;
-  private voiceCode: string;
-  private voiceRate: number;
-  private voicePitch: number;
 
-  constructor(
-    scene: Object3D,
-    name: string,
-    color: string,
-    objectName: string,
-    tore: string,
-    voiceName: string,
-    voiceCode: string,
-    voiceRate: number,
-    voicePitch: number,
-  ) {
+  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string) {
     this.name = name;
     this.color = color;
     this.object = scene.getObjectByName(objectName) as Mesh;
     this.tore = scene.getObjectByName(tore) as Mesh;
-    this.voiceName = voiceName;
-    this.voiceCode = voiceCode;
-    this.voiceRate = voiceRate;
-    this.voicePitch = voicePitch;
 
     if (!this.object) {
       console.error(`Object not found for ${name}`);

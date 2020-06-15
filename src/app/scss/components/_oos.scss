@@ -1,0 +1,133 @@
+.oos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    list-style: none;
+
+    li {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 50%;
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 8px;
+
+        .oos__picture {
+        display: block;
+        width: 100%;
+        max-width: 80px;
+        margin: 0 auto;
+        pointer-events: all;
+        cursor: pointer;
+        transition: filter 0.3s ease;
+
+        &.selected {
+            background-color: $blue-light;
+            box-shadow: 0 0 0 10px $blue-light;
+            border-radius: 100%;
+            transition: box-shadow 0.62s ease-in-out, background-color 0.62s ease-in-out;
+        }
+
+        &.fixed {
+            cursor: not-allowed;
+        }
+        }
+    }
+
+    &__info {
+        width: 15px;
+        height: 15px;
+        border-radius: 15px;
+        box-shadow: 0 0 0 2px $yellow;
+        margin-left: 10px;
+        background-color: $yellow;
+        pointer-events: all;
+        cursor: pointer;
+    }
+
+    &__description {
+        background-color: $blue-light;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        padding-top: 150px;
+        padding-left: 25px;
+        position: fixed;
+        right: 0;
+        top: 0;
+        transform: translate(100%, -100%);
+        height: 100vh;
+        width: 60%;
+        min-width: calc(100vw - 550px);
+        transition: transform 0.62s $custom-ease;
+        z-index: -1;
+        pointer-events: all;
+        overflow-y: scroll;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        p {
+            font-size: 13px;
+            text-align: left;
+            max-width: 380px;
+            font-family: 'Open Sans';
+            margin-bottom: 50px;
+        }
+
+        img {
+            width: 100%;
+            max-width: 700px;
+        }
+    }
+
+    &__description--active {
+        transform: translate(100%, 0);
+    }
+
+    &__description-button {
+        background-color: unset;
+        outline: none;
+        border: none;
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        pointer-events: all;
+        cursor: pointer;
+    }
+
+    &__character {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    &__characters {
+        display: flex;
+        margin-top: 10px;
+
+        li {
+            margin-right: 72px;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+
+        strong {
+            font-size: 16px;
+        }
+    }
+}

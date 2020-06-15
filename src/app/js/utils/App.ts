@@ -21,7 +21,13 @@ export default class App {
         } else {
           sidebarButtonText.innerHTML = 'Les Oo\'';
         }
-      })
+
+        let infoOo:Element = document.querySelector('.oos__description--active');
+  
+        if (infoOo) {
+          infoOo.classList.remove('oos__description--active');
+        }
+      });
     });
   }
 }

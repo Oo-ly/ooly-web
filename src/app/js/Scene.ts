@@ -12,9 +12,10 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { Sentences } from './Sentences';
+// import { Sentences } from './Sentences';
 import AudioLoader from './utils/AudioLoader';
 import EventManager from './utils/EventManager';
+import ScenarioLoader from './utils/ScenarioLoader';
 
 class Scene {
   private scene: THREE.Scene;
@@ -40,7 +41,7 @@ class Scene {
 
   constructor() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 100);
+    this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0001, 100);
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
     });
@@ -142,7 +143,7 @@ class Scene {
         let element = event.target as HTMLElement;
         let description = element.parentElement.nextElementSibling as HTMLElement;
         this.closeAllInfos();
-        description.classList.toggle('oos__description--active')
+        description.classList.toggle('oos__description--active');
       });
     });
 
@@ -151,7 +152,7 @@ class Scene {
         let element = event.target as HTMLElement;
         element.parentElement.parentElement.classList.remove('oos__description--active');
       });
-    })
+    });
   }
 
   closeAllInfos() {
@@ -166,9 +167,12 @@ class Scene {
   }
 
   init() {
-    this.camera.position.set(-0.0819560393608861, 0.17910147276113078, 0.000008189676138274878);
-    this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
+    this.loadScenario();
+
+    this.camera.position.set(-0.19560393608861, 0.12910147276113078, 0.000008189676138274878);
+    this.camera.rotation.set(0, 0, 0);
     this.camera.lookAt(0, 0, 0);
+    this.scene.add(this.camera);
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
     light.intensity = 1;
@@ -182,20 +186,27 @@ class Scene {
     this.renderer.shadowMap.enabled = true;
 
     ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
-      object.position.z = -0.13;
-      object.rotateY((90 * Math.PI) / 180);
+      object.position.x = -0.1;
+      object.position.y = -0.015;
+      object.position.z = -0.1;
+      object.rotateX((90 * Math.PI) / 200);
+      object.rotateY((90 * Math.PI) / 85);
+      object.rotateZ((45 * Math.PI) / 360);
+      object.scale.x = 0.75;
+      object.scale.y = 0.75;
+      object.scale.z = 0.75;
 
-      this.scene.add(object);
+      this.camera.add(object);
 
       const likeButton = new InteractiveObject(object, 'Heart');
       likeButton.setAction(() => {
-        EventManager.emit(`interaction:${Interaction.LIKE}`);
+        EventManager.emit(`interaction`, { interaction: Interaction.LIKE });
         EventManager.emit('clean:interaction');
       });
 
       const dislikeButton = new InteractiveObject(object, 'heartbreak');
       dislikeButton.setAction(() => {
-        EventManager.emit(`interaction:${Interaction.DISLIKE}`);
+        EventManager.emit(`interaction`, { interaction: Interaction.DISLIKE });
         EventManager.emit('clean:interaction');
       });
 
@@ -209,6 +220,8 @@ class Scene {
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
       this.boitier = new Boitier(object);
+      object.position.set(-0.05, 0, 0.05);
+      object.rotation.set(0, 0, -0.1);
 
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
@@ -218,10 +231,10 @@ class Scene {
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
         if (this.scenario && this.scenario.isRunning()) {
-          EventManager.emit(`interaction:${Interaction.OFF}`);
+          EventManager.emit(`interaction`, { interaction: Interaction.OFF });
         } else {
+          EventManager.emit(`interaction`, { interaction: Interaction.ON });
           this.loadScenario();
-          this.scenario.play();
         }
       });
 
@@ -305,20 +318,27 @@ class Scene {
     if (object && object.parent) object.parent.remove(object);
   }
 
-  loadScenario() {
-    const sentences = Sentences.scenarios.sort((a, b) => {
-      return b.oos.length - a.oos.length;
-    });
-
-    const scenario = sentences.find((sentence) => {
-      return sentence.oos.reduce((status, oo) => {
-        return status && this.oos.includes(oo);
-      }, true);
-    });
-
+  async loadScenario() {
+    const scenario = await ScenarioLoader.fetchScenario();
     if (scenario) {
-      this.scenario = new Scenario(scenario.sentences);
+      this.scenario = new Scenario(scenario);
+      console.log(this.scenario);
+      this.scenario.play();
     }
+
+    // const sentences = Sentences.scenarios.sort((a, b) => {
+    //   return b.oos.length - a.oos.length;
+    // });
+
+    // const scenario = sentences.find((sentence) => {
+    //   return sentence.oos.reduce((status, oo) => {
+    //     return status && this.oos.includes(oo);
+    //   }, true);
+    // });
+
+    // if (scenario) {
+    //   this.scenario = new Scenario(scenario.sentences);
+    // }
   }
 }
 
