@@ -12,7 +12,7 @@ class ObjectLoader {
     return new Promise((resolve, reject) => {
       this.loader.load(
         file,
-        (object) => {
+        object => {
           object.scene.position.x = 0;
           object.scene.position.y = 0;
           object.scene.position.z = 0;
@@ -20,7 +20,7 @@ class ObjectLoader {
           resolve(object.scene);
         },
         null,
-        (err) => {
+        err => {
           reject(err);
         },
       );

@@ -4,18 +4,15 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial, Matrix4, Ray } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO } from './Oo';
 import Boitier from './Boitier';
-import Scenario, { Sentence, Interaction } from './Scenario';
+import { Interaction } from './Scenario';
 import Pod from './Pod';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-// import { Sentences } from './Sentences';
-import AudioLoader from './utils/AudioLoader';
+import PlaylistManager from './utils/PlaylistManager';
 import EventManager from './utils/EventManager';
-import ScenarioLoader from './utils/ScenarioLoader';
 
 class Scene {
   private scene: THREE.Scene;
@@ -31,13 +28,10 @@ class Scene {
 
   private controls: OrbitControls;
 
-  private oos: string[] = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
-  private boitier: Boitier;
+  private oos: string[] = [];
   private pod: Pod;
 
   private interactiveElements: InteractiveObject[] = [];
-
-  private scenario: Scenario;
 
   constructor() {
     this.scene = new THREE.Scene();
@@ -118,26 +112,6 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('ul.oos li img').forEach((oo) => {
-      oo.addEventListener('click', (e) => {
-        const element = e.target as HTMLElement;
-
-        if (!element.classList.contains('fixed')) element.classList.toggle('selected');
-
-        const ooClicked = element.getAttribute('data-oo');
-        this.boitier.toogleOo(ooClicked);
-
-        if (!element.classList.contains('fixed')) {
-          if (this.oos.includes(ooClicked)) {
-            this.oos.splice(this.oos.indexOf(ooClicked), 1);
-          } else {
-            this.oos.push(ooClicked);
-          }
-        }
-        console.log(this.oos);
-      });
-    });
-
     document.querySelectorAll('.oos__info').forEach((ooInfo) => {
       ooInfo.addEventListener('click', (event) => {
         let element = event.target as HTMLElement;
@@ -167,8 +141,6 @@ class Scene {
   }
 
   init() {
-    this.loadScenario();
-
     this.camera.position.set(-0.19560393608861, 0.12910147276113078, 0.000008189676138274878);
     this.camera.rotation.set(0, 0, 0);
     this.camera.lookAt(0, 0, 0);
@@ -219,7 +191,7 @@ class Scene {
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
-      this.boitier = new Boitier(object);
+      Boitier.init(object);
       object.position.set(-0.05, 0, 0.05);
       object.rotation.set(0, 0, -0.1);
 
@@ -230,11 +202,10 @@ class Scene {
 
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
-        if (this.scenario && this.scenario.isRunning()) {
-          EventManager.emit(`interaction`, { interaction: Interaction.OFF });
+        if (PlaylistManager.power) {
+          EventManager.emit('interaction:off', { oos: this.oos });
         } else {
-          EventManager.emit(`interaction`, { interaction: Interaction.ON });
-          this.loadScenario();
+          EventManager.emit('interaction:on', { oos: this.oos });
         }
       });
 
@@ -248,7 +219,7 @@ class Scene {
         }
 
         setTimeout(() => {
-          EventManager.emit('bandeau:intensity', { intensity: 0.1 });
+          EventManager.emit('bandeau:intensity', { intensity: 0.06 });
         }, 1000);
 
         const tween = TweenMax.to(couvercle.object, 1, {
@@ -310,35 +281,12 @@ class Scene {
 
     this.controls.update();
 
-    if (this.boitier) this.boitier.update();
+    if (Boitier) Boitier.update();
     if (this.pod) this.pod.update();
   }
 
   removeObject(object: Object3D) {
     if (object && object.parent) object.parent.remove(object);
-  }
-
-  async loadScenario() {
-    const scenario = await ScenarioLoader.fetchScenario();
-    if (scenario) {
-      this.scenario = new Scenario(scenario);
-      console.log(this.scenario);
-      this.scenario.play();
-    }
-
-    // const sentences = Sentences.scenarios.sort((a, b) => {
-    //   return b.oos.length - a.oos.length;
-    // });
-
-    // const scenario = sentences.find((sentence) => {
-    //   return sentence.oos.reduce((status, oo) => {
-    //     return status && this.oos.includes(oo);
-    //   }, true);
-    // });
-
-    // if (scenario) {
-    //   this.scenario = new Scenario(scenario.sentences);
-    // }
   }
 }
 

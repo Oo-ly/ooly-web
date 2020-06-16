@@ -1,78 +1,48 @@
-import { Object3D, MeshStandardMaterial, Mesh, DoubleSide, Color } from 'three';
+import { Object3D, MeshStandardMaterial, Mesh, Color } from 'three';
 import { TweenMax } from 'gsap';
+import { Audio } from './Scenario';
 
-const OO_DISCOO = {
-  name: "Disc'Oo",
-  color: '0085FF',
-  objectName: 'Disc_Oo',
-  tore: 'Tore_3',
-};
+const FIXED_OO: string[] = [];
 
-const OO_CINOOCHE = {
-  name: "Cin'Oo'che",
-  color: 'CA0024',
-  objectName: 'Cinoche_1',
-  tore: 'Tore_5',
-};
-
-const OO_INFOO = {
-  name: "Inf'Oo",
-  color: '77CEFF',
-  objectName: 'Infoo',
-  tore: 'Tore_8',
-};
-
-const OO_YOOGA = {
-  name: "Y'Oo'ga",
-  color: '53BA9A',
-  objectName: 'Yoga',
-  tore: 'Tore_1',
-};
-
-const OO_VEGETOO = {
-  name: "Végét'Oo",
-  color: '7AEC70',
-  objectName: 'Vegeto_1',
-  tore: 'Tore_4',
-};
-
-const OO_COOMIQUE = {
-  name: "C'Oo'mique",
-  color: 'FFE92D',
-  objectName: 'Comique_1',
-  tore: 'Tore_6',
-};
-
-const OO_WHOOW = {
-  name: "Wh'Oo'w",
-  color: 'FFB300',
-  objectName: 'Whow_1',
-  tore: 'Tore_7',
-};
-
-const OO_MELIMELOO = {
-  name: "Méli-Mél'Oo",
-  color: '9573F2',
-  objectName: 'melimelo_1',
-  tore: 'Tore_1',
-};
-
-const FIXED_OO = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
-
-export { OO_CINOOCHE, OO_COOMIQUE, OO_DISCOO, OO_INFOO, OO_VEGETOO, OO_WHOOW, OO_YOOGA, OO_MELIMELOO };
+interface OoData {
+  uuid: string;
+  name: string;
+  color: string;
+  objectName: string;
+  toreObjectName: string;
+  byes: Audio[];
+  entries: Audio[];
+  exits: Audio[];
+  hellos: Audio[];
+  noScenario: Audio[];
+}
 
 export default class Oo {
+  private uuid: string;
   private name: string;
   private object: Mesh;
   private color: string;
   private material: MeshStandardMaterial;
   private tore: Mesh;
+  private byes: Audio[] = [];
+  private entries: Audio[] = [];
+  private hellos: Audio[] = [];
+  private exits: Audio[] = [];
+  private noScenario: Audio[] = [];
+  private active: boolean = false;
 
-  constructor(scene: Object3D, name: string, color: string, objectName: string, tore: string) {
-    this.name = name;
-    this.color = color;
-    this.object = scene.getObjectByName(objectName) as Mesh;
-    this.tore = scene.getObjectByName(tore) as Mesh;
+  constructor(scene: Object3D, data: OoData) {
+    this.uuid = data.uuid;
+    this.name = data.name;
+    this.color = data.color;
+    this.object = scene.getObjectByName(data.objectName) as Mesh;
+    this.tore = scene.getObjectByName(data.toreObjectName) as Mesh;
+
+    this.hellos = data.hellos;
+    this.byes = data.byes;
+    this.entries = data.entries;
+    this.exits = data.exits;
+    this.noScenario = data.noScenario;
 
     if (!this.object) {
       console.error(`Object not found for ${name}`);
@@ -94,6 +64,7 @@ export default class Oo {
   toogle() {
     if (FIXED_OO.indexOf(this.name) > -1) return;
     const nextOpacity = this.material.opacity === 0 ? 1 : 0;
+    this.active = !this.active;
 
     TweenMax.to(this.material, 0.3, {
       opacity: nextOpacity,
@@ -105,8 +76,8 @@ export default class Oo {
 
   setActive(active: boolean) {
     const toreMaterial = this.tore.material as MeshStandardMaterial;
-    const nextColor = active ? new Color(`#${this.color}`) : new Color('#000000');
-    const nextEmissive = active ? new Color(`#${this.color}`) : new Color('#ffffff');
+    const nextColor = active ? new Color(`${this.color}`) : new Color('#000000');
+    const nextEmissive = active ? new Color(`${this.color}`) : new Color('#ffffff');
     const duration = 0.3;
 
     const nextEmissiveIntensity = active ? 0.2 : 0;
@@ -143,5 +114,35 @@ export default class Oo {
 
   getName() {
     return this.name;
+  }
+
+  getUUID() {
+    return this.uuid;
+  }
+
+  getRandomAudio(type: string) {
+    switch (type) {
+      case 'hello':
+        return this.getRandomFromArray(this.hellos);
+      case 'bye':
+        return this.getRandomFromArray(this.byes);
+      case 'entry':
+        return this.getRandomFromArray(this.entries);
+      case 'exit':
+        return this.getRandomFromArray(this.exits);
+      case 'sorry':
+        return this.getRandomFromArray(this.noScenario);
+    }
+
+    return null;
+  }
+
+  isActive() {
+    return this.active;
+  }
+
+  private getRandomFromArray(array: Audio[]): Audio {
+    const index = Math.floor(Math.random() * array.length);
+    return array[index];
   }
 }

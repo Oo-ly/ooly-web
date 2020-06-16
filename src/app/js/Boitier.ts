@@ -1,10 +1,11 @@
 import { Object3D, Mesh, MeshStandardMaterial, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE, OO_MELIMELOO } from './Oo';
+import Oo from './Oo';
 import { TweenMax } from 'gsap';
 import { Interaction } from './Scenario';
 import EventManager from './utils/EventManager';
+import ScenarioLoader from './utils/ScenarioLoader';
 
-export default class Boitier {
+class Boitier {
   private object: Object3D;
   private oos: Oo[] = [];
 
@@ -14,17 +15,20 @@ export default class Boitier {
 
   private powerButton: Mesh;
 
-  constructor(object: Object3D) {
+  private waitingBandeauColor1 = new Color(0x09b9e0);
+  private waitingBandeauColor2 = new Color(0x7c04c2);
+
+  init(object: Object3D) {
     this.object = object;
 
     this.bandeauUniforms = {
       color1: {
         type: 'c',
-        value: new Color(0x09b9e0),
+        value: this.waitingBandeauColor1,
       },
       color2: {
         type: 'c',
-        value: new Color(0x7c04c2),
+        value: this.waitingBandeauColor2,
       },
       time: {
         type: 'f',
@@ -32,27 +36,18 @@ export default class Boitier {
       },
     };
 
-    // this.setBandeauColor();
+    this.setBandeauColor();
     this.createOos();
 
-    const melimelo = this.object.getObjectByName('melimelo_1') as Mesh;
-    const melimeloMaterial = melimelo.material as MeshStandardMaterial;
-    melimeloMaterial.transparent = true;
-    melimeloMaterial.opacity = 0;
-
-    const tore2 = this.object.getObjectByName('Tore_2') as Mesh;
-    const tore2Material = tore2.material as MeshStandardMaterial;
-    tore2.layers.set(1);
-    tore2Material.emissiveIntensity = 0;
-
     this.bandeau = object.getObjectByName('Bandeau_LED') as Mesh;
-    this.bandeau.material = new MeshPhongMaterial({
-      color: 0x000000,
-      emissive: 0xffffff,
-      emissiveIntensity: 0.01,
-    });
+    // this.bandeau.material = new MeshPhongMaterial({
+    //   color: 0x000000,
+    //   emissive: 0xffffff,
+    //   emissiveIntensity: 0.01,
+    // });
     this.bandeauMaterial = this.bandeau.material as MeshStandardMaterial;
     this.bandeau.layers.enable(1);
+    console.log('Uniform', this.bandeauMaterial);
 
     this.powerButton = this.object.getObjectByName('Power') as Mesh;
 
@@ -61,7 +56,6 @@ export default class Boitier {
   }
 
   bind() {
-
     EventManager.on('show:off', (e) => {
       this.setOoDesactive();
     });
@@ -88,15 +82,58 @@ export default class Boitier {
     EventManager.on('bandeau:color', (e) => {
       const color = new Color(e.color);
 
-      TweenMax.to(this.bandeauMaterial.color, 0.3, {
+      TweenMax.to(this.bandeauUniforms.color1.value, 0.3, {
+        r: color.r,
+        g: color.g,
+        b: color.b,
+      });
+
+      TweenMax.to(this.bandeauUniforms.color2.value, 0.3, {
         r: color.r,
         g: color.g,
         b: color.b,
       });
     });
 
+    EventManager.on('bandeau:reset', () => {
+      TweenMax.to(this.bandeauUniforms.color1.value, 0.3, {
+        r: this.waitingBandeauColor1.r,
+        g: this.waitingBandeauColor1.g,
+        b: this.waitingBandeauColor1.b,
+      });
+
+      TweenMax.to(this.bandeauUniforms.color2.value, 0.3, {
+        r: this.waitingBandeauColor2.r,
+        g: this.waitingBandeauColor2.g,
+        b: this.waitingBandeauColor2.b,
+      });
+    });
+
     EventManager.on('wait:interaction', (e) => {
       if (e.interaction == Interaction.OFF) this.setPowerButton(true);
+    });
+
+    document.querySelectorAll('ul.oos li img').forEach((oo) => {
+      oo.addEventListener('click', (e) => {
+        const element = e.target as HTMLElement;
+
+        if (!element.classList.contains('fixed')) element.classList.toggle('selected');
+
+        const ooClicked = element.getAttribute('data-oo');
+        this.toogleOo(ooClicked);
+
+        if (!element.classList.contains('fixed')) {
+          const oo = this.oos.find((oo) => oo.getName() === ooClicked);
+          if (oo) {
+            if (oo.isActive()) {
+              EventManager.emit('oo:putNew', { oo: ooClicked, oos: this.oos });
+            } else {
+              EventManager.emit('oo:takeOff', { oo: ooClicked, oos: this.oos });
+            }
+          }
+        }
+        console.log(this.getActiveOos().map((oo) => oo.getName()));
+      });
     });
   }
 
@@ -121,67 +158,20 @@ export default class Boitier {
   }
 
   createOos() {
-    const discoo = new Oo(
-      this.object,
-      OO_DISCOO.name,
-      OO_DISCOO.color,
-      OO_DISCOO.objectName,
-      OO_DISCOO.tore
-    );
-    const cinooche = new Oo(
-      this.object,
-      OO_CINOOCHE.name,
-      OO_CINOOCHE.color,
-      OO_CINOOCHE.objectName,
-      OO_CINOOCHE.tore
-    );
-    const infoo = new Oo(
-      this.object,
-      OO_INFOO.name,
-      OO_INFOO.color,
-      OO_INFOO.objectName,
-      OO_INFOO.tore
-    );
-    const yooga = new Oo(
-      this.object,
-      OO_YOOGA.name,
-      OO_YOOGA.color,
-      OO_YOOGA.objectName,
-      OO_YOOGA.tore
-    );
-    const vegetoo = new Oo(
-      this.object,
-      OO_VEGETOO.name,
-      OO_VEGETOO.color,
-      OO_VEGETOO.objectName,
-      OO_VEGETOO.tore
-    );
-    const whoow = new Oo(
-      this.object,
-      OO_WHOOW.name,
-      OO_WHOOW.color,
-      OO_WHOOW.objectName,
-      OO_WHOOW.tore
-    );
-    const coomique = new Oo(
-      this.object,
-      OO_COOMIQUE.name,
-      OO_COOMIQUE.color,
-      OO_COOMIQUE.objectName,
-      OO_COOMIQUE.tore
-    );
-    const melimelo = new Oo(
-      this.object,
-      OO_MELIMELOO.name,
-      OO_MELIMELOO.color,
-      OO_MELIMELOO.objectName,
-      OO_MELIMELOO.tore
-    );
-
-    this.oos.push(discoo, cinooche, infoo, yooga, vegetoo, whoow, coomique, melimelo);
+    ScenarioLoader.getOos().then((oosData) => {
+      oosData.forEach((ooData) => {
+        const oo = new Oo(this.object, ooData);
+        console.log(oo);
+        this.oos.push(oo);
+      });
+    });
   }
 
-  setOoDesactive(){
+  getActiveOos() {
+    return this.oos.filter((oo) => oo.isActive());
+  }
+
+  setOoDesactive() {
     this.oos.forEach((oo) => {
       oo.setActive(false);
     });
@@ -195,13 +185,8 @@ export default class Boitier {
     });
 
     const activeOo = this.oos.find((oo) => oo.getName() === name);
-    const color = new Color(`#${activeOo.getColor()}`);
 
-    TweenMax.to(this.bandeauMaterial.emissive, 0.3, {
-      r: color.r,
-      g: color.g,
-      b: color.b,
-    });
+    EventManager.emit('bandeau:color', { color: activeOo.getColor() });
   }
 
   randomActive() {
@@ -209,6 +194,27 @@ export default class Boitier {
       const index = Math.floor(Math.random() * this.oos.length);
       this.setOoActive(this.oos[index].getName());
     }, 2000);
+  }
+
+  getOoByUUID(ooUuid: string) {
+    return this.oos.find((oo) => oo.getUUID() === ooUuid);
+  }
+
+  getOoByName(ooName: string) {
+    return this.oos.find((oo) => oo.getName() === ooName);
+  }
+
+  getRandomActiveOos(number: number) {
+    const activesOos = this.getActiveOos();
+    const selectedOos = [];
+
+    while (selectedOos.length < number && activesOos.length > 0) {
+      const randomIndex = Math.floor(Math.random() * activesOos.length);
+      const oo = activesOos.splice(randomIndex, 1);
+      selectedOos.push(...oo);
+    }
+
+    return selectedOos;
   }
 
   setBandeauColor() {
@@ -230,6 +236,8 @@ export default class Boitier {
   }
 
   update() {
-    this.bandeauUniforms.time.value += 1 / 60;
+    if (this.bandeauUniforms) this.bandeauUniforms.time.value += 1 / 60;
   }
 }
+
+export default new Boitier();

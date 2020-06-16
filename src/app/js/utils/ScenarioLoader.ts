@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { IScenario } from '../Scenario';
 
 interface ScenarioLoaderConfig {
   token: string;
@@ -8,6 +9,7 @@ interface ScenarioLoaderConfig {
       Authorization: string;
     };
   };
+  playedScenarios: string[];
 }
 
 class ScenarioLoader {
@@ -19,11 +21,13 @@ class ScenarioLoader {
         Authorization: null,
       },
     },
+    playedScenarios: [],
   };
 
   constructor() {}
 
   async init() {
+    /* Token request */
     const response = await axios.post(`${this.config.baseUrl}/login`, {
       username: 'Ooly',
       password: 'ooly',
@@ -33,14 +37,27 @@ class ScenarioLoader {
     this.config.headers.headers.Authorization = `Bearer ${this.config.token}`;
   }
 
-  async fetchScenario() {
-    // const request = await axios.get('https://dev.api.ooly.fr/scenarios/f8e6adab-7bd2-4925-b769-a154e011df67', this.config.headers);
-    const request = await axios.get(`${this.config.baseUrl}/scenarios/71e735cd-7c22-473c-bde7-8296fee62da4`, this.config.headers);
-    console.log(request.data);
-    if (request.status === 200 && request.data.scenario) {
-      return request.data.scenario;
+  async fetchScenario(myOos: string[]) {
+    const request = await axios.post(`${this.config.baseUrl}/scenarios`, { oos: myOos }, this.config.headers);
+    if (request.status === 200 && request.data.scenarios) {
+      const filteredScenario = request.data.scenarios.filter((s: IScenario) => this.config.playedScenarios.indexOf(s.uuid) === -1);
+      const scenario = filteredScenario[Math.floor(Math.random() * request.data.scenarios.length)]; // Select a random scenario in request.data.scenarios[]
+
+      if (!scenario) return null;
+
+      this.config.playedScenarios.push(scenario.uuid);
+
+      return scenario; // Return scenario to PlaylistManager
     }
     console.log('Error during fetching');
+  }
+
+  async getOos() {
+    const response = await axios.get(`${this.config.baseUrl}/oos`);
+    if (response.status === 200 && response.data.oos) {
+      return response.data.oos as any[];
+    }
+    return [];
   }
 }
 

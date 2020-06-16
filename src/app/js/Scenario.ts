@@ -1,7 +1,3 @@
-import AudioLoader from './utils/AudioLoader';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE, OO_MELIMELOO } from './Oo';
-import EventManager from './utils/EventManager';
-
 enum Interaction {
   LIKE = 'LIKE',
   DISLIKE = 'DISLIKE',
@@ -19,16 +15,6 @@ interface myOo {
   toreObjectName: string;
 }
 
-interface Sentence {
-  uuid: string;
-  name: string;
-  order?: number | null;
-  interaction: boolean;
-  audio: Audio;
-  dislikes: [];
-  likes: [];
-}
-
 interface Audio {
   uuid: string;
   name: string;
@@ -36,6 +22,10 @@ interface Audio {
   type?: string | null;
   oo: myOo;
   encodedData?: string | null;
+  interaction: boolean;
+  order?: number | null;
+  dislikes: Audio[];
+  ooUuid: string;
 }
 
 interface IScenario {
@@ -45,91 +35,26 @@ interface IScenario {
   neutral_entries: Audio[];
   positive_entries: Audio[];
   exits: Audio[];
-  sentences: Sentence[];
-  oos: Oo[];
+  sentences: Audio[];
+  oos: myOo[];
 }
 
-export { Sentence, Interaction, IScenario, Audio };
+export { Interaction, IScenario, Audio };
 
 export default class Scenario {
   private iscenario: IScenario;
-  private isPlaying: boolean = false;
-  private previousEnd: string = 'neutral';
-  private index: number = -1;
+  private previousEnd: string;
 
-  constructor(iscenario: IScenario) {
+  constructor(iscenario: IScenario, previousEnd: string) {
     this.iscenario = iscenario;
+    this.previousEnd = previousEnd;
   }
 
-  play() {
-    console.log('Running scenario');
-    this.isPlaying = true;
-    let entry = null;
-    let sentence = null;
-
-    console.log(this.iscenario.sentences);
-
-    if (this.index === -1) {
-      if (this.previousEnd === 'neutral') {
-        entry = this.iscenario.neutral_entries[0];
-      } else {
-        entry = this.iscenario.negative_entries[0];
-      }
-      this.playEntry(entry);
-    } else {
-      sentence = this.iscenario.sentences.find((s) => s.order === this.index);
-      this.playSentence(sentence);
-    }
+  getScenarioDetails() {
+    return this.iscenario;
   }
 
-  isRunning() {
-    return this.isPlaying;
-  }
-
-  async playEntry(audio: Audio) {
-    EventManager.emit('show:oo', { oo: audio.oo.name });
-    await AudioLoader.playAudio(audio);
-    setTimeout(async () => {
-      this.index += 1;
-      await this.play();
-    }, 600);
-  }
-
-  async playSentence(sentence: Sentence) {
-    EventManager.emit('show:oo', { oo: sentence.audio.oo.name });
-    const nextSentence = this.iscenario.sentences.find((s) => s.order === this.index + 1);
-    // await AudioLoader.playAudio(sentence.audio);
-
-    if (sentence.interaction) {
-      EventManager.emit('wait:interaction');
-
-      const eventId = EventManager.on(`interaction`, async (e) => {
-        EventManager.off(eventId);
-
-        if (e.interaction === Interaction.LIKE) {
-          await this.playSentence(nextSentence);
-          console.log('Like');
-        } else {
-          // await this.playSentence(nextSentence);
-          // Jouer les phrases de sortie
-          console.log('Dislike');
-        }
-      });
-    } else {
-      if (nextSentence) {
-        EventManager.emit('show:oo', { oo: nextSentence.audio.oo.name });
-      }
-
-      setTimeout(async () => {
-        if (nextSentence) {
-          this.index += 1;
-          await this.playSentence(nextSentence);
-        }else{
-          this.index = -1;
-          this.isPlaying = false;
-          EventManager.emit('show:off');
-        }
-      }, 600);
-    }
+  getPreviousEndType() {
+    return this.previousEnd;
   }
 }
