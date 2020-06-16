@@ -84,6 +84,7 @@ export default class Pod {
     this.enableButton(this.dislikeButton, new Color('#e74c3c'));
     this.enableButton(this.likeButton, new Color('#2ecc71'));
     this.enableButton(this.wizzButton, new Color('#f5d316'));
+    EventManager.emit('image', '05');
 
     if (this.animation) this.animation.kill();
     const nextColor = new Color('#180236');

@@ -118,6 +118,7 @@ class Boitier {
         const element = e.target as HTMLElement;
 
         if (!element.classList.contains('fixed')) element.classList.toggle('selected');
+        EventManager.emit('image', '02');
 
         const ooClicked = element.getAttribute('data-oo');
         this.toogleOo(ooClicked);
