@@ -15,17 +15,20 @@ class Boitier {
 
   private powerButton: Mesh;
 
+  private waitingBandeauColor1 = new Color(0x09b9e0);
+  private waitingBandeauColor2 = new Color(0x7c04c2);
+
   init(object: Object3D) {
     this.object = object;
 
     this.bandeauUniforms = {
       color1: {
         type: 'c',
-        value: new Color(0x09b9e0),
+        value: this.waitingBandeauColor1,
       },
       color2: {
         type: 'c',
-        value: new Color(0x7c04c2),
+        value: this.waitingBandeauColor2,
       },
       time: {
         type: 'f',
@@ -33,17 +36,18 @@ class Boitier {
       },
     };
 
-    // this.setBandeauColor();
+    this.setBandeauColor();
     this.createOos();
 
     this.bandeau = object.getObjectByName('Bandeau_LED') as Mesh;
-    this.bandeau.material = new MeshPhongMaterial({
-      color: 0x000000,
-      emissive: 0xffffff,
-      emissiveIntensity: 0.01,
-    });
+    // this.bandeau.material = new MeshPhongMaterial({
+    //   color: 0x000000,
+    //   emissive: 0xffffff,
+    //   emissiveIntensity: 0.01,
+    // });
     this.bandeauMaterial = this.bandeau.material as MeshStandardMaterial;
     this.bandeau.layers.enable(1);
+    console.log('Uniform', this.bandeauMaterial);
 
     this.powerButton = this.object.getObjectByName('Power') as Mesh;
 
@@ -78,10 +82,30 @@ class Boitier {
     EventManager.on('bandeau:color', (e) => {
       const color = new Color(e.color);
 
-      TweenMax.to(this.bandeauMaterial.color, 0.3, {
+      TweenMax.to(this.bandeauUniforms.color1.value, 0.3, {
         r: color.r,
         g: color.g,
         b: color.b,
+      });
+
+      TweenMax.to(this.bandeauUniforms.color2.value, 0.3, {
+        r: color.r,
+        g: color.g,
+        b: color.b,
+      });
+    });
+
+    EventManager.on('bandeau:reset', () => {
+      TweenMax.to(this.bandeauUniforms.color1.value, 0.3, {
+        r: this.waitingBandeauColor1.r,
+        g: this.waitingBandeauColor1.g,
+        b: this.waitingBandeauColor1.b,
+      });
+
+      TweenMax.to(this.bandeauUniforms.color2.value, 0.3, {
+        r: this.waitingBandeauColor2.r,
+        g: this.waitingBandeauColor2.g,
+        b: this.waitingBandeauColor2.b,
       });
     });
 
@@ -161,13 +185,8 @@ class Boitier {
     });
 
     const activeOo = this.oos.find((oo) => oo.getName() === name);
-    const color = new Color(`${activeOo.getColor()}`);
 
-    TweenMax.to(this.bandeauMaterial.emissive, 0.3, {
-      r: color.r,
-      g: color.g,
-      b: color.b,
-    });
+    EventManager.emit('bandeau:color', { color: activeOo.getColor() });
   }
 
   randomActive() {

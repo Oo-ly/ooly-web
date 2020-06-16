@@ -209,7 +209,7 @@ class Scene {
         }
 
         setTimeout(() => {
-          EventManager.emit('bandeau:intensity', { intensity: 0.1 });
+          EventManager.emit('bandeau:intensity', { intensity: 0.06 });
         }, 1000);
 
         const tween = TweenMax.to(couvercle.object, 1, {

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { IScenario } from '../Scenario';
 
 interface ScenarioLoaderConfig {
   token: string;
@@ -8,6 +9,7 @@ interface ScenarioLoaderConfig {
       Authorization: string;
     };
   };
+  playedScenarios: string[];
 }
 
 class ScenarioLoader {
@@ -19,6 +21,7 @@ class ScenarioLoader {
         Authorization: null,
       },
     },
+    playedScenarios: [],
   };
 
   constructor() {}
@@ -37,7 +40,13 @@ class ScenarioLoader {
   async fetchScenario(myOos: string[]) {
     const request = await axios.post(`${this.config.baseUrl}/scenarios`, { oos: myOos }, this.config.headers);
     if (request.status === 200 && request.data.scenarios) {
-      const scenario = request.data.scenarios[Math.floor(Math.random() * request.data.scenarios.length)]; // Select a random scenario in request.data.scenarios[]
+      const filteredScenario = request.data.scenarios.filter((s: IScenario) => this.config.playedScenarios.indexOf(s.uuid) === -1);
+      const scenario = filteredScenario[Math.floor(Math.random() * request.data.scenarios.length)]; // Select a random scenario in request.data.scenarios[]
+
+      if (!scenario) return null;
+
+      this.config.playedScenarios.push(scenario.uuid);
+
       return scenario; // Return scenario to PlaylistManager
     }
     console.log('Error during fetching');

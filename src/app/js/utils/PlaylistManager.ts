@@ -54,7 +54,7 @@ class PlaylistManager {
     });
     /* When the user take a Oo out of the box */
     EventManager.on('audio:finished', (e) => {
-     console.log('AUDIO FINISHED');
+      console.log('AUDIO FINISHED');
     });
   }
 
@@ -79,7 +79,7 @@ class PlaylistManager {
             console.log('AUDIO FINISHED');
             resolve();
           });
-          console.log("ask to play the thing main")
+          console.log('ask to play the thing main');
           this.audioStreamMain.play(); // Play the audio
         } else {
           // If we need to play an audio related to an Oo interaction
@@ -95,7 +95,6 @@ class PlaylistManager {
             resolve();
           });
 
-        
           this.audioStreamSecondary.play(); // Play the audio
         }
       } else {
@@ -114,7 +113,8 @@ class PlaylistManager {
 
   /* Load scenario by calling ScenarioLoader fetch function */
   async loadScenario() {
-    console.log("load scenario");
+    EventManager.emit('bandeau:reset');
+    console.log('load scenario');
     this.scenarioStatus = Status.waiting;
     const oos = Boitier.getActiveOos().map((oo) => oo.getUUID());
     const scenario = await ScenarioLoader.fetchScenario(oos);
@@ -124,12 +124,13 @@ class PlaylistManager {
       this.scenario = new Scenario(scenario, 'neutral_entries');
       this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
       this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
-    // }
-      } else {
-      console.log("no scenario founded");
+      // }
+    } else {
+      console.log('no scenario founded');
       this.scenarioStatus = Status.null;
       this.saySorry();
     }
+    EventManager.emit('scenario:loaded');
   }
 
   /* Main playlist construct function */
@@ -179,7 +180,7 @@ class PlaylistManager {
 
   // /* Oos want to say sorry */
   async saySorry() {
-    console.log("say sorry !");
+    console.log('say sorry !');
     this.cleanPlaylist('main');
     this.cleanPlaylist('secondary'); // Clean actual playlist
     Boitier.getRandomActiveOos(1).map((oo) => {
@@ -207,15 +208,15 @@ class PlaylistManager {
     this.cleanPlaylist('secondary'); // Clean secondary playlist
     this.cleanPlaylist('main'); // Clean main playlist
 
-    var ooInstance = Boitier.getOoByName(oo);
-    
+    const ooInstance = Boitier.getOoByName(oo);
+
     this.playlistSecondary.push(ooInstance.getRandomAudio('entry'));
     // await this.play(); // Playlist play
   }
 
   /* Taking a Oo out of the box */
   async takeOff(oo: string) {
-    console.log("take of a oo");
+    console.log('take of a oo');
     this.cleanPlaylist('secondary'); // Clean secondary playlist
     this.cleanPlaylist('main'); // Clean main playlist
 
@@ -228,11 +229,11 @@ class PlaylistManager {
 
   /* Playlist play function */
   async play() {
-    console.log("play something");
+    console.log('play something');
     if (this.playlistSecondary[0]) {
       // If Playlist Secondary isn't empty we want to play it before playing the main playlist
       this.pausePlaylist('main'); // Playlist pause
-      var audio = this.playlistSecondary.shift(); // Take the first element of the playlist
+      const audio = this.playlistSecondary.shift(); // Take the first element of the playlist
       EventManager.emit('show:oo', { oo: Boitier.getOoByUUID(audio.ooUuid).getName() }); // Change the box light color because a Oo is going to speek
       await this.playAudio(audio, 'secondary'); // Play the audio
       setTimeout(async () => {
@@ -243,7 +244,7 @@ class PlaylistManager {
       if (this.playlistMain[0]) {
         // If Playlist Main isn't empty
         this.pausePlaylist('secondary');
-        var audio = this.playlistMain.shift();
+        const audio = this.playlistMain.shift();
         EventManager.emit('show:oo', { oo: audio.oo.name });
         await this.playAudio(audio, 'main');
         if (!this.playlistMain[0]) {
@@ -275,25 +276,32 @@ class PlaylistManager {
           }, 800);
         }
       } else {
-        // If playlists are both empty
-        console.log('nothing to play');
-        setTimeout(async () => {
-          console.log("nothing to read, ", this.timer);
+        // // If playlists are both empty
+        // console.log('nothing to play');
+        // setTimeout(async () => {
+        //   console.log('nothing to read, ', this.timer);
 
-          if (this.scenarioStatus === Status.null) {
-            console.log("try to reload scenario because value is null");
-            this.loadScenario();
-          }
+        //   if (this.scenarioStatus === Status.null) {
+        //     console.log('try to reload scenario because value is null');
+        //     this.loadScenario();
+        //   }
 
-          this.timer+=1
+        //   this.timer += 1;
 
-          if (this.timer > 30 && this.scenarioStatus === Status.empty) {
-            console.log("it's been 30 seconds that scenario is empty");
-            this.timer = 0;
-            this.loadScenario();
-          }
+        //   if (this.timer > 30 && this.scenarioStatus === Status.empty) {
+        //     console.log("it's been 30 seconds that scenario is empty");
+        //     this.timer = 0;
+        //     this.loadScenario();
+        //   }
+        //   await this.play();
+        // }, 800);
+
+        const eventId = EventManager.on('scenario:loaded', async () => {
+          EventManager.off(eventId);
           await this.play();
-        }, 800);
+        });
+
+        this.loadScenario();
       }
     }
   }
