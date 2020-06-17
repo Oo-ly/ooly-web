@@ -52,7 +52,7 @@ class Scene {
 
     this.bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
     this.bloomPass.threshold = 0;
-    this.bloomPass.strength = 2;
+    this.bloomPass.strength = 0.8;
     this.bloomPass.radius = 0;
 
     this.bloomComposer = new EffectComposer(this.renderer);

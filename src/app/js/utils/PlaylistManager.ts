@@ -34,6 +34,7 @@ class PlaylistManager {
     /* When the user turn the box on */
     EventManager.on('interaction:on', (e) => {
       // this.loadScenario();
+      this.timer = 0;
       this.sayHello();
     });
     /* When the user turn the box off */
@@ -43,12 +44,14 @@ class PlaylistManager {
     /* When the user add a Oo on the box */
     EventManager.on('oo:putNew', (e) => {
       if (this.power) {
+        this.timer = 0;
         this.putNew(e.oo);
       }
     });
     /* When the user take a Oo out of the box */
     EventManager.on('oo:takeOff', (e) => {
       if (this.power) {
+        this.timer = 0;
         this.takeOff(e.oo);
       }
     });
@@ -113,24 +116,32 @@ class PlaylistManager {
 
   /* Load scenario by calling ScenarioLoader fetch function */
   async loadScenario() {
-    EventManager.emit('bandeau:reset');
+    // EventManager.emit('bandeau:reset');
     console.log('load scenario');
     this.scenarioStatus = Status.waiting;
     const oos = Boitier.getActiveOos().map((oo) => oo.getUUID());
-    const scenario = await ScenarioLoader.fetchScenario(oos);
-    if (scenario) {
-      console.log(scenario);
-      this.scenarioStatus = Status.loaded;
-      this.scenario = new Scenario(scenario, 'neutral_entries');
-      this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
-      this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
-      // }
-    } else {
-      console.log('no scenario founded');
-      this.scenarioStatus = Status.null;
-      this.saySorry();
+    if (oos[0]) {
+      const scenario = await ScenarioLoader.fetchScenario(oos);
+      if (scenario) {
+        console.log(scenario);
+        this.scenarioStatus = Status.loaded;
+        this.scenario = new Scenario(scenario, 'neutral_entries');
+        this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
+        this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
+        // }
+      } else {
+        console.log('no scenario founded');
+        this.scenarioStatus = Status.null;
+        this.timer+=1;
+        if (this.timer === 1) {
+          // this.saySorry();
+        }else if(this.timer > 30){
+          this.timer = 0;
+        }
+        
+      }
+      EventManager.emit('scenario:loaded');
     }
-    EventManager.emit('scenario:loaded');
   }
 
   /* Main playlist construct function */
@@ -262,10 +273,16 @@ class PlaylistManager {
             } else {
               // If user doesn't want to continue
               this.playlistMain = []; // Empty playlist
-              audio.dislikes.forEach((dislikeAudio) => {
-                // Add to playlist exit sentences that were planned
+
+              for (let index = 0; index < audio.dislikes.length; index++) {
+                var dislikeAudio = audio.dislikes.find((s) => s.order === index); // Push audio into the playlist by sentence order
                 this.playlistMain.push(dislikeAudio);
-              });
+              }
+
+              // audio.dislikes.forEach((dislikeAudio) => {
+              //   // Add to playlist exit sentences that were planned
+              //   this.playlistMain.push(dislikeAudio);
+              // });
               await this.play();
             }
           });
@@ -296,8 +313,10 @@ class PlaylistManager {
         //   await this.play();
         // }, 800);
 
+        EventManager.emit('bandeau:reset');
         const eventId = EventManager.on('scenario:loaded', async () => {
           EventManager.off(eventId);
+          
           await this.play();
         });
 
@@ -308,7 +327,6 @@ class PlaylistManager {
 
   /* Playlist clean function */
   cleanPlaylist(type: string) {
-    this.timer = 0;
     this.scenarioStatus = Status.empty;
     switch (type) {
       case 'main':

@@ -15,8 +15,8 @@ class Boitier {
 
   private powerButton: Mesh;
 
-  private waitingBandeauColor1 = new Color(0x09b9e0);
-  private waitingBandeauColor2 = new Color(0x7c04c2);
+  private waitingBandeauColor1: Color = new Color(0xFF3D00);
+  private waitingBandeauColor2: Color = new Color(0xFFA113);
 
   init(object: Object3D) {
     this.object = object;
@@ -24,11 +24,11 @@ class Boitier {
     this.bandeauUniforms = {
       color1: {
         type: 'c',
-        value: this.waitingBandeauColor1,
+        value: this.waitingBandeauColor1.clone(),
       },
       color2: {
         type: 'c',
-        value: this.waitingBandeauColor2,
+        value: this.waitingBandeauColor2.clone(),
       },
       time: {
         type: 'f',
@@ -80,6 +80,7 @@ class Boitier {
     });
 
     EventManager.on('bandeau:color', (e) => {
+      console.log("BANDEAU COLOR")
       const color = new Color(e.color);
 
       TweenMax.to(this.bandeauUniforms.color1.value, 0.3, {
@@ -96,12 +97,13 @@ class Boitier {
     });
 
     EventManager.on('bandeau:reset', () => {
+      this.setOoDesactive();
+
       TweenMax.to(this.bandeauUniforms.color1.value, 0.3, {
         r: this.waitingBandeauColor1.r,
         g: this.waitingBandeauColor1.g,
         b: this.waitingBandeauColor1.b,
       });
-
       TweenMax.to(this.bandeauUniforms.color2.value, 0.3, {
         r: this.waitingBandeauColor2.r,
         g: this.waitingBandeauColor2.g,
@@ -176,7 +178,7 @@ class Boitier {
       oo.setActive(false);
     });
 
-    this.setBandeauColor();
+    // this.setBandeauColor();
   }
 
   setOoActive(name: string) {
@@ -219,6 +221,7 @@ class Boitier {
 
   setBandeauColor() {
     this.object.traverse((child) => {
+
       if (child instanceof Mesh && child.name === 'Bandeau_LED') {
         const material = child.material as MeshStandardMaterial;
         material.color.setHex(0x0000ff);
