@@ -180,10 +180,10 @@ class Scene {
     this.renderer.shadowMap.enabled = true;
 
     ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
-      object.position.x = -0.1;
+      object.position.x = -0.09;
       object.position.y = -0.04;
-      object.position.z = -0.13;
-      object.rotation.x = ((90 * Math.PI) / 180);
+      object.position.z = -0.12;
+      object.rotation.x = ((90 * Math.PI) / 220);
       object.rotation.y = ((90 * Math.PI) / 90);
       object.rotation.z = ((45 * Math.PI) / 360);
 
@@ -253,12 +253,6 @@ class Scene {
 
       const couvercle = new InteractiveObject(object, 'Couvercle_final');
       couvercle.setAction(() => {
-        /* Add default Oo' but to be improved */
-        let discoo = document.querySelector('.oos-discoo .oos__picture') as HTMLElement;
-        let infoo = document.querySelector('.oos-infoo .oos__picture') as HTMLElement;
-        discoo.click();
-        infoo.click();
-
         const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
         EventManager.emit('image');

@@ -122,7 +122,7 @@ class Boitier {
         if (!element.classList.contains('fixed')) element.classList.toggle('selected');
 
         const ooClicked = element.getAttribute('data-oo');
-        this.toogleOo(ooClicked);
+        this.toggleOo(ooClicked);
 
         if (!element.classList.contains('fixed')) {
           const oo = this.oos.find((oo) => oo.getName() === ooClicked);
@@ -149,7 +149,7 @@ class Boitier {
     });
   }
 
-  toogleOo(ooName: string) {
+  toggleOo(ooName: string) {
     const ooInList = this.oos.filter((o) => {
       return o.getName() === ooName;
     });
@@ -165,6 +165,11 @@ class Boitier {
         const oo = new Oo(this.object, ooData);
         console.log(oo);
         this.oos.push(oo);
+
+        // Default Oos
+        if(oo.getName() === "Disc'Oo" || oo.getName() === "Inf'Oo") {
+          this.toggleOo(oo.getName());
+        }
       });
     });
   }
@@ -221,6 +226,19 @@ class Boitier {
 
   setBandeauColor() {
     this.object.traverse((child) => {
+
+      if (child.name === 'Power') {
+        child.traverse((buttonChild) => {
+          if(buttonChild instanceof Mesh && child.name === 'Power') {
+            const material = buttonChild.material as MeshStandardMaterial;
+            material.color.setHex(0xFF3D00);
+            material.emissive.setHex(0xFF3D00);
+            material.emissiveIntensity = 30;
+
+            buttonChild.material = material;
+          }
+        })
+      }
 
       if (child instanceof Mesh && child.name === 'Bandeau_LED') {
         const material = child.material as MeshStandardMaterial;
