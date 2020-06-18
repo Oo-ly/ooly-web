@@ -30,14 +30,36 @@ class Scene {
 
   private oos: string[] = [];
   private pod: Pod;
+  private demoImages: string[] = [
+    '00', 
+    '01', 
+    '02', 
+    '03', 
+    '04', 
+    '05', 
+    '06', 
+    '07', 
+    '08', 
+    '09', 
+    '10', 
+    '11', 
+    '12', 
+    '13', 
+    '14', 
+    '15', 
+    '16', 
+    '17', 
+  ];
+  private clickedNumber: number = 0;
 
   private interactiveElements: InteractiveObject[] = [];
 
   constructor() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0001, 100);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 2000);
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
+      antialias: true
     });
 
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -88,7 +110,8 @@ class Scene {
 
   bind() {
     window.addEventListener('resize', () => this.onResize());
-
+    EventManager.on('image', (shift) => this.changeImage(shift));
+    
     this.renderer.domElement.addEventListener('click', (e) => {
       const raycaster = new Raycaster();
       const mouse = new Vector2();
@@ -147,26 +170,22 @@ class Scene {
     this.scene.add(this.camera);
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
-    light.intensity = 1;
+    light.intensity = 0.1;
     this.scene.add(light);
 
     const directionalLight = new DirectionalLight(0xffffff);
     directionalLight.position.set(0.285, 0.493, 0.086);
-    directionalLight.castShadow = true;
 
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
 
     ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
       object.position.x = -0.1;
-      object.position.y = -0.015;
-      object.position.z = -0.1;
-      object.rotateX((90 * Math.PI) / 200);
-      object.rotateY((90 * Math.PI) / 85);
-      object.rotateZ((45 * Math.PI) / 360);
-      object.scale.x = 0.75;
-      object.scale.y = 0.75;
-      object.scale.z = 0.75;
+      object.position.y = -0.04;
+      object.position.z = -0.13;
+      object.rotation.x = ((90 * Math.PI) / 180);
+      object.rotation.y = ((90 * Math.PI) / 90);
+      object.rotation.z = ((45 * Math.PI) / 360);
 
       this.camera.add(object);
 
@@ -174,12 +193,26 @@ class Scene {
       likeButton.setAction(() => {
         EventManager.emit(`interaction`, { interaction: Interaction.LIKE });
         EventManager.emit('clean:interaction');
+
+        if(this.clickedNumber == 0) {
+          EventManager.emit('image');
+          setTimeout(() => { EventManager.emit('image') }, 2000);
+        }
+
+        this.clickedNumber++;
       });
 
       const dislikeButton = new InteractiveObject(object, 'heartbreak');
       dislikeButton.setAction(() => {
         EventManager.emit(`interaction`, { interaction: Interaction.DISLIKE });
         EventManager.emit('clean:interaction');
+
+        EventManager.emit('image');
+
+        if (this.clickedNumber == 2) {
+          setTimeout(() => { EventManager.emit('image') }, 2000);
+          setTimeout(() => { EventManager.emit('image') }, 6000);
+        }
       });
 
       const wizzButton = new InteractiveObject(object, 'Main_1');
@@ -191,8 +224,8 @@ class Scene {
 
       this.pod = new Pod(object);
 
-      object.receiveShadow = true;
-      object.castShadow = true;
+      object.receiveShadow = false;
+      object.castShadow = false;
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
@@ -209,22 +242,35 @@ class Scene {
       powerButton.setAction(() => {
         if (PlaylistManager.power) {
           EventManager.emit('interaction:off', { oos: this.oos });
+          EventManager.emit('image');
+          setTimeout(() => { EventManager.emit('image') }, 2000);
         } else {
           EventManager.emit('interaction:on', { oos: this.oos });
+          EventManager.emit('image');
+          setTimeout(() => { EventManager.emit('image') }, 3000);
         }
       });
 
       const couvercle = new InteractiveObject(object, 'Couvercle_final');
       couvercle.setAction(() => {
+        /* Add default Oo' but to be improved */
+        let discoo = document.querySelector('.oos-discoo .oos__picture') as HTMLElement;
+        let infoo = document.querySelector('.oos-infoo .oos__picture') as HTMLElement;
+        discoo.click();
+        infoo.click();
+
         const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
+        EventManager.emit('image');
+        setTimeout(() => { EventManager.emit('image') }, 2000);
+
         const index = this.interactiveElements.indexOf(couvercle);
         if (index > -1) {
           this.interactiveElements.splice(index, 1);
         }
 
         setTimeout(() => {
-          EventManager.emit('bandeau:intensity', { intensity: 0.06 });
+          EventManager.emit('bandeau:intensity', { intensity: 0.001 });
         }, 1000);
 
         const tween = TweenMax.to(couvercle.object, 1, {
@@ -237,15 +283,6 @@ class Scene {
           },
         });
       });
-
-      const geometry = new THREE.PlaneGeometry(5, 20, 32);
-      const material = new THREE.MeshPhongMaterial({ color: 0x343434, side: THREE.DoubleSide });
-
-      var plane = new THREE.Mesh(geometry, material);
-      plane.castShadow = true;
-      plane.receiveShadow = true;
-      plane.rotateX((90 * Math.PI) / 180);
-      // this.scene.add(plane);
 
       this.renderer.shadowMap.enabled = true;
 
@@ -292,6 +329,17 @@ class Scene {
 
   removeObject(object: Object3D) {
     if (object && object.parent) object.parent.remove(object);
+  }
+
+  changeImage(shift: Boolean = true) {
+    let image: Element = document.querySelector('.info-image img');
+
+    let src = './assets/UI/demo/';
+    image.setAttribute('src', `${src}${this.demoImages[0]}.png`);
+
+    if (shift) {
+      this.demoImages.shift();
+    }
   }
 }
 

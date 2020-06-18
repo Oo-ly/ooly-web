@@ -15,7 +15,7 @@
         color: white;
         text-align: center;
         margin-bottom: 20px;
-        font-size: 8px;
+        font-size: 12px;
 
         .oos__picture {
         display: block;
@@ -68,6 +68,7 @@
         z-index: -1;
         pointer-events: all;
         overflow-y: scroll;
+        padding-left: 50px;
 
         &::-webkit-scrollbar {
             display: none;
@@ -87,8 +88,9 @@
         }
 
         img {
-            width: 100%;
+            width: auto;
             max-width: 700px;
+            margin-left: -30px;
         }
     }
 
@@ -117,13 +119,17 @@
         margin-top: 10px;
 
         li {
+            display: flex;
+            align-items: center;
             margin-right: 72px;
+            width: 100px;
         }
 
         img {
-            width: 100px;
+            width: 100%;
             height: 100px;
             margin-bottom: 10px;
+            margin-left: 0;
         }
 
         strong {
