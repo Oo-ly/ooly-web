@@ -52,6 +52,7 @@ class ScenarioLoader {
     console.log('Error during fetching');
   }
 
+
   async getOos() {
     const response = await axios.get(`${this.config.baseUrl}/oos`);
     if (response.status === 200 && response.data.oos) {

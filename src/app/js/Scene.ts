@@ -74,7 +74,7 @@ class Scene {
 
     this.bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
     this.bloomPass.threshold = 0;
-    this.bloomPass.strength = 2;
+    this.bloomPass.strength = 0.8;
     this.bloomPass.radius = 0;
 
     this.bloomComposer = new EffectComposer(this.renderer);
@@ -215,7 +215,12 @@ class Scene {
         }
       });
 
-      this.interactiveElements.push(likeButton, dislikeButton);
+      const wizzButton = new InteractiveObject(object, 'Main_1');
+      wizzButton.setAction(() => {
+        EventManager.emit(`wizz`);
+      });
+
+      this.interactiveElements.push(likeButton, dislikeButton, wizzButton);
 
       this.pod = new Pod(object);
 
