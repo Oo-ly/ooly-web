@@ -57,6 +57,10 @@ export default class Pod {
     const nextColor = new Color('#f76700');
     const nextColorB = new Color('#542300');
 
+    this.enableButton(this.dislikeButton, new Color('#f76700'));
+    this.enableButton(this.likeButton, new Color('#f76700'));
+    this.enableButton(this.wizzButton, new Color('#f76700'));
+
     TweenMax.to(this.color, 1, {
       r: nextColor.r,
       g: nextColor.g,
@@ -82,7 +86,7 @@ export default class Pod {
     // if (interaction === Interaction.LIKE || interaction === Interaction.DISLIKE) {
     this.enableButton(this.dislikeButton, new Color('#DB00FF'));
     this.enableButton(this.likeButton, new Color('#DB00FF'));
-    this.enableButton(this.wizzButton, new Color('#DB00FF'));
+    this.enableButton(this.wizzButton, new Color('#000000'));
 
     if (this.animation) this.animation.kill();
     const nextColor = new Color('#400067');
