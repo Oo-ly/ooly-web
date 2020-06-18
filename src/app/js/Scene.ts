@@ -176,7 +176,6 @@ class Scene {
 
         if(this.clickedNumber == 0) {
 
-          setTimeout(() => { EventManager.emit('image') }, 2000);
         }
 
         this.clickedNumber++;
@@ -190,8 +189,6 @@ class Scene {
 
         
         if (this.clickedNumber == 2) {
-          setTimeout(() => { EventManager.emit('image') }, 2000);
-          setTimeout(() => { EventManager.emit('image') }, 6000);
         }
       });
 
@@ -220,14 +217,12 @@ class Scene {
 
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
-        if (PlaylistManager.power) {
+        if (PlaylistManager.power === "on") {
           EventManager.emit('interaction:off', { oos: this.oos });
 
-          setTimeout(() => { EventManager.emit('image') }, 2000);
-        } else {
+        } else if (PlaylistManager.power === "off"){
           EventManager.emit('interaction:on', { oos: this.oos });
 
-          setTimeout(() => { EventManager.emit('image') }, 3000);
         }
       });
 
@@ -242,7 +237,6 @@ class Scene {
         const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
 
-        setTimeout(() => { EventManager.emit('image') }, 2000);
 
         const index = this.interactiveElements.indexOf(couvercle);
         if (index > -1) {

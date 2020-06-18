@@ -16,13 +16,16 @@ class PlaylistManager {
   private previousEnd: string = "neutral_entries"
   private audioStreamMain: any; // Audio stream dedicated to scenarios audios
   private audioStreamSecondary: any; // Audio stream dedicated to oos interactions audios
+  private audioStreamBye: any; // Audio stream dedicated to oos bye audios
+
 
   private playlistMain: Audio[] = []; // Playlist dedicated to scenarios audios
   private playlistSecondary: Audio[] = []; // Playlist dedicated to oos interactions audios
+  private playlistBye: Audio[] = []; // Playlist dedicated to oos interactions audios
 
   public scenario: Scenario; // To stock instance of Scenario
 
-  public power: boolean = false; // Box status
+  public power: string = "off"; // Box status
   private scenarioStatus: Status = Status.empty;
 
   private timer: number = 0;
@@ -48,7 +51,7 @@ class PlaylistManager {
     });
     /* When the user add a Oo on the box */
     EventManager.on('oo:putNew', (e) => {
-      if (this.power) {
+      if (this.power === "on") {
         this.timer = 0;
         this.previousEnd = "neutral_entries";
         this.putNew(e.oo);
@@ -56,7 +59,7 @@ class PlaylistManager {
     });
     /* When the user take a Oo out of the box */
     EventManager.on('oo:takeOff', (e) => {
-      if (this.power) {
+      if (this.power === "on") {
         this.timer = 0;
         this.previousEnd = "neutral_entries";
         this.takeOff(e.oo);
@@ -200,7 +203,7 @@ class PlaylistManager {
 
   /* Oos want to say hello */
   async sayHello() {
-    this.power = true;
+    this.power = "on";
     this.cleanPlaylist('secondary'); // Clean actual playlist
     this.cleanPlaylist('main');
     Boitier.getRandomActiveOos(3).map((oo) => {
@@ -223,15 +226,29 @@ class PlaylistManager {
 
   /* Oos want to say goodbye */
   async sayGoodbye() {
+    this.power = "shut";
+    this.scenarioStatus = Status.null;
+    this.timer = 0;
+    this.timerSecond = 0;
+    this.previousEnd = "neutral_entries";
     this.cleanPlaylist('secondary'); // Clean actual playlist
     this.cleanPlaylist('main');
-    Boitier.getRandomActiveOos(3).map((oo) => {
+
+
+    Boitier.getRandomActiveOos(2).map((oo) => {
       // Foreach Oo present in the box, add a correspondant "goodbye" sentence to playlist
-      this.playlistSecondary.unshift(oo.getRandomAudio('bye'));
+      this.playlistBye.push(oo.getRandomAudio('bye'))
     });
 
-    // await this.play(); // Playlist play
-    this.power = false;
+    for (let index = 0; index < this.playlistBye.length; index++) {
+      const audio = this.playlistBye[index];
+      EventManager.emit('show:oo', { oo: Boitier.getOoByUUID(audio.ooUuid).getName() }); // Change the box light color because a Oo is going to speek
+      await this.playBye(audio);
+      if (index+1 === this.playlistBye.length) {
+        this.power = "off";
+        EventManager.emit('bandeau:reset');
+      }
+    }
   }
 
   /* Adding a new Oo in the box */
@@ -260,9 +277,39 @@ class PlaylistManager {
     // await this.play(); // Playlist play
   }
 
+
+  async playBye(data: Audio){
+    return new Promise((resolve) => {
+
+      if (data.encodedData) {
+        
+          // If we need to play an audio related to a scenario
+          const audio = this.fetchAudio(data.encodedData); // Transfrom txt to readable base64 audio
+          this.audioStreamBye = new Audio(audio);
+          this.audioStreamBye.addEventListener('ended', () => {
+            EventManager.emit('audioBye:finished');
+          });
+
+          EventManager.on('audioBye:finished', (e) => {
+            console.log('AUDIO FINISHED');
+            resolve();
+          });
+
+          this.audioStreamBye.play(); // Play the audio
+        
+      } else {
+        resolve();
+      }
+
+
+    });
+  }
+
   /* Playlist play function */
   async play() {
-    console.log('play something');
+
+    if (this.power === "on") {
+      console.log('play something');
     if (this.playlistSecondary[0]) {
       // If Playlist Secondary isn't empty we want to play it before playing the main playlist
       this.pausePlaylist('main'); // Playlist pause
@@ -388,6 +435,8 @@ class PlaylistManager {
         // this.loadScenario();
       }
     }
+    }
+    
   }
 
   /* Playlist clean function */
