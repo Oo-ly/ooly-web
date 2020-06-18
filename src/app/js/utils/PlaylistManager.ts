@@ -66,6 +66,17 @@ class PlaylistManager {
     EventManager.on('audio:finished', (e) => {
       console.log('AUDIO FINISHED');
     });
+
+     /* When the user call wizz */
+     EventManager.on('wizz', (e) => {
+      console.log('wizz requested');
+
+      if (this.scenarioStatus === Status.empty) {
+        this.timer = 0;
+        this.loadScenario();
+      }
+
+    });
   }
 
   /* Return readable base64 file */
@@ -280,7 +291,7 @@ class PlaylistManager {
           case "1c141d55-4239-4647-a059-8eccf50a10f0":
               this.playlistMain.unshift(audios.special.musics[1]); // yoga music
               break;
-              
+
           case "064121b8-b352-471a-8ab4-e00f26297896":
               setTimeout(() => {
                 console.log("pause");
@@ -290,6 +301,7 @@ class PlaylistManager {
           default:
             break;
         }
+
         if (audio.interaction) {
           // If we encounter a sentence that need an interaction from the user
           EventManager.emit('wait:interaction'); // Light on the Pod and activation of Pod choices buttons
@@ -300,24 +312,34 @@ class PlaylistManager {
               // If user wants to continue
               await this.play();
             } else {
-              // If user doesn't want to continue
-              this.playlistMain = []; // Empty playlist
-              var audioOrdered = audio.dislikes.sort((a,b) => (a.order || 99) - (b.order || 99));
-              audioOrdered.forEach(audio => {
-                this.playlistMain.push(audio);
-              });
-              this.timer = 10;
-              this.previousEnd = "negative_entries";
-              // for (let index = 0; index < audio.dislikes.length; index++) {
-              //   var dislikeAudio = audio.dislikes.find((s) => s.order === index); // Push audio into the playlist by sentence order
-              //   this.playlistMain.push(dislikeAudio);
-              // }
 
-              // audio.dislikes.forEach((dislikeAudio) => {
-              //   // Add to playlist exit sentences that were planned
-              //   this.playlistMain.push(dislikeAudio);
-              // });
-              await this.play();
+              switch (audio.uuid) {
+                case "dadf54bd-092b-49df-87cd-4ca1714c31cf":
+                  await this.play();
+                  break;
+              
+                default:
+                      // If user doesn't want to continue
+                  this.playlistMain = []; // Empty playlist
+                  var audioOrdered = audio.dislikes.sort((a,b) => (a.order || 99) - (b.order || 99));
+                  audioOrdered.forEach(audio => {
+                    this.playlistMain.push(audio);
+                  });
+                  this.timer = 10;
+                  this.previousEnd = "negative_entries";
+                  // for (let index = 0; index < audio.dislikes.length; index++) {
+                  //   var dislikeAudio = audio.dislikes.find((s) => s.order === index); // Push audio into the playlist by sentence order
+                  //   this.playlistMain.push(dislikeAudio);
+                  // }
+
+                  // audio.dislikes.forEach((dislikeAudio) => {
+                  //   // Add to playlist exit sentences that were planned
+                  //   this.playlistMain.push(dislikeAudio);
+                  // });
+                  await this.play();
+                  break;
+              }
+              
             }
           });
         } else {
