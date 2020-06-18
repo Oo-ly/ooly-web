@@ -1,0 +1,69 @@
+.sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 40%;
+    max-width: 550px;
+    background: #120c58;
+    padding: 100px;
+    transform: translateX(-100%);
+  
+    z-index: 100;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    pointer-events: none;
+    cursor: pointer;
+  
+    transition: transform 0.62s $custom-ease;
+  
+    &--active {
+      transform: translateX(0);
+  
+      .sidebar__button-image {
+        transform: rotate(180deg);
+      }
+    }
+  
+    &__title {
+      color: $white;
+      font-family: $font-comforta;
+      letter-spacing: 2.8px;
+    }
+  
+    &__description {
+      color: $yellow;
+      margin-bottom: 80px;
+    }
+  
+    &__button {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      border: 0;
+      right: 0;
+      top: 40px;
+      z-index: 100;
+      transform: translateX(100%);
+      pointer-events: all;
+      cursor: pointer;
+      outline: none;
+      background: none;
+    }
+  
+    &__button-figure {
+      border-radius: 0 5px 5px 0;
+      background: $yellow;
+      margin-right: 15px;
+      padding: 15px;
+      transition: transform 0.62s;
+    }
+  
+    &__button-text {
+      font-family: $font-comforta;
+      color: $yellow;
+      font-size: 18px;
+    }
+}

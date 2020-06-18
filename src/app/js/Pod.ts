@@ -38,7 +38,7 @@ export default class Pod {
     this.ledBas = object.getObjectByName('LED_dessous') as Mesh;
     this.ledBas.layers.enable(1);
 
-    object.traverse((child) => {
+    object.traverse(child => {
       if (child instanceof Mesh) {
         const material = child.material as MeshStandardMaterial;
         material.roughness = 0.05;
@@ -75,35 +75,35 @@ export default class Pod {
   }
 
   bind() {
-    EventManager.on('wait:interaction', (e) => this.waitInteraction(e.interaction));
+    EventManager.on('wait:interaction', () => this.waitInteraction());
     EventManager.on('clean:interaction', () => this.cleanInteraction());
   }
 
-  waitInteraction(interaction: string) {
-    if (interaction === Interaction.LIKE || interaction === Interaction.DISLIKE) {
-      this.enableButton(this.dislikeButton, new Color('#e74c3c'));
-      this.enableButton(this.likeButton, new Color('#2ecc71'));
-      this.enableButton(this.wizzButton, new Color('#f5d316'));
+  waitInteraction() {
+    // if (interaction === Interaction.LIKE || interaction === Interaction.DISLIKE) {
+    this.enableButton(this.dislikeButton, new Color('#e74c3c'));
+    this.enableButton(this.likeButton, new Color('#2ecc71'));
+    this.enableButton(this.wizzButton, new Color('#f5d316'));
 
-      if (this.animation) this.animation.kill();
-      const nextColor = new Color('#180236');
-      const nextColorB = new Color('#4d04d4');
+    if (this.animation) this.animation.kill();
+    const nextColor = new Color('#180236');
+    const nextColorB = new Color('#4d04d4');
 
-      TweenMax.to(this.color, 1, {
-        r: nextColor.r,
-        g: nextColor.g,
-        b: nextColor.b,
-        onComplete: () => {
-          this.animation = TweenMax.to(this.color, 2, {
-            r: nextColorB.r,
-            g: nextColorB.g,
-            b: nextColorB.b,
-            yoyo: true,
-            repeat: -1,
-          });
-        },
-      });
-    }
+    TweenMax.to(this.color, 1, {
+      r: nextColor.r,
+      g: nextColor.g,
+      b: nextColor.b,
+      onComplete: () => {
+        this.animation = TweenMax.to(this.color, 2, {
+          r: nextColorB.r,
+          g: nextColorB.g,
+          b: nextColorB.b,
+          yoyo: true,
+          repeat: -1,
+        });
+      },
+    });
+    // }
   }
 
   cleanInteraction() {
@@ -113,7 +113,7 @@ export default class Pod {
   }
 
   disableButtons(buttons: Mesh[]) {
-    buttons.forEach((button) => {
+    buttons.forEach(button => {
       const material = button.material as MeshStandardMaterial;
 
       TweenMax.to(material.emissive, 0.3, {

@@ -1,67 +1,60 @@
-import AudioLoader from './utils/AudioLoader';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO, OO_YOOGA, OO_VEGETOO, OO_WHOOW, OO_COOMIQUE } from './Oo';
-import EventManager from './utils/EventManager';
-
 enum Interaction {
   LIKE = 'LIKE',
   DISLIKE = 'DISLIKE',
   OFF = 'OFF',
+  ON = 'ON',
 }
 
-interface Sentence {
-  id: number;
-  oo: string;
-  text: string;
-  nextSentence?: number | null;
-  interaction?: Interaction | null;
+interface myOo {
+  uuid: string;
+  color: string;
+  createdAt: string;
+  description: string;
+  name: string;
+  objectName: string;
+  toreObjectName: string;
 }
 
-export { Sentence, Interaction };
+interface Audio {
+  uuid: string;
+  name: string;
+  url: string;
+  type?: string | null;
+  oo: myOo;
+  encodedData?: string | null;
+  interaction: boolean;
+  order?: number | null;
+  dislikes: Audio[];
+  ooUuid: string;
+}
+
+interface IScenario {
+  uuid: string;
+  name: string;
+  negative_entries: Audio[];
+  neutral_entries: Audio[];
+  positive_entries: Audio[];
+  exits: Audio[];
+  sentences: Audio[];
+  oos: myOo[];
+}
+
+export { Interaction, IScenario, Audio };
 
 export default class Scenario {
-  private sentences: Sentence[];
-  private isPlaying: boolean = false;
+  private iscenario: IScenario;
+  private previousEnd: string;
 
-  constructor(sentences: Sentence[]) {
-    this.sentences = sentences;
+  constructor(iscenario: IScenario, previousEnd: string) {
+    this.iscenario = iscenario;
+    this.previousEnd = previousEnd;
   }
 
-  play() {
-    console.log('Running scenario');
-    this.isPlaying = true;
-
-    const sentence = this.sentences.find((s) => s.id === 1);
-    EventManager.emit('show:oo', { oo: sentence.oo });
-
-    this.playSentence(1);
+  getScenarioDetails() {
+    return this.iscenario;
   }
 
-  isRunning() {
-    return this.isPlaying;
-  }
-
-  async playSentence(id: number) {
-    const sentence = this.sentences.find((s) => s.id === id);
-    const nextSentence = this.sentences.find((s) => s.id === sentence.nextSentence);
-
-    console.log(`Sentence ${id}: ${sentence.text}`);
-    await AudioLoader.playAudio(sentence);
-
-    if (sentence.interaction) {
-      EventManager.emit('wait:interaction', { interaction: sentence.interaction.toString() });
-
-      const eventId = EventManager.on(`interaction:${sentence.interaction}`, async () => {
-        EventManager.off(eventId);
-        await this.playSentence(sentence.nextSentence);
-      });
-    } else {
-      if (nextSentence) {
-        EventManager.emit('show:oo', { oo: nextSentence.oo });
-      }
-
-      setTimeout(async () => {
-        if (sentence.nextSentence) await this.playSentence(sentence.nextSentence);
-      }, 600);
-    }
+  getPreviousEndType() {
+    return this.previousEnd;
   }
 }

@@ -4,16 +4,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MeshStandardMaterial, Raycaster, Vector2, Object3D, Mesh, DirectionalLight, Layers, Vector3, MeshBasicMaterial, Matrix4, Ray } from 'three';
 import ObjectLoader from './utils/ObjectLoader';
 import InteractiveObject from './InteractiveObject';
-import Oo, { OO_DISCOO, OO_CINOOCHE, OO_INFOO } from './Oo';
 import Boitier from './Boitier';
-import Scenario, { Sentence, Interaction } from './Scenario';
+import { Interaction } from './Scenario';
 import Pod from './Pod';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { Sentences } from './Sentences';
-import AudioLoader from './utils/AudioLoader';
+import PlaylistManager from './utils/PlaylistManager';
 import EventManager from './utils/EventManager';
 
 class Scene {
@@ -30,17 +28,14 @@ class Scene {
 
   private controls: OrbitControls;
 
-  private oos: string[] = [OO_DISCOO.name, OO_CINOOCHE.name, OO_INFOO.name];
-  private boitier: Boitier;
+  private oos: string[] = [];
   private pod: Pod;
 
   private interactiveElements: InteractiveObject[] = [];
 
-  private scenario: Scenario;
-
   constructor() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 100);
+    this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0001, 100);
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
     });
@@ -57,7 +52,7 @@ class Scene {
 
     this.bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
     this.bloomPass.threshold = 0;
-    this.bloomPass.strength = 2;
+    this.bloomPass.strength = 0.8;
     this.bloomPass.radius = 0;
 
     this.bloomComposer = new EffectComposer(this.renderer);
@@ -117,32 +112,12 @@ class Scene {
       });
     });
 
-    document.querySelectorAll('ul.oos li img').forEach((oo) => {
-      oo.addEventListener('click', (e) => {
-        const element = e.target as HTMLElement;
-
-        if (!element.classList.contains('fixed')) element.classList.toggle('selected');
-
-        const ooClicked = element.getAttribute('data-oo');
-        this.boitier.toogleOo(ooClicked);
-
-        if (!element.classList.contains('fixed')) {
-          if (this.oos.includes(ooClicked)) {
-            this.oos.splice(this.oos.indexOf(ooClicked), 1);
-          } else {
-            this.oos.push(ooClicked);
-          }
-        }
-        console.log(this.oos);
-      });
-    });
-
     document.querySelectorAll('.oos__info').forEach((ooInfo) => {
       ooInfo.addEventListener('click', (event) => {
         let element = event.target as HTMLElement;
         let description = element.parentElement.nextElementSibling as HTMLElement;
         this.closeAllInfos();
-        description.classList.toggle('oos__description--active')
+        description.classList.toggle('oos__description--active');
       });
     });
 
@@ -151,7 +126,7 @@ class Scene {
         let element = event.target as HTMLElement;
         element.parentElement.parentElement.classList.remove('oos__description--active');
       });
-    })
+    });
   }
 
   closeAllInfos() {
@@ -166,9 +141,10 @@ class Scene {
   }
 
   init() {
-    this.camera.position.set(-0.0819560393608861, 0.17910147276113078, 0.000008189676138274878);
-    this.camera.rotation.set(-1.5707506003359997, -0.4291524162538065, -1.5706864338997546);
+    this.camera.position.set(-0.19560393608861, 0.12910147276113078, 0.000008189676138274878);
+    this.camera.rotation.set(0, 0, 0);
     this.camera.lookAt(0, 0, 0);
+    this.scene.add(this.camera);
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
     light.intensity = 1;
@@ -182,24 +158,36 @@ class Scene {
     this.renderer.shadowMap.enabled = true;
 
     ObjectLoader.loadGLTF('assets/Bake_Pod/Bake_Pod.gltf').then((object) => {
-      object.position.z = -0.13;
-      object.rotateY((90 * Math.PI) / 180);
+      object.position.x = -0.1;
+      object.position.y = -0.015;
+      object.position.z = -0.1;
+      object.rotateX((90 * Math.PI) / 200);
+      object.rotateY((90 * Math.PI) / 85);
+      object.rotateZ((45 * Math.PI) / 360);
+      object.scale.x = 0.75;
+      object.scale.y = 0.75;
+      object.scale.z = 0.75;
 
-      this.scene.add(object);
+      this.camera.add(object);
 
       const likeButton = new InteractiveObject(object, 'Heart');
       likeButton.setAction(() => {
-        EventManager.emit(`interaction:${Interaction.LIKE}`);
+        EventManager.emit(`interaction`, { interaction: Interaction.LIKE });
         EventManager.emit('clean:interaction');
       });
 
       const dislikeButton = new InteractiveObject(object, 'heartbreak');
       dislikeButton.setAction(() => {
-        EventManager.emit(`interaction:${Interaction.DISLIKE}`);
+        EventManager.emit(`interaction`, { interaction: Interaction.DISLIKE });
         EventManager.emit('clean:interaction');
       });
 
-      this.interactiveElements.push(likeButton, dislikeButton);
+      const wizzButton = new InteractiveObject(object, 'Main_1');
+      wizzButton.setAction(() => {
+        EventManager.emit(`wizz`);
+      });
+
+      this.interactiveElements.push(likeButton, dislikeButton, wizzButton);
 
       this.pod = new Pod(object);
 
@@ -208,7 +196,9 @@ class Scene {
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
-      this.boitier = new Boitier(object);
+      Boitier.init(object);
+      object.position.set(-0.05, 0, 0.05);
+      object.rotation.set(0, 0, -0.1);
 
       const plusButton = new InteractiveObject(object, 'Plus');
       plusButton.setAction(() => {
@@ -217,11 +207,10 @@ class Scene {
 
       const powerButton = new InteractiveObject(object, 'Power');
       powerButton.setAction(() => {
-        if (this.scenario && this.scenario.isRunning()) {
-          EventManager.emit(`interaction:${Interaction.OFF}`);
+        if (PlaylistManager.power) {
+          EventManager.emit('interaction:off', { oos: this.oos });
         } else {
-          this.loadScenario();
-          this.scenario.play();
+          EventManager.emit('interaction:on', { oos: this.oos });
         }
       });
 
@@ -235,7 +224,7 @@ class Scene {
         }
 
         setTimeout(() => {
-          EventManager.emit('bandeau:intensity', { intensity: 0.1 });
+          EventManager.emit('bandeau:intensity', { intensity: 0.06 });
         }, 1000);
 
         const tween = TweenMax.to(couvercle.object, 1, {
@@ -297,28 +286,12 @@ class Scene {
 
     this.controls.update();
 
-    if (this.boitier) this.boitier.update();
+    if (Boitier) Boitier.update();
     if (this.pod) this.pod.update();
   }
 
   removeObject(object: Object3D) {
     if (object && object.parent) object.parent.remove(object);
-  }
-
-  loadScenario() {
-    const sentences = Sentences.scenarios.sort((a, b) => {
-      return b.oos.length - a.oos.length;
-    });
-
-    const scenario = sentences.find((sentence) => {
-      return sentence.oos.reduce((status, oo) => {
-        return status && this.oos.includes(oo);
-      }, true);
-    });
-
-    if (scenario) {
-      this.scenario = new Scenario(scenario.sentences);
-    }
   }
 }
 
