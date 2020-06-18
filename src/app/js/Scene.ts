@@ -30,26 +30,7 @@ class Scene {
 
   private oos: string[] = [];
   private pod: Pod;
-  private demoImages: string[] = [
-    '00', 
-    '01', 
-    '02', 
-    '03', 
-    '04', 
-    '05', 
-    '06', 
-    '07', 
-    '08', 
-    '09', 
-    '10', 
-    '11', 
-    '12', 
-    '13', 
-    '14', 
-    '15', 
-    '16', 
-    '17', 
-  ];
+
   private clickedNumber: number = 0;
 
   private interactiveElements: InteractiveObject[] = [];
@@ -110,7 +91,6 @@ class Scene {
 
   bind() {
     window.addEventListener('resize', () => this.onResize());
-    EventManager.on('image', (shift) => this.changeImage(shift));
     
     this.renderer.domElement.addEventListener('click', (e) => {
       const raycaster = new Raycaster();
@@ -195,7 +175,7 @@ class Scene {
         EventManager.emit('clean:interaction');
 
         if(this.clickedNumber == 0) {
-          EventManager.emit('image');
+
           setTimeout(() => { EventManager.emit('image') }, 2000);
         }
 
@@ -207,8 +187,8 @@ class Scene {
         EventManager.emit(`interaction`, { interaction: Interaction.DISLIKE });
         EventManager.emit('clean:interaction');
 
-        EventManager.emit('image');
 
+        
         if (this.clickedNumber == 2) {
           setTimeout(() => { EventManager.emit('image') }, 2000);
           setTimeout(() => { EventManager.emit('image') }, 6000);
@@ -242,11 +222,11 @@ class Scene {
       powerButton.setAction(() => {
         if (PlaylistManager.power) {
           EventManager.emit('interaction:off', { oos: this.oos });
-          EventManager.emit('image');
+
           setTimeout(() => { EventManager.emit('image') }, 2000);
         } else {
           EventManager.emit('interaction:on', { oos: this.oos });
-          EventManager.emit('image');
+
           setTimeout(() => { EventManager.emit('image') }, 3000);
         }
       });
@@ -261,7 +241,7 @@ class Scene {
 
         const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
-        EventManager.emit('image');
+
         setTimeout(() => { EventManager.emit('image') }, 2000);
 
         const index = this.interactiveElements.indexOf(couvercle);
@@ -331,16 +311,9 @@ class Scene {
     if (object && object.parent) object.parent.remove(object);
   }
 
-  changeImage(shift: Boolean = true) {
-    let image: Element = document.querySelector('.info-image img');
 
-    let src = './assets/UI/demo/';
-    image.setAttribute('src', `${src}${this.demoImages[0]}.png`);
+  
 
-    if (shift) {
-      this.demoImages.shift();
-    }
-  }
 }
 
 export default new Scene();

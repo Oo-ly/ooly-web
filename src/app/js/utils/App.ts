@@ -19,7 +19,7 @@ export default class App {
 
         if (sidebar.classList.contains(`${sidebarName}--active`)) {
           sidebarButtonText.innerHTML = 'Fermer';
-          EventManager.emit('image');
+
         } else {
           sidebarButtonText.innerHTML = "Les Oo'";
         }
