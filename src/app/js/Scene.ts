@@ -182,7 +182,12 @@ class Scene {
         EventManager.emit('clean:interaction');
       });
 
-      this.interactiveElements.push(likeButton, dislikeButton);
+      const wizzButton = new InteractiveObject(object, 'Main_1');
+      wizzButton.setAction(() => {
+        EventManager.emit(`wizz`);
+      });
+
+      this.interactiveElements.push(likeButton, dislikeButton, wizzButton);
 
       this.pod = new Pod(object);
 
