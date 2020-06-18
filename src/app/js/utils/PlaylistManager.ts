@@ -19,6 +19,7 @@ class PlaylistManager {
   private playlistSecondary: Audio[] = []; // Playlist dedicated to oos interactions audios
 
   public scenario: Scenario; // To stock instance of Scenario
+  private played: Boolean = false // Demo Variable
 
   public power: boolean = false; // Box status
   private scenarioStatus: Status = Status.empty;
@@ -116,20 +117,25 @@ class PlaylistManager {
     EventManager.emit('bandeau:reset');
     console.log('load scenario');
     this.scenarioStatus = Status.waiting;
-    const oos = Boitier.getActiveOos().map((oo) => oo.getUUID());
-    const scenario = await ScenarioLoader.fetchScenario(oos);
-    if (scenario) {
-      console.log(scenario);
-      this.scenarioStatus = Status.loaded;
-      this.scenario = new Scenario(scenario, 'neutral_entries');
-      this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
-      this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
-      // }
-    } else {
-      console.log('no scenario founded');
-      this.scenarioStatus = Status.null;
-      this.saySorry();
+
+    if (!this.played) {
+      const oos = Boitier.getActiveOos().map((oo) => oo.getUUID());
+      const scenario = await ScenarioLoader.fetchScenario(oos);
+      if (scenario) {
+        console.log(scenario);
+        this.scenarioStatus = Status.loaded;
+        this.scenario = new Scenario(scenario, 'neutral_entries');
+        this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
+        this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
+        // }
+      } else {
+        console.log('no scenario founded');
+        this.scenarioStatus = Status.null;
+        this.saySorry();
+      }
     }
+
+    this.played = true;
     EventManager.emit('scenario:loaded');
   }
 
@@ -256,9 +262,10 @@ class PlaylistManager {
           const eventId = EventManager.on(`interaction`, async (e) => {
             // On user interaction
             EventManager.off(eventId);
+            await this.play();
+            /*
             if (e.interaction === Interaction.LIKE) {
               // If user wants to continue
-              await this.play();
             } else {
               // If user doesn't want to continue
               this.playlistMain = []; // Empty playlist
@@ -267,7 +274,7 @@ class PlaylistManager {
                 this.playlistMain.push(dislikeAudio);
               });
               await this.play();
-            }
+            }*/
           });
         } else {
           // If sentence doesn't need interaction, play next sentence

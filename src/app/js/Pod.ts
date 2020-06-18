@@ -16,7 +16,6 @@ export default class Pod {
 
   private led: Mesh;
   private ledBas: Mesh;
-  private ampoule: Mesh;
 
   private animation: TweenMax;
 
@@ -81,29 +80,22 @@ export default class Pod {
 
   waitInteraction() {
     // if (interaction === Interaction.LIKE || interaction === Interaction.DISLIKE) {
-    this.enableButton(this.dislikeButton, new Color('#e74c3c'));
-    this.enableButton(this.likeButton, new Color('#2ecc71'));
-    this.enableButton(this.wizzButton, new Color('#f5d316'));
-    EventManager.emit('image', '05');
+    this.enableButton(this.dislikeButton, new Color('#DB00FF'));
+    this.enableButton(this.likeButton, new Color('#DB00FF'));
+    this.enableButton(this.wizzButton, new Color('#DB00FF'));
+
+    EventManager.emit('image');
 
     if (this.animation) this.animation.kill();
-    const nextColor = new Color('#180236');
-    const nextColorB = new Color('#4d04d4');
+    const nextColor = new Color('#400067');
+    console.log(this.color.getHexString());
 
     TweenMax.to(this.color, 1, {
       r: nextColor.r,
       g: nextColor.g,
-      b: nextColor.b,
-      onComplete: () => {
-        this.animation = TweenMax.to(this.color, 2, {
-          r: nextColorB.r,
-          g: nextColorB.g,
-          b: nextColorB.b,
-          yoyo: true,
-          repeat: -1,
-        });
-      },
+      b: nextColor.b
     });
+
     // }
   }
 
@@ -168,5 +160,6 @@ export default class Pod {
     const ledBasMaterial = this.ledBas.material as MeshStandardMaterial;
 
     ledBasMaterial.color = ledMaterial.color = this.color;
+    ledBasMaterial.emissive = ledMaterial.emissive = this.color;
   }
 }

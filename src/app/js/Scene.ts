@@ -30,14 +30,36 @@ class Scene {
 
   private oos: string[] = [];
   private pod: Pod;
+  private demoImages: string[] = [
+    '00', 
+    '01', 
+    '02', 
+    '03', 
+    '04', 
+    '05', 
+    '06', 
+    '07', 
+    '08', 
+    '09', 
+    '10', 
+    '11', 
+    '12', 
+    '13', 
+    '14', 
+    '15', 
+    '16', 
+    '17', 
+  ];
+  private clickedNumber: number = 0;
 
   private interactiveElements: InteractiveObject[] = [];
 
   constructor() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0001, 2000);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 2000);
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
+      antialias: true
     });
 
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -88,7 +110,7 @@ class Scene {
 
   bind() {
     window.addEventListener('resize', () => this.onResize());
-    EventManager.on('image', (data) => this.changeImage(data));
+    EventManager.on('image', (shift) => this.changeImage(shift));
     
     this.renderer.domElement.addEventListener('click', (e) => {
       const raycaster = new Raycaster();
@@ -148,12 +170,11 @@ class Scene {
     this.scene.add(this.camera);
 
     const light = new THREE.AmbientLight(0x404040); // soft white light
-    light.intensity = 1;
+    light.intensity = 0.1;
     this.scene.add(light);
 
     const directionalLight = new DirectionalLight(0xffffff);
     directionalLight.position.set(0.285, 0.493, 0.086);
-    directionalLight.castShadow = true;
 
     this.renderer.gammaOutput = true;
     this.renderer.shadowMap.enabled = true;
@@ -162,12 +183,9 @@ class Scene {
       object.position.x = -0.1;
       object.position.y = -0.04;
       object.position.z = -0.13;
-      object.rotateX((90 * Math.PI) / 190);
-      object.rotateY((90 * Math.PI) / 90);
-      object.rotateZ((45 * Math.PI) / 350);
-      object.scale.x = 0.75;
-      object.scale.y = 0.75;
-      object.scale.z = 0.75;
+      object.rotation.x = ((90 * Math.PI) / 180);
+      object.rotation.y = ((90 * Math.PI) / 90);
+      object.rotation.z = ((45 * Math.PI) / 360);
 
       this.camera.add(object);
 
@@ -175,22 +193,34 @@ class Scene {
       likeButton.setAction(() => {
         EventManager.emit(`interaction`, { interaction: Interaction.LIKE });
         EventManager.emit('clean:interaction');
-        EventManager.emit('image', '06');
-        setTimeout(() => { EventManager.emit('image', '07') }, 1000);
+
+        if(this.clickedNumber == 0) {
+          EventManager.emit('image');
+          setTimeout(() => { EventManager.emit('image') }, 2000);
+        }
+
+        this.clickedNumber++;
       });
 
       const dislikeButton = new InteractiveObject(object, 'heartbreak');
       dislikeButton.setAction(() => {
         EventManager.emit(`interaction`, { interaction: Interaction.DISLIKE });
         EventManager.emit('clean:interaction');
+
+        EventManager.emit('image');
+
+        if (this.clickedNumber == 2) {
+          setTimeout(() => { EventManager.emit('image') }, 2000);
+          setTimeout(() => { EventManager.emit('image') }, 6000);
+        }
       });
 
       this.interactiveElements.push(likeButton, dislikeButton);
 
       this.pod = new Pod(object);
 
-      object.receiveShadow = true;
-      object.castShadow = true;
+      object.receiveShadow = false;
+      object.castShadow = false;
     });
 
     ObjectLoader.loadGLTF('assets/Boitier_Oos/Boitier_Oos.gltf').then((object) => {
@@ -207,25 +237,35 @@ class Scene {
       powerButton.setAction(() => {
         if (PlaylistManager.power) {
           EventManager.emit('interaction:off', { oos: this.oos });
+          EventManager.emit('image');
+          setTimeout(() => { EventManager.emit('image') }, 2000);
         } else {
           EventManager.emit('interaction:on', { oos: this.oos });
-          EventManager.emit('image', '03');
-          setTimeout(() => { EventManager.emit('image', '04') }, 2000);
+          EventManager.emit('image');
+          setTimeout(() => { EventManager.emit('image') }, 3000);
         }
       });
 
       const couvercle = new InteractiveObject(object, 'Couvercle_final');
       couvercle.setAction(() => {
+        /* Add default Oo' but to be improved */
+        let discoo = document.querySelector('.oos-discoo .oos__picture') as HTMLElement;
+        let infoo = document.querySelector('.oos-infoo .oos__picture') as HTMLElement;
+        discoo.click();
+        infoo.click();
+
         const material = couvercle.object.material as MeshStandardMaterial;
         material.transparent = true;
-        EventManager.emit('image', '01');
+        EventManager.emit('image');
+        setTimeout(() => { EventManager.emit('image') }, 2000);
+
         const index = this.interactiveElements.indexOf(couvercle);
         if (index > -1) {
           this.interactiveElements.splice(index, 1);
         }
 
         setTimeout(() => {
-          EventManager.emit('bandeau:intensity', { intensity: 0.06 });
+          EventManager.emit('bandeau:intensity', { intensity: 0.001 });
         }, 1000);
 
         const tween = TweenMax.to(couvercle.object, 1, {
@@ -286,10 +326,15 @@ class Scene {
     if (object && object.parent) object.parent.remove(object);
   }
 
-  changeImage(number: String) {
+  changeImage(shift: Boolean = true) {
     let image: Element = document.querySelector('.info-image img');
+
     let src = './assets/UI/demo/';
-    image.setAttribute('src', `${src}${number}.png`);
+    image.setAttribute('src', `${src}${this.demoImages[0]}.png`);
+
+    if (shift) {
+      this.demoImages.shift();
+    }
   }
 }
 
