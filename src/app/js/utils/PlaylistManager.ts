@@ -358,10 +358,9 @@ class PlaylistManager {
                     // If user doesn't want to continue
                     this.playlistMain = []; // Empty playlist
                     const audioOrdered = [...audio.dislikes];
-                    audioOrdered.sort((a, b) => (a.order || 99) - (b.order || 99));
-                    audioOrdered.forEach((audio) => {
-                      this.playlistMain.push(audio);
-                    });
+                    audioOrdered.sort((a, b) => a.order - b.order);
+                    console.log(audioOrdered);
+                    this.playlistMain.push(...audioOrdered);
                     this.timer = 10;
                     this.previousEnd = 'negative_entries';
                     // for (let index = 0; index < audio.dislikes.length; index++) {
