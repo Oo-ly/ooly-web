@@ -21,6 +21,7 @@ class PlaylistManager {
   private playlistSecondary: Audio[] = []; // Playlist dedicated to oos interactions audios
 
   public scenario: Scenario; // To stock instance of Scenario
+  private played: Boolean = false // Demo Variable
 
   public power: boolean = false; // Box status
   private scenarioStatus: Status = Status.empty;
@@ -137,29 +138,34 @@ class PlaylistManager {
     // EventManager.emit('bandeau:reset');
     console.log('load scenario');
     this.scenarioStatus = Status.waiting;
-    const oos = Boitier.getActiveOos().map((oo) => oo.getUUID());
-    if (oos[0]) {
-      const scenario = await ScenarioLoader.fetchScenario(oos);
-      if (scenario) {
-        console.log(scenario);
-        this.scenarioStatus = Status.loaded;
-        this.scenario = new Scenario(scenario, this.previousEnd);
-        this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
-        this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
-        // }
-      } else {
-        console.log('no scenario founded');
-        this.scenarioStatus = Status.null;
-        this.timerSecond+=1;
-        if (this.timerSecond === 1) {
-          this.saySorry();
-        }else if(this.timerSecond > 10){
-          this.timerSecond = 0;
+
+    if (!this.played) {
+      const oos = Boitier.getActiveOos().map((oo) => oo.getUUID());
+      if (oos[0]) {
+        const scenario = await ScenarioLoader.fetchScenario(oos);
+        if (scenario) {
+          console.log(scenario);
+          this.scenarioStatus = Status.loaded;
+          this.scenario = new Scenario(scenario, this.previousEnd);
+          this.constructPlaylistMain('entries'); // Construct the playlist by adding an entry audio
+          this.constructPlaylistMain('sentences'); // Construct the playlist by adding an sentence audio
+          // }
+        } else {
+          console.log('no scenario founded');
+          this.scenarioStatus = Status.null;
+          this.timerSecond+=1;
+          if (this.timerSecond === 1) {
+            this.saySorry();
+          }else if(this.timerSecond > 10){
+            this.timerSecond = 0;
+          }
+          
         }
-        
+        EventManager.emit('scenario:loaded');
       }
-      EventManager.emit('scenario:loaded');
     }
+
+    this.played = true;
   }
 
   /* Main playlist construct function */
@@ -308,9 +314,12 @@ class PlaylistManager {
           const eventId = EventManager.on(`interaction`, async (e) => {
             // On user interaction
             EventManager.off(eventId);
+            
+            await this.play();
+
+            /*
             if (e.interaction === Interaction.LIKE) {
               // If user wants to continue
-              await this.play();
             } else {
 
               switch (audio.uuid) {
@@ -340,7 +349,7 @@ class PlaylistManager {
                   break;
               }
               
-            }
+            }*/
           });
         } else {
           // If sentence doesn't need interaction, play next sentence

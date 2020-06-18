@@ -1,5 +1,6 @@
 import '../../scss/app.scss';
 import * as Promise from 'bluebird';
+import EventManager from './EventManager';
 
 export default class App {
   isReady() {
@@ -18,6 +19,7 @@ export default class App {
 
         if (sidebar.classList.contains(`${sidebarName}--active`)) {
           sidebarButtonText.innerHTML = 'Fermer';
+          EventManager.emit('image');
         } else {
           sidebarButtonText.innerHTML = "Les Oo'";
         }
