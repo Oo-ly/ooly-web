@@ -163,7 +163,6 @@ class Boitier {
     ScenarioLoader.getOos().then((oosData) => {
       oosData.forEach((ooData) => {
         const oo = new Oo(this.object, ooData);
-        console.log(oo);
         this.oos.push(oo);
       });
     });
@@ -221,6 +220,19 @@ class Boitier {
 
   setBandeauColor() {
     this.object.traverse((child) => {
+
+      if (child.name === 'Power') {
+        child.traverse((buttonChild) => {
+          if(buttonChild instanceof Mesh && child.name === 'Power') {
+            const material = buttonChild.material as MeshStandardMaterial;
+            material.color.setHex(0xFF3D00);
+            material.emissive.setHex(0xFF3D00);
+            material.emissiveIntensity = 30;
+
+            buttonChild.material = material;
+          }
+        })
+      }
 
       if (child instanceof Mesh && child.name === 'Bandeau_LED') {
         const material = child.material as MeshStandardMaterial;
