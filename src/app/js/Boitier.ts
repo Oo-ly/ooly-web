@@ -122,7 +122,7 @@ class Boitier {
         if (!element.classList.contains('fixed')) element.classList.toggle('selected');
 
         const ooClicked = element.getAttribute('data-oo');
-        this.toogleOo(ooClicked);
+        this.toggleOo(ooClicked);
 
         if (!element.classList.contains('fixed')) {
           const oo = this.oos.find((oo) => oo.getName() === ooClicked);
@@ -149,7 +149,7 @@ class Boitier {
     });
   }
 
-  toogleOo(ooName: string) {
+  toggleOo(ooName: string) {
     const ooInList = this.oos.filter((o) => {
       return o.getName() === ooName;
     });
@@ -164,6 +164,11 @@ class Boitier {
       oosData.forEach((ooData) => {
         const oo = new Oo(this.object, ooData);
         this.oos.push(oo);
+
+        // Default Oos
+        if(oo.getName() === "Disc'Oo" || oo.getName() === "Inf'Oo") {
+          this.toggleOo(oo.getName());
+        }
       });
     });
   }
