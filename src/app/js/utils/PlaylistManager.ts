@@ -274,8 +274,18 @@ class PlaylistManager {
 
         switch (audio.uuid) {
           case "67d469aa-9a6d-452d-89c5-b72e459af55b":
-            this.playlistMain.unshift(audios.special.musics[0]);
+            this.playlistMain.unshift(audios.special.musics[0]); // tibetan music
             break;
+
+          case "1c141d55-4239-4647-a059-8eccf50a10f0":
+              this.playlistMain.unshift(audios.special.musics[1]); // yoga music
+              break;
+              
+          case "064121b8-b352-471a-8ab4-e00f26297896":
+              setTimeout(() => {
+                console.log("pause");
+              }, 3000); // yoga music
+              break;
         
           default:
             break;
